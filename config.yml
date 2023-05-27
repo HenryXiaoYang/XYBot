@@ -1,0 +1,33 @@
+#如果不知道自己在干什么请别动着两行
+ip: 127.0.0.1
+port: 5555
+
+admins: ['']
+
+command_prefix: "/"
+
+menu_key: 菜单
+main_menu: "-----XYBot菜单------\n1.1 随机图图\n1.2 签到\n1.3 查询积分\n1.4 积分榜\n1.5 ChatGPT\n帮助指令格式/菜单 (编号)\n例如/菜单 1.2\n指令参数的()不用打"
+
+menus: { "1.1": "-----XYBot菜单------\n1.1: 随机一个二次元图片！\n指令：/随机图图",
+         "1.2": "-----XYBot菜单------\n1.2: 签到领取积分，每天只能领取一次哦(每天3点刷新)\n指令：/签到",
+         "1.3": "-----XYBot菜单------\n1.3: 查询自己的积分！\n指令：/查询积分",
+         "1.4": "-----XYBot菜单------\n1.4: 查看积分排行榜！\n指令：/积分榜",
+         "1.5": "-----XYBot菜单------\n1.5: 微信中用ChatGPT！\n(支持私聊)\n指令：/gpt (问题)\n*注意！扣除3点积分！*"}
+
+random_pic_key: 随机图图
+random_pic_url: "https://api.yimian.xyz/img"
+
+signin_key: 签到
+query_points_key: 查询积分
+points_leaderboard_key: 积分榜
+
+#ChatGPT的API网址
+openai_api_base: ""
+#ChatGPT API的Key
+openai_api_key: ""
+gpt_key: gpt
+gpt_point_price: 3
+
+admin_whitelist: 管理白名单
+admin_points: 管理积分
