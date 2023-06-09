@@ -170,3 +170,12 @@ python3 start.py
 看到机器人口口成功即代表成功启动
 
 ![pic14.png](https://github.com/HenryXiaoYang/XYBot/blob/main/readmepics/pic14.png)
+
+## Credits
+https://kgithub.com/HenryXiaoYang/pywxdll
+
+https://kgithub.com/ChisBread/wechat-service/
+
+https://kgithub.com/cixingguangming55555/wechat-bot
+
+https://kgithub.com/chisbread/wechat-box
