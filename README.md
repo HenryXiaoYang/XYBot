@@ -169,4 +169,4 @@ python3 start.py
 ```
 看到机器人口口成功即代表成功启动
 
-![pic14.png](https://github.com/HenryXiaoYang/XYBot/blob/main/readmepics/pic16.png)
+![pic14.png](https://github.com/HenryXiaoYang/XYBot/blob/main/readmepics/pic14.png)
