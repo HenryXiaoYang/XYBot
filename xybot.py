@@ -191,7 +191,7 @@ class XYBot:
                     res=self.chatgpt(message))
                 logger.info('[发送信息]' + out_message + ' | [发送到]' + recv['wxid'])
                 self.bot.send_txt_msg(recv['wxid'], out_message)
-            elif self.db.get_points(recv['id1']) >= self.gpt_point_price:
+            elif self.db.get_points(recv['wxid']) >= self.gpt_point_price:
                 message = ''
                 for i in recv['content'][1:]: message = message + str(i) + ' '
                 self.db.minus_points(recv['wxid'], self.gpt_point_price)
