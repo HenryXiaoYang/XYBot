@@ -1,3 +1,4 @@
+import json
 import os
 import random
 
@@ -6,6 +7,7 @@ import pywxdll
 import requests
 import yaml
 from loguru import logger
+from prettytable import PrettyTable
 
 import database
 
@@ -56,6 +58,14 @@ class XYBot:
         self.news_urls = config['news_urls']
         self.news_number = config['news_number']
 
+        self.information_post_url = config['information_post_url']
+
+        self.get_contact_list_key = config['get_contact_list_key']
+
+        self.get_chatroom_memberlist_key = config['get_chatroom_memberlist_key']
+
+        self.antoautolog_group = config['antiautolog_group']
+
         self.db = database.BotDatabase()
 
         self.bot = pywxdll.Pywxdll(self.ip, self.port)
@@ -88,17 +98,51 @@ class XYBot:
                     self.admin_whitelist_handler(recv)
                 elif key in self.admin_points_key:  # 管理积分
                     self.admin_points_handler(recv)
-                elif key in self.admin_signin_reset_key:#重置签到状态
+                elif key in self.admin_signin_reset_key:  # 重置签到状态
                     self.admin_signin_reset(recv)
-                elif key in self.weather_key:#查询天气
+                elif key in self.weather_key:  # 查询天气
                     self.weather_handler(recv)
-                elif key in self.news_key: #查询新闻
+                elif key in self.news_key:  # 查询新闻
                     self.news_handler(recv)
+                elif key in self.get_contact_list_key: #获取机器人通讯录
+                    self.get_contact_list_handler(recv)
+                elif key in self.get_chatroom_memberlist_key: #获取当前群成员列表
+                    self.get_chatroom_memberlist_handler(recv)
                 else:
                     self.bot.send_txt_msg(recv['wxid'], '该指令不存在！')
             else:
-                if key == self.gpt_key:
+                if recv['id1'] == '':
+                    recv['id1'] = recv['wxid'] #如果id1(朋友是空，群是发送人)是空，则id1为recv（即发送人）
+                if key in self.menu_key:  # 菜单
+                    self.menu_handler(recv)
+                elif key in self.random_pic_key:  # 随机图图
+                    self.random_pic_handler(recv)
+                elif key in self.random_pic_link_key: # 随机链接
+                    self.random_pic_link_handler(recv)
+                elif key in 'bottest':  # tmp
+                    self.bot_test_handler(recv)
+                elif key in self.signin_key:  # 签到
+                    self.sign_in_handler(recv)
+                elif key in self.query_points_key:  # 查询积分
+                    self.query_points_handler(recv)
+                elif key in self.points_leaderboard_key:  # 积分榜
+                    self.points_leaderboard_handler(recv)
+                elif key in self.gpt_key:  # ChatGPT
                     self.friend_chatgpt_handler(recv)
+                elif key in self.admin_whitelist_key:  # 管理白名单
+                    self.admin_whitelist_handler(recv)
+                elif key in self.admin_points_key:  # 管理积分
+                    self.admin_points_handler(recv)
+                elif key in self.admin_signin_reset_key:  # 重置签到状态
+                    self.admin_signin_reset(recv)
+                elif key in self.weather_key:  # 查询天气
+                    self.weather_handler(recv)
+                elif key in self.news_key:  # 查询新闻
+                    self.news_handler(recv)
+                elif key in self.get_contact_list_key: # 获取机器人通讯录
+                    self.get_contact_list_handler(recv)
+                elif key in self.get_chatroom_memberlist_key: # 获取微信群成员列表
+                    self.get_chatroom_memberlist_handler(recv)
                 else:
                     self.bot.send_txt_msg(recv['wxid'], '该指令不存在！')
 
@@ -122,14 +166,15 @@ class XYBot:
             f.close()
         logger.info('[发送信息](随机图图图片) | [发送到]' + recv['wxid'])
         self.bot.send_pic_msg(recv['wxid'], os.path.abspath(path))
+
     def random_pic_link_handler(self, recv):
         r = requests.get(self.random_pic_link_url, timeout=5000)
-        r.encoding ='utf-8'
-        r=r.json()
+        r.encoding = 'utf-8'
+        r = r.json()
         url_list = r['pics']
         out_message = '-----XYBot-----\n❓❓❓\n'
-        for i in range(1,len(url_list)+1):
-            out_message+='❓{num}：{url}\n'.format(num=i,url=url_list[i-1])
+        for i in range(1, len(url_list) + 1):
+            out_message += '❓{num}：{url}\n'.format(num=i, url=url_list[i - 1])
         logger.info('[发送信息]' + out_message + ' | [发送到]' + recv['wxid'])
         self.bot.send_txt_msg(recv['wxid'], out_message)
 
@@ -171,7 +216,7 @@ class XYBot:
         logger.info('[发送信息]' + out_message + ' | [发送到]' + recv['wxid'])
         self.bot.send_txt_msg(recv['wxid'], out_message)
 
-    def chatgpt(self, message):  # ChatGPT请求
+    def chatgpt(self, message, recv):  # ChatGPT请求
         openai.api_key = self.openai_api_key
         openai.api_base = self.openai_api_base
         completion = ''
@@ -188,7 +233,7 @@ class XYBot:
                 if list(res.keys())[0] == 'content':
                     completion += res['content']
         except Exception as error:
-            self.bot.send_txt_msg('出现错误！⚠️{error}'.format(error=error))
+            self.bot.send_txt_msg(recv['wxid'], '出现错误！⚠️{error}'.format(error=error))
 
     def gpt_handler(self, recv):  # ChatGPT处理
         nickname = self.bot.get_chatroom_nick(recv['wxid'], recv['id1'])['content']['nick']
@@ -199,7 +244,7 @@ class XYBot:
                 message = ''
                 for i in recv['content'][1:]: message = message + str(i) + ' '
                 out_message = "\n-----XYBot-----\n因为你在白名单内，所以没扣除积分！👍\nChatGPT回答：\n{res}".format(
-                    res=self.chatgpt(message))
+                    res=self.chatgpt(message, recv))
                 logger.info('[发送信息]' + out_message + ' | [发送到]' + recv['wxid'])
                 self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname, out_message)
             elif self.db.get_points(recv['id1']) >= self.gpt_point_price:
@@ -208,7 +253,7 @@ class XYBot:
                 self.db.minus_points(recv['id1'], self.gpt_point_price)
                 out_message = "\n-----XYBot-----\n已扣除{gpt_price}点积分，还剩{points_left}点积分👍\nChatGPT回答：\n{res}".format(
                     gpt_price=self.gpt_point_price, points_left=self.db.get_points(recv['id1']),
-                    res=self.chatgpt(message))
+                    res=self.chatgpt(message, recv))
                 self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname, out_message)
             else:
                 self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname,
@@ -226,7 +271,7 @@ class XYBot:
                 message = ''
                 for i in recv['content'][1:]: message = message + str(i) + ' '
                 out_message = "-----XYBot-----\n因为你在白名单内，所以没扣除积分！👍\nChatGPT回答：\n{res}".format(
-                    res=self.chatgpt(message))
+                    res=self.chatgpt(message, recv))
                 logger.info('[发送信息]' + out_message + ' | [发送到]' + recv['wxid'])
                 self.bot.send_txt_msg(recv['wxid'], out_message)
             elif self.db.get_points(recv['wxid']) >= self.gpt_point_price:
@@ -235,7 +280,7 @@ class XYBot:
                 self.db.minus_points(recv['wxid'], self.gpt_point_price)
                 out_message = "-----XYBot-----\n已扣除{gpt_price}点积分，还剩{points_left}点积分👍\nChatGPT回答：\n{res}".format(
                     gpt_price=self.gpt_point_price, points_left=self.db.get_points(recv['wxid']),
-                    res=self.chatgpt(message))
+                    res=self.chatgpt(message, recv))
                 logger.info('[发送信息]' + out_message + ' | [发送到]' + recv['wxid'])
                 self.bot.send_txt_msg(recv['wxid'], out_message)
             else:
@@ -328,9 +373,6 @@ class XYBot:
             for j in res:
                 for i in range(self.news_number):
                     dict_key = list(j.keys())
-                    # byd网易新闻nsl api不规范 开发者两行泪
-                    # byd调试了一天结果api问题
-
                     news_title = j[dict_key[0]][i].get('title', '❓未知❓')
                     news_type = j[dict_key[0]][i].get('tname', '❓未知❓')
                     news_source = j[dict_key[0]][i].get('source', '无😔')
@@ -349,3 +391,86 @@ class XYBot:
             out_message = '出现错误！⚠️{error}'.format(error=error)
             logger.info('[发送信息]' + out_message + ' | [发送到]' + recv['wxid'])
             self.bot.send_txt_msg(recv['wxid'], out_message)
+
+    def get_contact_list_handler(self, recv):
+        if recv['id1'] in self.admin_list:
+            heading = ['名字', '类型', '微信号(机器人用)', '微信号(加好友用)']
+
+            chart = PrettyTable(heading)
+
+            data = self.bot.get_contact_list()
+            data = data['content']
+
+            for i in data:
+                name = i['name']
+                wxcode = i['wxcode']
+                wxid = i['wxid']
+                if wxid[:5] == 'wxid_':
+                    type = '好友'
+                elif wxid[-9:] == '@chatroom':
+                    type = '群'
+                else:
+                    type = '其他'
+                chart.add_row([name, type, wxid, wxcode])
+
+            chart.align = 'l'
+            json_data = json.dumps({"content": chart.get_string()})
+            url = self.information_post_url + '/texts'
+            headers = {"Content-Type": "application/json",
+                       "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36"}
+            reqeust = requests.post(url, data=json_data, headers=headers).json()
+            fetch_code = reqeust['fetch_code']
+            date_expire = reqeust['date_expire']
+
+            fetch_link = '{url}/r/{code}'.format(url=self.information_post_url, code=fetch_code)
+            out_message = '🤖️机器人的通讯录：\n{fetch_link}\n过期时间：{date_expire}'.format(fetch_link=fetch_link,
+                                                                                                 date_expire=date_expire)
+
+            self.bot.send_txt_msg(recv['wxid'], out_message)
+            logger.info('[发送信息]' + out_message + ' | [发送到]' + recv['wxid'])
+        else:
+            logger.info('[发送信息]❌你配用这个指令吗？ ｜ [发送到]' + recv['wxid'])
+            self.bot.send_txt_msg(recv['wxid'], '❌你配用这个指令吗？')
+
+    def get_chatroom_memberlist_handler(self, recv):
+        if recv['id1'] in self.admin_list:
+            heading = ['名字', 'wxid']
+            chart = PrettyTable(heading)
+
+            data = self.bot.get_chatroom_memberlist(recv['wxid'])
+            data = data['content']
+
+            for i in data:
+                if i['room_id'] == recv['wxid']:
+                    for j in i['member']:
+                        wxid = j
+                        name = self.bot.get_chatroom_nick(recv['wxid'], j)['content']['nick']
+                        chart.add_row([name, wxid])
+
+            chart.align = 'l'
+            # 不传直接发微信是因为微信一行实在太少了，不同设备还不一样，用pywxdll发excel文件会报错
+            json_data = json.dumps({"content": chart.get_string()})
+            url = self.information_post_url + '/texts'
+            headers = {"Content-Type": "application/json",
+                       "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36"}
+            reqeust = requests.post(url, data=json_data, headers=headers).json()
+            fetch_code = reqeust['fetch_code']
+            date_expire = reqeust['date_expire']
+
+            fetch_link = '{url}/r/{code}'.format(url=self.information_post_url, code=fetch_code)
+            out_message = '🤖️本群聊的群员列表：\n{fetch_link}\n过期时间：{date_expire}'.format(fetch_link=fetch_link,
+                                                                                             date_expire=date_expire)
+
+            self.bot.send_txt_msg(recv['wxid'], out_message)
+            logger.info('[发送信息]' + out_message + ' | [发送到]' + recv['wxid'])
+        else:
+            logger.info('[发送信息]❌你配用这个指令吗？ ｜ [发送到]' + recv['wxid'])
+            self.bot.send_txt_msg(recv['wxid'], '❌你配用这个指令吗？')
+
+    def schudle_antiautolog_handler(self):
+        if self.antoautolog_group != '':
+            out_message = '防微信自动退出登录[{num}]'.format(num=random.randint(1,9999))
+            self.bot.send_txt_msg(self.antoautolog_group, out_message)
+            logger.info('[发送信息]' + out_message + ' | [发送到]' + self.antoautolog_group)
+        else:
+            logger.debug('设置中未填写防微信自动退出登录群号')

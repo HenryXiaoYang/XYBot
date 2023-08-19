@@ -20,10 +20,16 @@ def reset_signinstat():
     logger.info('[数据库]签到重置成功！')
 
 
+def schedule_antiautolog():
+    handlebot = xybot.XYBot()
+    handlebot.schudle_antiautolog_handler()
+
+
 if __name__ == "__main__":
     with open('config.yml', 'r', encoding='utf-8') as f:  # 读取设置
         config = yaml.load(f.read(), Loader=yaml.FullLoader)
-    logger.add('logs/log_{time}.log', encoding='utf-8', enqueue=True, compression='zip', retention='2 weeks', rotation='00:01')
+    logger.add('logs/log_{time}.log', encoding='utf-8', enqueue=True, compression='zip', retention='2 weeks',
+               rotation='00:01')
 
     ip = config['ip']
     port = config['port']
@@ -34,6 +40,7 @@ if __name__ == "__main__":
     logger.info('机器人启动成功！')
 
     schedule.every().day.at("03:00").do(reset_signinstat)  # 重置签到时间
+    schedule.every(30).minutes.do(schedule_antiautolog)  # 防微信自动退出登录
 
     pool = ThreadPoolExecutor(max_workers=10)
     while True:
