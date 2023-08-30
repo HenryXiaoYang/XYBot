@@ -62,9 +62,6 @@ get_chatroom_memberlist_key: ["获取群成员列表"]
 
 information_post_url: "https://easychuan.cn"
 
-#防微信自动退出群号，可从获取机器人通讯录功能中获取群号
-antiautolog_group: ""
-
 admin_whitelist: ["管理白名单"]
 admin_points: ["管理积分"]
 admin_signin_reset: ["重置签到状态", "重置签到", "重置签到数据库"]
