@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from functools import wraps
+
 
 class BotDatabase:
     def __new__(cls, *args, **kwargs):
@@ -33,7 +33,6 @@ class BotDatabase:
             sql_command = "INSERT INTO USERPOINTS VALUES {}".format((wxid, 0, 0, 0))
             self.c.execute(sql_command)
             self.database.commit()  # 提交数据库
-
 
     def add_points(self, wxid, num):
         self._check_user(wxid)

@@ -9,18 +9,18 @@ import database
 import xybot
 
 
-def handle_bot(recv):
+def handle_bot(recv):  # 处理聊天
     handlebot = xybot.XYBot()
     handlebot.handle_message(recv)
 
 
-def reset_signinstat():
+def reset_signinstat():  # 签到状态重置
     db = database.BotDatabase()
     db.reset_stat()
-    logger.info('[数据库]签到重置成功！')
+    logger.info('[数据库]签到状态重置成功！')
 
 
-def schedule_antiautolog():
+def schedule_antiautolog():  # 防微信自动退出
     handlebot = xybot.XYBot()
     handlebot.schudle_antiautolog_handler()
 
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     with open('config.yml', 'r', encoding='utf-8') as f:  # 读取设置
         config = yaml.load(f.read(), Loader=yaml.FullLoader)
     logger.add('logs/log_{time}.log', encoding='utf-8', enqueue=True, compression='zip', retention='2 weeks',
-               rotation='00:01')
+               rotation='00:01')  # 日志设置
 
     ip = config['ip']
     port = config['port']
@@ -42,10 +42,10 @@ if __name__ == "__main__":
     schedule.every().day.at("03:00").do(reset_signinstat)  # 重置签到时间
     schedule.every(30).minutes.do(schedule_antiautolog)  # 防微信自动退出登录
 
-    pool = ThreadPoolExecutor(max_workers=10)
+    pool = ThreadPoolExecutor(max_workers=15)  # 创建线程池
     while True:
         schedule.run_pending()
-        if len(bot.msg_list) != 0:
+        if len(bot.msg_list) != 0:  # 如果有聊天信息
             recv = bot.msg_list.pop(0)  # 获取信息列表第一项并pop
             logger.info('[收到消息]:{command}'.format(command=recv))
-            pool.submit(handle_bot, recv)
+            pool.submit(handle_bot, recv)  # 向线程池提交任务
