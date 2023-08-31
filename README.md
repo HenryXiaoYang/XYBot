@@ -195,6 +195,11 @@ python3 start.py
 
 3.6.0.18😄
 
+#### 使用有没有封号风险?🤔️
+
+我连续用了3个月了，没被封😄
+
+
 
 ## Credit
 https://github.com/HenryXiaoYang/pywxdll

@@ -1,3 +1,4 @@
+import os
 from concurrent.futures import ThreadPoolExecutor
 
 import pywxdll
@@ -30,6 +31,18 @@ if __name__ == "__main__":
         config = yaml.load(f.read(), Loader=yaml.FullLoader)
     logger.add('logs/log_{time}.log', encoding='utf-8', enqueue=True, compression='zip', retention='2 weeks',
                rotation='00:01')  # 日志设置
+
+    pic_cache_path = './pic_cache'  # 检测是否有pic_cache文件夹
+    if not os.path.exists(pic_cache_path):
+        logger.info('检测到未创建pic_cache图片缓存文件夹')
+        os.makedirs(pic_cache_path)
+        logger.info('已创建pic_cach文件夹')
+
+    log_path = './logs'  # 检查是否有logs文件夹，在设置log时应就被创建，这里的是一个backup
+    if not os.path.exists(log_path):
+        logger.info('检测到未创建logs日志文件夹')
+        os.makedirs(log_path)
+        logger.info('已创建log文件夹')
 
     ip = config['ip']
     port = config['port']
