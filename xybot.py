@@ -389,7 +389,7 @@ class XYBot:
         try:
             res = []
             for i in self.news_urls:  # 从设置中获取链接列表
-                r = requests.get(i, timeout=5000)  # 发送请求
+                r = requests.get(i, timeout=5000, verify=False)  # 发送请求
                 r.encoding = 'utf-8'
                 res.append(r.json())
             out_message = '-----XYBot新闻-----\n'
@@ -442,7 +442,7 @@ class XYBot:
             url = self.information_post_url + '/texts'  # 创建url
             headers = {"Content-Type": "application/json",
                        "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36"}
-            reqeust = requests.post(url, data=json_data, headers=headers).json()  # 发送到api
+            reqeust = requests.post(url, data=json_data, headers=headers, verify=False).json()  # 发送到api
             fetch_code = reqeust['fetch_code']  # 从api获取提取码
             date_expire = reqeust['date_expire']  # 从api获取过期时间
 
@@ -479,7 +479,7 @@ class XYBot:
             url = self.information_post_url + '/texts'  # 组建url
             headers = {"Content-Type": "application/json",
                        "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36"}
-            reqeust = requests.post(url, data=json_data, headers=headers).json()  # 向api发送数据
+            reqeust = requests.post(url, data=json_data, headers=headers, verify=False).json()  # 向api发送数据
             fetch_code = reqeust['fetch_code']  # 从api获取提取码
             date_expire = reqeust['date_expire']  # 从api获取过期时间
 
