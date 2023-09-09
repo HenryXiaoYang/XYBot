@@ -3,10 +3,12 @@ import sqlite3
 
 
 class BotDatabase:
-    def __new__(cls, *args, **kwargs):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super().__new__(cls)
-        return cls.instance
+    _instance = None
+
+    def __new__(cls, *args, **kw):
+        if cls._instance is None:
+            cls._instance = object.__new__(cls, *args, **kw)
+        return cls._instance
 
     def __init__(self):
         super().__init__()
@@ -33,6 +35,8 @@ class BotDatabase:
             sql_command = "INSERT INTO USERPOINTS VALUES {}".format((wxid, 0, 0, 0))
             self.c.execute(sql_command)
             self.database.commit()  # 提交数据库
+        self.c.execute('select u.WXID from USERPOINTS u;')  # 刷新已有用户列表
+        self.wxid_list = self.c.fetchall()  # 刷新已有用户列表
 
     def add_points(self, wxid, num):
         self._check_user(wxid)
