@@ -1,0 +1,5 @@
+keywords: [ "随机链接" ]
+plugin_name: "random_picture_link"
+
+#设置数量？看到链接最后面那个数字没？改它！
+random_pic_link_url: "https://moe.jitsu.top/img/?type=json&num=3"

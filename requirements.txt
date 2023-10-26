@@ -1,7 +1,7 @@
-pywxdll~=0.1.8
-schedule~=1.2.0
+pywxdll==0.1.8
 PyYAML~=6.0
 loguru~=0.7.0
 openai~=0.27.7
 requests~=2.29.0
 prettytable~=3.8.0
+schedule~=1.2.0

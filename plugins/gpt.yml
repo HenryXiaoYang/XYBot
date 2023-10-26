@@ -1,0 +1,10 @@
+keywords: [ "gpt","GPT","ChatGPT","chatgpt" ]
+plugin_name: "gpt"
+
+#ChatGPT的API网址
+openai_api_base: ""
+#ChatGPT API的Key
+openai_api_key: ""
+gpt_key: [ "gpt", "chatgpt", "GPT", "ChatGPT", "CHATGPT" ]
+gpt_version: 'gpt-3.5-turbo'
+gpt_point_price: 3
