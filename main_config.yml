@@ -8,3 +8,5 @@ admins: [ "" ]
 command_prefix: "/"
 
 exclude_plugins: [""]
+
+plan_timezone: "Asia/Shanghai"

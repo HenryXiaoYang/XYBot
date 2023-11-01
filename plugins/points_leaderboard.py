@@ -14,6 +14,8 @@ class points_leaderboard(PluginInterface):
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
+        self.leaderboard_top_number = config['leaderboard_top_number']
+
         current_directory = os.path.dirname(os.path.abspath(__file__))
         main_config_path = os.path.join(current_directory, '../main_config.yml')
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
@@ -27,7 +29,7 @@ class points_leaderboard(PluginInterface):
     def run(self, recv):
         self.db = BotDatabase()
 
-        data = self.db.get_highest_points(30)  # 从数据库获取前30名积分数
+        data = self.db.get_highest_points(self.leaderboard_top_number)  # 从数据库获取前x名积分数
         out_message = "-----XYBot积分排行榜-----"  # 创建积分
         rank = 1
         for i in data:  # 从数据库获取的数据中for循环

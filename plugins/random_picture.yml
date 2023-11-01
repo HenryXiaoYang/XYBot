@@ -1,4 +1,4 @@
 keywords: [ "随机图图" ]
 plugin_name: "random_picture"
 
-random_picture_url: "https://dev.iw233.cn/wbapi.php?sort=random"
+random_picture_url: "https://iw233.cn/api.php?sort=iw233"

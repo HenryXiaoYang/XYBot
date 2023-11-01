@@ -125,7 +125,7 @@ docker run --name xybotwechat \
 
 git clone https://github.com/HenryXiaoYang/XYBot.git
 #如果上面的太慢的话可以用这个
-git clone https://kgithub.com/HenryXiaoYang/XYBot.git
+git clone https://kkgithub.com/HenryXiaoYang/XYBot.git
 
 cd XYBot
 

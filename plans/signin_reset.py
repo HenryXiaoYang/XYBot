@@ -17,6 +17,7 @@ class signin_reset(PlansInterface):
 
         self.ip = main_config['ip']
         self.port = main_config['port']
+        self.timezone = main_config['plan_timezone']
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
         self.bot.start()  # 开启机器人
 
@@ -26,4 +27,4 @@ class signin_reset(PlansInterface):
         logger.info('[数据库]签到状态重置成功！')
 
     def run(self, myscheduler):
-        myscheduler.every().day.at("03:00").do(self.job)  # 重置签到时间
+        myscheduler.every().day.at("03:00", self.timezone).do(self.job)  # 重置签到时间

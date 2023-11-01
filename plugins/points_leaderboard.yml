@@ -1,2 +1,4 @@
 keywords: [ "积分榜","积分榜单" ]
 plugin_name: "points_leaderboard"
+
+leaderboard_top_number: 30
