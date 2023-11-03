@@ -29,25 +29,24 @@ class admin_points(PluginInterface):
     def run(self, recv):
         self.db = BotDatabase()
 
-
         if recv['id1']:
             admin_wxid = recv['id1']  # 是群
         else:
             admin_wxid = recv['wxid']  # 是私聊
 
         if admin_wxid in self.admin_list:
-            change_wxid = recv['content'][1]  # 获取要变更积分change_wxid
-            if len(recv['content']) == 2:
+            change_wxid = recv['content'][1]  # 获取要变更积分的wxid
+            if len(recv['content']) == 3:  # 直接改变，不加/减
                 self.db.set_points(change_wxid, recv['content'][2])
 
                 total_points = self.db.get_points(change_wxid)  # 获取修改后积分
-                out_message = '😊成功设置了{change_wxid}的积分！他现在有点积分{points}'.format(change_wxid=change_wxid,
+                out_message = '😊成功设置了{change_wxid}的积分！他现在有{points}点积分'.format(change_wxid=change_wxid,
                                                                                              points=total_points)  # 创建信息
                 logger.info('[发送信息]{out_message}| [发送到] {change_wxid}'.format(out_message=out_message,
-                                                                                     change_wxid=recv['change_wxid']))
-                self.bot.send_txt_msg(recv['change_wxid'], out_message)  # 发送
+                                                                                     change_wxid=admin_wxid))
+                self.bot.send_txt_msg(admin_wxid, out_message)  # 发送
 
-            elif recv['content'][2] == '加' and len(recv['content']) == 3:
+            elif recv['content'][2] == '加' and len(recv['content']) == 4:
                 self.db.add_points(change_wxid, int(recv['content'][3]))
 
                 total_points = self.db.get_points(change_wxid)  # 获取修改后积分
@@ -61,7 +60,7 @@ class admin_points(PluginInterface):
                     '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
                 self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
 
-            elif recv['content'][2] == '减' and len(recv['content']) == 3:
+            elif recv['content'][2] == '减' and len(recv['content']) == 4:
                 self.db.minus_points(change_wxid, int(recv['content'][3]))
 
                 total_points = self.db.get_points(change_wxid)  # 获取修改后积分

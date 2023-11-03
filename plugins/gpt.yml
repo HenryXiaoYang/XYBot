@@ -5,6 +5,5 @@ plugin_name: "gpt"
 openai_api_base: ""
 #ChatGPT API的Key
 openai_api_key: ""
-gpt_key: [ "gpt", "chatgpt", "GPT", "ChatGPT", "CHATGPT" ]
 gpt_version: 'gpt-3.5-turbo'
 gpt_point_price: 3

@@ -15,7 +15,6 @@ class gpt(PluginInterface):
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
-        self.gpt_key = config['gpt_key']  # gpt关键词
         self.openai_api_base = config['openai_api_base']  # openai api 链接
         self.openai_api_key = config['openai_api_key']  # openai api 密钥
         self.gpt_version = config['gpt_version']  # gpt版本

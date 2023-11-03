@@ -29,11 +29,9 @@ class random_picture_link(PluginInterface):
     def run(self, recv):
         r = requests.get(self.random_pic_link_url, timeout=5000)  # 下载json
         r.encoding = 'utf-8'
-        r = r.json()
-        url_list = r['pics']
-        out_message = '-----XYBot-----\n❓❓❓\n'  # 创建发送信息
-        for i in range(1, len(url_list) + 1):
-            out_message += '❓{num}：{url}\n'.format(num=i, url=url_list[i - 1])
+        img_url = r.url
+
+        out_message = '-----XYBot-----\n❓❓❓\n❓: {url}\n'.format(url=img_url)
         logger.info(
             '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))  # 发送信息
         self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
