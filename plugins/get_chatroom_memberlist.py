@@ -35,15 +35,23 @@ class get_chatroom_memberlist(PluginInterface):
             heading = ['名字', 'wxid']
             chart = PrettyTable(heading)  # 创建列表
 
-            data = self.bot.get_chatroom_memberlist(recv['wxid'])  # 获取操作所在群的成员列表
+            # pywxdll 0.1.8
+            ''' data = self.bot.get_chatroom_memberlist(recv['wxid'])  # 获取操作所在群的成员列表
             data = data['content']
-
+            
             for i in data:  # for循环获得的数据
                 if i['room_id'] == recv['wxid']:  # 如果群号相同
                     for j in i['member']:  # for循环成员列表
                         wxid = j
                         name = self.bot.get_chatroom_nick(recv['wxid'], j)['content']['nick']  # 获取成员昵称
                         chart.add_row([name, wxid])  # 加入表格中
+            '''
+
+            # pywxdll 0.2
+            data = self.bot.get_chatroom_memberlist(recv['wxid'])
+            for member_wxid in data['member']:  # for循环成员列表
+                name = self.bot.get_chatroom_nickname(recv['wxid'], member_wxid)['nick']  # 获取成员昵称
+                chart.add_row([name, member_wxid])  # 加入表格中
 
             chart.align = 'l'
             # 不传直接发微信是因为微信一行实在太少了，不同设备还不一样，用pywxdll发excel文件会报错

@@ -27,7 +27,17 @@ class query_points(PluginInterface):
     def run(self, recv):
         self.db = BotDatabase()
 
-        nickname = self.bot.get_chatroom_nick(recv['wxid'], recv['id1'])['content']['nick']  # 获取昵称
-        out_message = '你有{}点积分！👍'.format(self.db.get_points(recv['id1']))  # 从数据库获取积分数并创建信息
+        if recv['id1']:  # 判断是群还是私聊
+            query_wxid = recv['id1']  # 是群
+        else:
+            query_wxid = recv['wxid']  # 是私聊
+
+        # pywxdll 0.1.8
+        '''nickname = self.bot.get_chatroom_nick(recv['wxid'], recv['id1'])['content']['nick']  # 获取昵称'''
+
+        # pywxdll 0.2
+        nickname = self.bot.get_chatroom_nickname(recv['wxid'], recv['id1'])['nick']  # 获取昵称
+
+        out_message = '你有{}点积分！👍'.format(self.db.get_points(query_wxid))  # 从数据库获取积分数并创建信息
         logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
         self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname, out_message)  # 发送

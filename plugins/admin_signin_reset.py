@@ -29,7 +29,12 @@ class admin_signin_reset(PluginInterface):
     def run(self, recv):
         self.db = database.BotDatabase()
 
-        if recv['id1'] in self.admin_list:  # 如果操作人在白名单内
+        if recv['id1']:  # 判断是群还是私聊
+            admin_wxid = recv['id1']  # 是群
+        else:
+            admin_wxid = recv['wxid']  # 是私聊
+
+        if admin_wxid in self.admin_list:  # 如果操作人在白名单内
             self.db.reset_stat()  # 重置数据库签到状态
             out_message = '😊成功重置签到状态！'
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))

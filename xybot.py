@@ -1,5 +1,5 @@
-import yaml
 import pywxdll
+import yaml
 from loguru import logger
 
 from plugin_manager import plugin_manager
@@ -19,7 +19,7 @@ class XYBot:
         self.bot.start()  # 开启机器人
 
     def message_handler(self, recv):
-        if recv['content'][0] == self.command_prefix:  # 判断是否为命令
+        if recv['content'][0] == self.command_prefix and len(recv['content']) != 1:  # 判断是否为命令
             recv['content'] = recv['content'][1:]  # 去除命令前缀
             recv['content'] = recv['content'].split(' ')  # 分割命令参数
 

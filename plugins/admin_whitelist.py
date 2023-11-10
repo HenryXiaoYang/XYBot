@@ -29,9 +29,14 @@ class admin_whitelist(PluginInterface):
     def run(self, recv):
         self.db = BotDatabase()
 
+        if recv['id1']:  # 判断是群还是私聊
+            admin_wxid = recv['id1']  # 是群
+        else:
+            admin_wxid = recv['wxid']  # 是私聊
+
         wxid = recv['content'][1]  # 获取操作人
         action = recv['content'][2]  # 获取操作
-        if recv['id1'] in self.admin_list:  # 如果操作人在管理员名单内
+        if admin_wxid in self.admin_list:  # 如果操作人在管理员名单内
             if action == '加入':  # 操作为加入
                 self.db.set_whitelist(wxid, 1)  # 修改数据库白名单信息
             elif action == '删除':  # 操作为删除

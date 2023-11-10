@@ -44,7 +44,12 @@ class gpt(PluginInterface):
         if recv['id1']:  # 检查是群聊还是私聊
             is_chatgroup = True  # 是群聊
             user_wxid = recv['id1']  # 用户的wxid，非群聊id
-            nickname = self.bot.get_chatroom_nick(recv['wxid'], recv['id1'])['content']['nick']  # 是群聊所以可以获取昵称
+
+            # pywxdll 0.1.8
+            '''nickname = self.bot.get_chatroom_nick(recv['wxid'], recv['id1'])['content']['nick']  # 是群聊所以可以获取昵称'''
+
+            # pywxdll 0.2
+            nickname = self.bot.get_chatroom_nickname(recv['wxid'], recv['id1'])['nick']  # 是群聊所以可以获取昵称
         else:
             is_chatgroup = False  # 不是群聊
             user_wxid = recv['wxid']  # 用户的wxid，是私聊所以直接获得wxid
@@ -60,54 +65,43 @@ class gpt(PluginInterface):
             out_message = '已收到指令，处理中，请勿重复发送指令！👍'  # 发送已收到信息，防止用户反复发送命令
             logger.info(
                 '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
-            if is_chatgroup:  # 判断是群还是私聊
-                self.bot.send_at_msg(recv['wxid'], user_wxid, nickname, out_message)  # 发送
-            else:
-                self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
+            self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, out_message)  # 判断是群还是私聊
 
             if self.db.get_whitelist(user_wxid) == 1 or user_wxid in self.admins:  # 如果用户在白名单内/是管理员
 
                 chatgpt_answer = self.chatgpt(message, recv)
                 if chatgpt_answer[0]:
-                    out_message = "\n-----XYBot-----\n因为你在白名单内，所以没扣除积分！👍\nChatGPT回答：\n{res}".format(
+                    out_message = "-----XYBot-----\n因为你在白名单内，所以没扣除积分！👍\nChatGPT回答：\n{res}".format(
                         res=chatgpt_answer[1])  # 创建信息并从gpt api获取回答
                     logger.info(
                         '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
-                    if is_chatgroup:  # 判断是群还是私聊
-                        self.bot.send_at_msg(recv['wxid'], user_wxid, nickname, out_message)  # 发送
-                    else:
-                        self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
+                    self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, out_message)  # 判断是群还是私聊
                 else:
                     self.bot.send_txt_msg(recv['wxid'], '出现错误！⚠️{error}'.format(error=chatgpt_answer))  # 出错力
 
             elif self.db.get_points(user_wxid) >= self.gpt_point_price:  # 用户不在白名单内，并积分数大于等于chatgpt价格
 
-
                 self.db.minus_points(user_wxid, self.gpt_point_price)
                 chatgpt_answer = self.chatgpt(message, recv)
 
                 if chatgpt_answer[0]:
-                    out_message = "\n-----XYBot-----\n已扣除{gpt_price}点积分，还剩{points_left}点积分👍\nChatGPT回答：\n{res}".format(
+                    out_message = "-----XYBot-----\n已扣除{gpt_price}点积分，还剩{points_left}点积分👍\nChatGPT回答：\n{res}".format(
                         gpt_price=self.gpt_point_price, points_left=self.db.get_points(user_wxid),  # 创建信息并从gpt api获取回答
                         res=chatgpt_answer[1])
                     logger.info(
                         '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
-                    if is_chatgroup:  # 判断是群还是私聊
-                        self.bot.send_at_msg(recv['wxid'], user_wxid, nickname, out_message)  # 发送
-                    else:
-                        self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
+                    self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, out_message)
                 else:
                     self.db.add_points(user_wxid, self.gpt_point_price)
-                    self.bot.send_txt_msg(recv['wxid'], '出现错误，已补回积分！⚠️{error}'.format(error=chatgpt_answer))  # 出错力
+                    self.bot.send_txt_msg(recv['wxid'],
+                                          '出现错误，已补回积分！⚠️{error}'.format(error=chatgpt_answer))  # 出错力
 
         else:  # 参数数量不对
             out_message = '参数错误/积分不足,需要{require_points}点/内容包含敏感词⚠️'.format(
                 require_points=self.gpt_point_price)
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
-            if is_chatgroup:  # 判断是群还是私聊
-                self.bot.send_at_msg(recv['wxid'], user_wxid, nickname, out_message)  # 发送
-            else:
-                self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
+
+            self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, out_message)
 
     def chatgpt(self, message, recv):  # ChatGPT请求
         openai.api_key = self.openai_api_key  # 从设置中获取url和密钥
@@ -126,3 +120,9 @@ class gpt(PluginInterface):
             if word in message:
                 return False
         return True
+
+    def send_friend_or_group(self, is_chatgroup, recv, user_wxid='null', nickname='null', out_message='null'):
+        if is_chatgroup:  # 判断是群还是私聊
+            self.bot.send_at_msg(recv['wxid'], user_wxid, nickname, out_message)  # 发送
+        else:
+            self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送

@@ -33,8 +33,14 @@ class points_leaderboard(PluginInterface):
         out_message = "-----XYBot积分排行榜-----"  # 创建积分
         rank = 1
         for i in data:  # 从数据库获取的数据中for循环
-            nickname_req = self.bot.get_chatroom_nick(recv['wxid'], i[0])
-            nickname = nickname_req['content']['nick']  # 获取昵称
+            # pywxdll 0.1.8
+            '''nickname_req = self.bot.get_chatroom_nick(recv['wxid'], i[0])
+            nickname = nickname_req['content']['nick']  # 获取昵称'''
+
+            # pywxdll 0.2
+            nickname_req = self.bot.get_chatroom_nickname(recv['wxid'], i[0])
+            nickname = nickname_req['nick']  # 获取昵称
+
             if nickname != nickname_req['content']['wxid']:
                 out_message += "\n{rank}. {nickname} {points}分 👍".format(rank=rank, nickname=nickname,
                                                                           points=str(i[1]))

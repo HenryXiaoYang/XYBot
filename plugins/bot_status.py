@@ -15,7 +15,6 @@ class bot_status(PluginInterface):
 
         self.status_message = config['status_message']
         self.bot_version = config['bot_version']
-        self.bot_github = config['bot_github']
 
         current_directory = os.path.dirname(os.path.abspath(__file__))
         main_config_path = os.path.join(current_directory, '../main_config.yml')
@@ -28,8 +27,8 @@ class bot_status(PluginInterface):
         self.bot.start()  # 开启机器人
 
     def run(self, recv):
-        out_message = "\n-----XYBot-----\n{status_message}\nBot version: {bot_version}\nGithub: {bot_github}".format(
-            status_message=self.status_message, bot_version=self.bot_version, bot_github=self.bot_github)
+        out_message = "-----XYBot-----\n{status_message}\nBot version: {bot_version}\nGithub: https://github.com/HenryXiaoYang/XYBot".format(
+            status_message=self.status_message, bot_version=self.bot_version)
         logger.info(
             '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
         self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送

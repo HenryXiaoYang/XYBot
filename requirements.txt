@@ -11,10 +11,10 @@ loguru==0.7.0
 multidict==6.0.4
 openai==0.27.7
 openpyxl==3.1.2
+Pillow==10.1.0
 prettytable==3.8.0
 pytz==2023.3.post1
-pywxdll==0.1.8
-PyYAML==6.0
+pywxdll==0.2
 requests==2.29.0
 schedule==1.2.0
 tqdm==4.65.0

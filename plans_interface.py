@@ -1,3 +1,3 @@
 class PlansInterface:
-    def run(self, myscheduler):
+    def run(self):
         raise NotImplementedError("Subclasses must implement the 'run' method.")

@@ -29,7 +29,7 @@ class admin_points(PluginInterface):
     def run(self, recv):
         self.db = BotDatabase()
 
-        if recv['id1']:
+        if recv['id1']:  # 用于判断是否为管理员
             admin_wxid = recv['id1']  # 是群
         else:
             admin_wxid = recv['wxid']  # 是私聊
@@ -44,7 +44,7 @@ class admin_points(PluginInterface):
                                                                                              points=total_points)  # 创建信息
                 logger.info('[发送信息]{out_message}| [发送到] {change_wxid}'.format(out_message=out_message,
                                                                                      change_wxid=admin_wxid))
-                self.bot.send_txt_msg(admin_wxid, out_message)  # 发送
+                self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
 
             elif recv['content'][2] == '加' and len(recv['content']) == 4:
                 self.db.add_points(change_wxid, int(recv['content'][3]))

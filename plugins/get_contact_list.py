@@ -36,8 +36,12 @@ class get_contact_list(PluginInterface):
 
             chart = PrettyTable(heading)  # 创建表格
 
-            data = self.bot.get_contact_list()  # 获取机器人通讯录
-            data = data['content']
+            # pywxdll 0.1.8
+            '''data = self.bot.get_contact_list()  # 获取机器人通讯录
+            data = data['content']'''
+
+            # pywxdll 0.2
+            data = self.bot.get_contact_list()
 
             for i in data:  # 在通讯录数据中for
                 name = i['name']  # 获取昵称
