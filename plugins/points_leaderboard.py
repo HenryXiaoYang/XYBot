@@ -41,7 +41,8 @@ class points_leaderboard(PluginInterface):
             nickname_req = self.bot.get_chatroom_nickname(recv['wxid'], i[0])
             nickname = nickname_req['nick']  # 获取昵称
 
-            if nickname != nickname_req['content']['wxid']:
+            # if nickname != nickname_req['content']['wxid']: # pywxdll 0.1.8
+            if nickname != nickname_req['wxid']:  # pywxdll 0.2
                 out_message += "\n{rank}. {nickname} {points}分 👍".format(rank=rank, nickname=nickname,
                                                                           points=str(i[1]))
                 rank += 1
