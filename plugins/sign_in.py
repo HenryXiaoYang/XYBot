@@ -1,11 +1,11 @@
 import os
 import random
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import pywxdll
 import yaml
 from loguru import logger
-from pytz import timezone
 
 from database import BotDatabase
 from plugin_interface import PluginInterface
@@ -29,15 +29,14 @@ class sign_in(PluginInterface):
         self.port = main_config['port']
         self.timezone = main_config['timezone']
 
-        timezone(self.timezone)  # cache
+        # timezone(self.timezone)  # cache
 
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
         self.bot.start()  # 开启机器人
 
-
-    def run(self, recv):
         self.db = BotDatabase()
 
+    def run(self, recv):
         signin_points = random.randint(self.min_points, self.max_points)  # 随机3-20积分
 
         if recv['id1']:  # 判断是群还是私聊
@@ -55,16 +54,16 @@ class sign_in(PluginInterface):
 
         if self.signstat_check(signstat):  # 如果今天未签到
             self.db.add_points(sign_wxid, signin_points)  # 在数据库加积分
-            now_datetime = datetime.now(tz=timezone(self.timezone)).strftime("%Y%m%d")  # 获取现在格式化后时间
+            now_datetime = datetime.now(tz=ZoneInfo(self.timezone)).strftime("%Y%m%d")  # 获取现在格式化后时间
             self.db.set_stat(sign_wxid, now_datetime)  # 设置签到状态为现在格式化后时间
 
-            out_message = '签到成功！你领到了{points}个积分！✅'.format(points=signin_points)  # 创建发送信息
+            out_message = '\n-----XYBot-----\n签到成功！你领到了{points}个积分！✅'.format(points=signin_points)  # 创建发送信息
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
             self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname, out_message)  # 发送
 
         else:  # 今天已签到，不加积分
             last_sign_date_formated = datetime.strptime(signstat, '%Y%m%d').strftime('%Y年%m月%d日')
-            out_message = '❌你今天已经签到过了，每日凌晨刷新签到哦！上次签到日期：{last_sign_date_formated}'.format(
+            out_message = '\n-----XYBot-----\n❌你今天已经签到过了，每日凌晨刷新签到哦！上次签到日期：{last_sign_date_formated}'.format(
                 last_sign_date_formated=last_sign_date_formated)  # 创建信息
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
             self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname, out_message)  # 发送
@@ -72,10 +71,11 @@ class sign_in(PluginInterface):
     def signstat_check(self, signstat):
         # 如果用户没签到过或者重置冷却过，那么数字应为0，所以需要判断。 老签到的已签到数值是1，也需要判断
         if signstat == '0' or signstat == '1':
-            signstat = '00010101'  # datetime不让全设为0 我就不信有人能穿越时空签到
+            signstat = '20000101'  # datetime不让全设为0 我就不信有人能穿越时空签到
 
         last_sign_date = datetime.strptime(signstat, '%Y%m%d').date()
-        now_date = datetime.now(tz=timezone(self.timezone)).date()
+        now_date = datetime.now(tz=ZoneInfo(self.timezone)).date()
+
         if (now_date - last_sign_date).days >= 1:
             return True
         else:

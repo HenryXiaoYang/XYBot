@@ -36,10 +36,10 @@ class admin_signin_reset(PluginInterface):
 
         if admin_wxid in self.admin_list:  # 如果操作人在白名单内
             self.db.reset_stat()  # 重置数据库签到状态
-            out_message = '😊成功重置签到状态！'
+            out_message = '-----XYBot-----\n😊成功重置签到状态！'
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
             self.bot.send_txt_msg(recv['wxid'], out_message)
         else:  # 操作人不在白名单内
-            out_message = '❌你配用这个指令吗？'
+            out_message = '-----XYBot-----\n❌你配用这个指令吗？'
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
             self.bot.send_txt_msg(recv['wxid'], out_message)

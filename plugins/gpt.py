@@ -1,9 +1,9 @@
 import os
 
-import openai
 import pywxdll
 import yaml
 from loguru import logger
+from openai import OpenAI
 
 from database import BotDatabase
 from plugin_interface import PluginInterface
@@ -62,7 +62,7 @@ class gpt(PluginInterface):
             recv['content']) >= 2 and self.senstitive_word_check(
             message):  # 如果(积分足够或在白名单或在管理员)与指令格式正确与敏感词检查通过
 
-            out_message = '已收到指令，处理中，请勿重复发送指令！👍'  # 发送已收到信息，防止用户反复发送命令
+            out_message = '-----XYBot-----\n已收到指令，处理中，请勿重复发送指令！👍'  # 发送已收到信息，防止用户反复发送命令
             logger.info(
                 '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
             self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, out_message)  # 判断是群还是私聊
@@ -77,11 +77,14 @@ class gpt(PluginInterface):
                         '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
                     self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, out_message)  # 判断是群还是私聊
                 else:
-                    self.bot.send_txt_msg(recv['wxid'], '出现错误！⚠️{error}'.format(error=chatgpt_answer))  # 出错力
+                    out_message = '-----XYBot-----\n出现错误！⚠️{error}'.format(error=chatgpt_answer)
+                    logger.info(
+                        '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+                    self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, out_message)  # 判断是群还是私聊
 
             elif self.db.get_points(user_wxid) >= self.gpt_point_price:  # 用户不在白名单内，并积分数大于等于chatgpt价格
 
-                self.db.minus_points(user_wxid, self.gpt_point_price)
+                self.db.add_points(user_wxid, self.gpt_point_price * -1)
                 chatgpt_answer = self.chatgpt(message, recv)
 
                 if chatgpt_answer[0]:
@@ -93,25 +96,28 @@ class gpt(PluginInterface):
                     self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, out_message)
                 else:
                     self.db.add_points(user_wxid, self.gpt_point_price)
-                    self.bot.send_txt_msg(recv['wxid'],
-                                          '出现错误，已补回积分！⚠️{error}'.format(error=chatgpt_answer))  # 出错力
+                    out_message = '-----XYBot-----\n出现错误，已补回积分！⚠️{error}'.format(error=chatgpt_answer)
+                    logger.info(
+                        '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+                    self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, out_message)  # 判断是群还是私聊
 
         else:  # 参数数量不对
-            out_message = '参数错误/积分不足,需要{require_points}点/内容包含敏感词⚠️'.format(
+            out_message = '-----XYBot-----\n参数错误/积分不足,需要{require_points}点/内容包含敏感词⚠️'.format(
                 require_points=self.gpt_point_price)
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
 
             self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, out_message)
 
     def chatgpt(self, message, recv):  # ChatGPT请求
-        openai.api_key = self.openai_api_key  # 从设置中获取url和密钥
-        openai.api_base = self.openai_api_base
+        client = OpenAI(api_key=self.openai_api_key, base_url=self.openai_api_base)
+
         try:  # 防止崩溃
-            completion = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model=self.gpt_version,
-                messages=[{"role": "user", "content": message}]
+                messages=[{"role": "user", "content": message}],
+                temperature=0.5
             )  # 用openai库创建请求
-            return True, completion.choices[0].message.content  # 返回答案
+            return True, response.choices[0].message.content  # 返回答案
         except Exception as error:
             return False, error
 
@@ -123,6 +129,6 @@ class gpt(PluginInterface):
 
     def send_friend_or_group(self, is_chatgroup, recv, user_wxid='null', nickname='null', out_message='null'):
         if is_chatgroup:  # 判断是群还是私聊
-            self.bot.send_at_msg(recv['wxid'], user_wxid, nickname, out_message)  # 发送
+            self.bot.send_at_msg(recv['wxid'], user_wxid, nickname, '\n' + out_message)  # 发送
         else:
             self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送

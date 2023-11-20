@@ -5,8 +5,11 @@ port: 5555
 
 admins: [ "" ]
 
+# 建议：(cpu核心数)*5-4
+max_thread: 16
+
 command_prefix: "/"
 
-exclude_plugins: [""]
+exclude_plugins: [ "" ]
 
 timezone: "Asia/Shanghai"

@@ -64,12 +64,13 @@ class get_chatroom_memberlist(PluginInterface):
             date_expire = reqeust['date_expire']  # 从api获取过期时间
 
             fetch_link = '{url}/r/{code}'.format(url=self.information_post_url, code=fetch_code)  # 组建提取链接
-            out_message = '🤖️本群聊的群员列表：\n{fetch_link}\n过期时间：{date_expire}'.format(fetch_link=fetch_link,
-                                                                                             date_expire=date_expire)  # 组建输出信息
+            out_message = '-----XYBot-----\n🤖️本群聊的群员列表：\n{fetch_link}\n过期时间：{date_expire}'.format(
+                fetch_link=fetch_link,
+                date_expire=date_expire)  # 组建输出信息
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
             self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
 
         else:  # 操作人不是管理员
-            out_message = '❌你配用这个指令吗？'
+            out_message = '-----XYBot-----\n❌你配用这个指令吗？'
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
             self.bot.send_txt_msg(recv['wxid'], out_message)

@@ -34,7 +34,7 @@ if __name__ == "__main__":
     ###### log设置 读取设置 ######
     logger.add('logs/log_{time}.log', encoding='utf-8', enqueue=True, retention='2 weeks', rotation='00:01')  # 日志设置
 
-    pic_cache_path = './pic_cache'  # 检测是否有pic_cache文件夹
+    pic_cache_path = 'resources/pic_cache'  # 检测是否有pic_cache文件夹
     if not os.path.exists(pic_cache_path):
         logger.info('检测到未创建pic_cache图片缓存文件夹')
         os.makedirs(pic_cache_path)
@@ -45,6 +45,8 @@ if __name__ == "__main__":
 
     ip = config['ip']
     port = config['port']
+
+    max_thread = config['max_thread']
 
     ###### 机器人实例化 登陆监测 机器人启动 ######
 
@@ -74,7 +76,7 @@ if __name__ == "__main__":
 
     ###### 线程池创建 计划等待判定线程创建与启动 ######
 
-    pool = ThreadPoolExecutor(max_workers=25, thread_name_prefix='xybot')  # 创建线程池
+    pool = ThreadPoolExecutor(max_workers=max_thread, thread_name_prefix='xybot')  # 创建线程池
 
     run_pending_thread = threading.Thread(target=schedule_run_pending)
     run_pending_thread.start()
@@ -83,12 +85,12 @@ if __name__ == "__main__":
 
     logger.success('机器人启动成功！')
     while True:
-        if len(bot.msg_list) != 0:  # 如果有聊天信息
-            recv = bot.msg_list.pop(0)  # 获取信息列表第一项并pop
-            logger.info('[收到消息]:{message}'.format(message=recv))
-            if isinstance(recv['content'], str):  # 判断是否为txt消息
-                try:
+        try:
+            if len(bot.msg_list) != 0:  # 如果有聊天信息
+                recv = bot.msg_list.pop(0)  # 获取信息列表第一项并pop
+                logger.info('[收到消息]:{message}'.format(message=recv))
+                if isinstance(recv['content'], str):  # 判断是否为txt消息
                     pool.submit(message_handler, recv).add_done_callback(threadpool_callback)  # 向线程池提交任务
-                except Exception as error:  # 异常处理
-                    logger.error(error)
-                    bot.send_txt_msg(recv['wxid'], '出现错误！⚠️{error}'.format(error=error))
+        except:
+            logger.warning('机器人微信账号未登录！请使用浏览器访问 http://{ip}:4000/vnc.html 扫码登陆微信'.format(ip=ip))
+            time.sleep(3)

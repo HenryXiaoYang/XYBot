@@ -40,8 +40,9 @@ class admin_points(PluginInterface):
                 self.db.set_points(change_wxid, recv['content'][2])
 
                 total_points = self.db.get_points(change_wxid)  # 获取修改后积分
-                out_message = '😊成功设置了{change_wxid}的积分！他现在有{points}点积分'.format(change_wxid=change_wxid,
-                                                                                             points=total_points)  # 创建信息
+                out_message = '-----XYBot-----\n😊成功设置了{change_wxid}的积分！他现在有{points}点积分'.format(
+                    change_wxid=change_wxid,
+                    points=total_points)  # 创建信息
                 logger.info('[发送信息]{out_message}| [发送到] {change_wxid}'.format(out_message=out_message,
                                                                                      change_wxid=admin_wxid))
                 self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
@@ -50,31 +51,33 @@ class admin_points(PluginInterface):
                 self.db.add_points(change_wxid, int(recv['content'][3]))
 
                 total_points = self.db.get_points(change_wxid)  # 获取修改后积分
-                out_message = '😊成功给{wxid}{action}了{points}点积分！他现在有{total}点积分！'.format(wxid=change_wxid,
-                                                                                                    action=
-                                                                                                    recv['content'][2],
-                                                                                                    points=
-                                                                                                    recv['content'][3],
-                                                                                                    total=total_points)
+                out_message = '-----XYBot-----\n😊成功给{wxid}{action}了{points}点积分！他现在有{total}点积分！'.format(
+                    wxid=change_wxid,
+                    action=
+                    recv['content'][2],
+                    points=
+                    recv['content'][3],
+                    total=total_points)
                 logger.info(
                     '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
                 self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
 
             elif recv['content'][2] == '减' and len(recv['content']) == 4:
-                self.db.minus_points(change_wxid, int(recv['content'][3]))
+                self.db.add_points(change_wxid, int(recv['content'][3]) * -1)
 
                 total_points = self.db.get_points(change_wxid)  # 获取修改后积分
-                out_message = '😊成功给{wxid}{action}了{points}点积分！他现在有{total}点积分！'.format(wxid=change_wxid,
-                                                                                                    action=
-                                                                                                    recv['content'][2],
-                                                                                                    points=
-                                                                                                    recv['content'][3],
-                                                                                                    total=total_points)
+                out_message = '-----XYBot-----\n😊成功给{wxid}{action}了{points}点积分！他现在有{total}点积分！'.format(
+                    wxid=change_wxid,
+                    action=
+                    recv['content'][2],
+                    points=
+                    recv['content'][3],
+                    total=total_points)
                 logger.info(
                     '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
                 self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
 
         else:  # 操作人不在白名单内
-            out_message = '❌你配用这个指令吗？'
+            out_message = '-----XYBot-----\n❌你配用这个指令吗？'
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
             self.bot.send_txt_msg(recv['wxid'], out_message)

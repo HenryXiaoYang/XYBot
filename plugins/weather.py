@@ -29,22 +29,49 @@ class weather(PluginInterface):
         self.bot.start()  # 开启机器人
 
     def run(self, recv):
-        city = recv['content'][1]  # 获取要查询的天气
-        url = "{api}?appid={appid}&appsecret={appsecret}&unescape=1&city={city}".format(api=self.weather_api,
-                                                                                        appid=self.weather_appid,
-                                                                                        appsecret=self.weather_appsecret,
-                                                                                        city=city)  # 从设置中获取链接，密钥，并构成url
-        try:
-            r = requests.get(url, timeout=5000)  # 向url发送请求
-            r.encoding = 'utf-8'
-            res = r.json()
-            out_message = '-----XYBot-----\n城市🌆：{city}\n天气☁️：{weather}\n实时温度🌡️：{temp}°\n白天温度🌡：{temp_day}°\n夜晚温度🌡：{temp_night}°\n空气质量🌬：{air_quality}\n空气湿度💦：{air_humidity}\n风向🌬：{wind_speed}{wind_dir}\n更新时间⌚：{update_time}'.format(
-                city=res['city'], weather=res['wea'], temp=res['tem'], temp_day=res['tem_day'],
-                temp_night=res['tem_night'], air_quality=res['air'], air_humidity=res['humidity'], wind_dir=res['win'],
-                wind_speed=res['win_speed'], update_time=res['update_time'])  # 创建信息
-            logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
-            self.bot.send_txt_msg(recv['wxid'], out_message)
-        except Exception as error:  # 报错处理
-            out_message = '出现错误！⚠️{error}'.format(error=error)
+        if len(recv['content']) == 2:
+            city = recv['content'][1]  # 获取要查询的天气
+            url = "{api}?appid={appid}&appsecret={appsecret}&unescape=1&city={city}".format(api=self.weather_api,
+                                                                                            appid=self.weather_appid,
+                                                                                            appsecret=self.weather_appsecret,
+                                                                                            city=city)  # 从设置中获取链接，密钥，并构成url
+            try:
+                r = requests.get(url)  # 向url发送请求
+                r.encoding = 'utf-8'
+                res = r.json()
+                if 'city' in res.keys():
+                    out_message = '-----XYBot-----\n城市🌆：{city}\n天气☁️：{weather}\n实时温度🌡️：{temp}°\n白天温度🌡：{temp_day}°\n夜晚温度🌡：{temp_night}°\n空气质量🌬：{air_quality}\n空气湿度💦：{air_humidity}\n风向🌬：{wind_speed}{wind_dir}\n更新时间⌚：{update_time}'.format(
+                        city=res['city'], weather=res['wea'], temp=res['tem'], temp_day=res['tem_day'],
+                        temp_night=res['tem_night'], air_quality=res['air'], air_humidity=res['humidity'],
+                        wind_dir=res['win'],
+                        wind_speed=res['win_speed'], update_time=res['update_time'])  # 创建信息
+                    logger.info(
+                        '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+                    self.bot.send_txt_msg(recv['wxid'], out_message)
+                else:
+                    out_message = '-----XYBot-----\n未知的城市：{city}❌'.format(city=city)
+                    logger.info(
+                        '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+                    self.bot.send_txt_msg(recv['wxid'], out_message)
+            except KeyError as error:
+                error_args = error.args[0]
+                if error_args == 'city':
+                    out_message = '-----XYBot-----\n未知的城市⚠️:{city}\n(仅支持国内城市！)'.format(city=error_args)
+                    logger.info(
+                        '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+                    self.bot.send_txt_msg(recv['wxid'], out_message)
+                else:
+                    out_message = '-----XYBot-----\n出现错误！⚠️{error}'.format(error=error)
+                    logger.info(
+                        '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+                    self.bot.send_txt_msg(recv['wxid'], out_message)
+
+            except Exception as error:  # 报错处理
+                out_message = '-----XYBot-----\n出现错误！⚠️{error}'.format(error=error)
+                logger.info(
+                    '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+                self.bot.send_txt_msg(recv['wxid'], out_message)
+        else:
+            out_message = '-----XYBot-----\n参数错误！⚠️'
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
             self.bot.send_txt_msg(recv['wxid'], out_message)
