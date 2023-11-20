@@ -25,6 +25,7 @@ def threadpool_callback(worker):  # 处理线程结束时，有无错误
 
 
 def schedule_run_pending():  # 计划等待判定线程
+    schedule.run_all()
     while True:
         schedule.run_pending()
         time.sleep(1)
@@ -91,6 +92,6 @@ if __name__ == "__main__":
                 logger.info('[收到消息]:{message}'.format(message=recv))
                 if isinstance(recv['content'], str):  # 判断是否为txt消息
                     pool.submit(message_handler, recv).add_done_callback(threadpool_callback)  # 向线程池提交任务
-        except:
-            logger.warning('机器人微信账号未登录！请使用浏览器访问 http://{ip}:4000/vnc.html 扫码登陆微信'.format(ip=ip))
+        except Exception as error:
+            logger.error('出现错误: {error}'.format(error=error))
             time.sleep(3)

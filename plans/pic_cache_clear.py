@@ -22,7 +22,7 @@ class pic_cache_clear(PlansInterface):
         self.bot.start()  # 开启机器人
 
     def job(self):
-        path = '../resources/pic_cache/'
+        path = './resources/pic_cache/'
         for filename in os.listdir(path):
             file_path = os.path.join(path, filename)
             # 判断路径是否为文件
