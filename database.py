@@ -22,9 +22,6 @@ class BotDatabase:
 
         self.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='database')  # 用来当queue用
 
-    def __del__(self):
-        print('fuck')
-
     def _execute_in_queue(self, method, *args, **kwargs):
         future = self.executor.submit(method, *args, **kwargs)
 
