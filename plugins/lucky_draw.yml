@@ -1,0 +1,23 @@
+keywords: [ "抽奖","积分抽奖" ]
+plugin_name: "lucky_draw"
+
+lucky_draw_probability: {
+  "小": { "cost": 20, "probability": { "0.05": { "name": "头等奖","points": 40 },
+                                       "0.1": { "name": "二等奖","points": 30 },
+                                       "0.2": { "name": "三等奖","points": 20 },
+                                       "0.3": { "name": "四等奖","points": 15 },
+                                       "0.35": { "name": "参与奖","points": 10 } }
+  },
+  "中": { "cost": 40, "probability": { "0.05": { "name": "头等奖","points": 70 },
+                                       "0.1": { "name": "二等奖","points": 50 },
+                                       "0.2": { "name": "三等奖","points": 40 },
+                                       "0.3": { "name": "四等奖","points": 30 },
+                                       "0.35": { "name": "参与奖","points": 25 } }
+  },
+  "大": { "cost": 80, "probability": { "0.05": { "name": "头等奖","points": 130 },
+                                       "0.1": { "name": "二等奖","points": 100 },
+                                       "0.2": { "name": "三等奖","points": 80 },
+                                       "0.3": { "name": "四等奖","points": 70 },
+                                       "0.35": { "name": "参与奖","points": 60 } }
+  }
+}
