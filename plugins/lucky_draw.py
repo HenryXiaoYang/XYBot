@@ -36,18 +36,21 @@ class lucky_draw(PluginInterface):
             target_wxid = recv['wxid']  # 是私聊
 
         command = recv['content']
-        draw_name = command[1]
 
         target_points = self.db.get_points(target_wxid)
 
         error = ''
         if len(command) != 2:
             error = '-----XYBot-----\n❌命令格式错误！请查看菜单获取正确命令格式'
-        elif not draw_name in self.lucky_draw_probability.keys():
-            error = '-----XYBot-----\n❌抽奖种类未知或者无效'
-        elif draw_name in self.lucky_draw_probability.keys() and target_points < self.lucky_draw_probability[draw_name][
-            'cost']:
-            error = '-----XYBot-----\n❌积分不足！'
+        else:
+            draw_name = command[1]
+
+            if not draw_name in self.lucky_draw_probability.keys():
+                error = '-----XYBot-----\n❌抽奖种类未知或者无效'
+            elif draw_name in self.lucky_draw_probability.keys() and target_points < \
+                    self.lucky_draw_probability[draw_name][
+                        'cost']:
+                error = '-----XYBot-----\n❌积分不足！'
 
         if not error:
             draw_probability = self.lucky_draw_probability[draw_name]['probability']

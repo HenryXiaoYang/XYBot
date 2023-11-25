@@ -9,7 +9,7 @@ from database import BotDatabase
 from plugin_interface import PluginInterface
 
 
-class gpt(PluginInterface):
+class gpt4(PluginInterface):
     def __init__(self):
         config_path = os.path.abspath(__file__)[:-3] + '.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
