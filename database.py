@@ -1,6 +1,10 @@
-import os
 import sqlite3
+from concurrent.futures import ThreadPoolExecutor
 
+from loguru import logger
+
+
+# 2b queue没法获取返回值
 
 class BotDatabase:
     _instance = None
@@ -13,93 +17,172 @@ class BotDatabase:
     def __init__(self):
         super().__init__()
 
-        if not os.path.exists('userpoints.db'):  # 检查数据库是否存在
-            conn = sqlite3.connect('userpoints.db')
-            c = conn.cursor()
-            c.execute('CREATE TABLE USERPOINTS (WXID TEXT PRIMARY KEY, POINTS INT, SIGNINSTAT INT, WHITELIST INT)')
-            conn.commit()
-            c.close()
-            conn.close()
-        else:
-            conn = sqlite3.connect('userpoints.db')
-            conn.commit()
-            conn.close()
+        self.database = sqlite3.connect('userpoints.db', check_same_thread=False)  # 连接数据库
+        self.wxid_list = self._get_wxid_list()  # 获取已有用户列表
 
-        self.database = sqlite3.connect('userpoints.db')  # 连接数据库
-        self.c = self.database.cursor()
-        self.c.execute('select u.WXID from USERPOINTS u;')  # 获取已有用户列表
-        self.wxid_list = self.c.fetchall()
+        self.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='database')  # 用来当queue用
+
+    def _execute_in_queue(self, method, *args, **kwargs):
+        future = self.executor.submit(method, *args, **kwargs)
+
+        try:
+            return future.result(timeout=20)
+        except Exception as error:
+            # 处理异常情况
+            logger.error(error)
+
+    def _get_wxid_list(self):
+        cursor = self.database.cursor()
+
+        try:
+            cursor.execute('select u.WXID from USERPOINTS u;')  # 获取已有用户列表
+            return cursor.fetchall()
+        finally:
+            cursor.close()
 
     def _check_user(self, wxid):
-        if not (wxid,) in self.wxid_list:  # 不存在，创建用户并设置积分为增加的积分
-            sql_command = "INSERT INTO USERPOINTS VALUES {}".format((wxid, 0, 0, 0))
-            self.c.execute(sql_command)
-            self.database.commit()  # 提交数据库
-        self.c.execute('select u.WXID from USERPOINTS u;')  # 刷新已有用户列表
-        self.wxid_list = self.c.fetchall()  # 刷新已有用户列表
+        cursor = self.database.cursor()
+        try:
+            if not (wxid,) in self.wxid_list:  # 不存在，创建用户并设置积分为增加的积分
+                sql_command = "INSERT INTO USERPOINTS VALUES {}".format((wxid, 0, 0, 0))
+                cursor.execute(sql_command)
+                self.database.commit()  # 提交数据库
+            cursor.execute('select u.WXID from USERPOINTS u;')  # 刷新已有用户列表
+            self.wxid_list = cursor.fetchall()  # 刷新已有用户列表
+        finally:
+            cursor.close()
 
     def add_points(self, wxid, num):
-        self._check_user(wxid)
-        sql_command = "SELECT POINTS FROM USERPOINTS WHERE WXID='{wxid}'".format(wxid=wxid)
-        self.c.execute(sql_command)
-        new_points = self.c.fetchall()[0][0] + num
-        sql_command = "UPDATE USERPOINTS SET POINTS={point} WHERE WXID='{wxid}'".format(point=new_points,
-                                                                                        wxid=wxid)
-        self.c.execute(sql_command)
-        self.database.commit()
+        return self._execute_in_queue(self._add_points, wxid, num)
 
-    def minus_points(self, wxid, num):  # 检查是否存在
-        self.add_points(wxid, num * -1)
+    def _add_points(self, wxid, num):
+        cursor = self.database.cursor()
+
+        try:
+            self._check_user(wxid)
+            sql_command = "SELECT POINTS FROM USERPOINTS WHERE WXID='{wxid}'".format(wxid=wxid)
+            cursor.execute(sql_command)
+            new_points = cursor.fetchall()[0][0] + num
+            sql_command = "UPDATE USERPOINTS SET POINTS={point} WHERE WXID='{wxid}'".format(point=new_points,
+                                                                                            wxid=wxid)
+            cursor.execute(sql_command)
+            self.database.commit()
+        finally:
+            cursor.close()
 
     def set_points(self, wxid, num):
-        self._check_user(wxid)
-        sql_command = "UPDATE USERPOINTS SET POINTS={point} WHERE WXID='{wxid}'".format(point=num,
-                                                                                        wxid=wxid)
-        self.c.execute(sql_command)
-        self.database.commit()
+        return self._execute_in_queue(self._set_points, wxid, num)
+
+    def _set_points(self, wxid, num):
+        cursor = self.database.cursor()
+
+        try:
+            self._check_user(wxid)
+            sql_command = "UPDATE USERPOINTS SET POINTS={point} WHERE WXID='{wxid}'".format(point=num,
+                                                                                            wxid=wxid)
+            cursor.execute(sql_command)
+            self.database.commit()
+        finally:
+            cursor.close()
 
     def get_points(self, wxid):
-        self._check_user(wxid)
-        sql_command = "SELECT POINTS FROM USERPOINTS WHERE WXID='{wxid}'".format(wxid=wxid)
-        self.c.execute(sql_command)
-        result = self.c.fetchall()[0][0]
-        return result
+        return self._execute_in_queue(self._get_points, wxid)
+
+    def _get_points(self, wxid):
+        cursor = self.database.cursor()
+
+        try:
+            self._check_user(wxid)
+            sql_command = "SELECT POINTS FROM USERPOINTS WHERE WXID='{wxid}'".format(wxid=wxid)
+            cursor.execute(sql_command)
+            result = cursor.fetchall()[0][0]
+            return result
+        finally:
+            cursor.close()
 
     def get_stat(self, wxid):
-        self._check_user(wxid)
-        sql_command = "SELECT SIGNINSTAT FROM USERPOINTS WHERE WXID='{wxid}'".format(wxid=wxid)
-        self.c.execute(sql_command)
-        result = self.c.fetchall()[0][0]
-        return result
+        return self._execute_in_queue(self._get_stat, wxid)
+
+    def _get_stat(self, wxid):
+        cursor = self.database.cursor()
+
+        try:
+            self._check_user(wxid)
+            sql_command = "SELECT SIGNINSTAT FROM USERPOINTS WHERE WXID='{wxid}'".format(wxid=wxid)
+            cursor.execute(sql_command)
+            result = cursor.fetchall()[0][0]
+            return result
+        finally:
+            cursor.close()
 
     def set_stat(self, wxid, num):
-        self._check_user(wxid)
-        sql_command = "UPDATE USERPOINTS SET SIGNINSTAT={SIGNINSTAT} WHERE WXID='{wxid}'".format(SIGNINSTAT=num,
-                                                                                                 wxid=wxid)
-        self.c.execute(sql_command)
-        self.database.commit()  # 提交数据库
+        return self._execute_in_queue(self._set_stat, wxid, num)
+
+    def _set_stat(self, wxid, num):
+        cursor = self.database.cursor()
+
+        try:
+            self._check_user(wxid)
+            sql_command = "UPDATE USERPOINTS SET SIGNINSTAT={SIGNINSTAT} WHERE WXID='{wxid}'".format(SIGNINSTAT=num,
+                                                                                                     wxid=wxid)
+            cursor.execute(sql_command)
+            self.database.commit()  # 提交数据库
+        finally:
+            cursor.close()
 
     def reset_stat(self):
-        sql_command = "UPDATE USERPOINTS SET SIGNINSTAT=0"
-        self.c.execute(sql_command)
-        self.database.commit()  # 提交数据库
+        return self._execute_in_queue(self._reset_stat)
+
+    def _reset_stat(self):
+        cursor = self.database.cursor()
+
+        try:
+            sql_command = "UPDATE USERPOINTS SET SIGNINSTAT=0"
+            cursor.execute(sql_command)
+            self.database.commit()  # 提交数据库
+        finally:
+            cursor.close()
 
     def get_highest_points(self, num):
-        sql_command = 'select * from USERPOINTS order by POINTS DESC, SIGNINSTAT LIMIT 0,{limit}'.format(limit=num)
-        self.c.execute(sql_command)
-        result = self.c.fetchall()
-        return result
+        return self._execute_in_queue(self._get_highest_points, num)
+
+    def _get_highest_points(self, num):
+        cursor = self.database.cursor()
+
+        try:
+            sql_command = 'select * from USERPOINTS order by POINTS DESC, SIGNINSTAT LIMIT 0,{limit}'.format(limit=num)
+            cursor.execute(sql_command)
+            result = cursor.fetchall()
+            return result
+        finally:
+            cursor.close()
 
     def set_whitelist(self, wxid, stat):
-        self._check_user(wxid)
-        sql_command = "UPDATE USERPOINTS SET WHITELIST={whitelist} WHERE WXID='{wxid}'".format(whitelist=stat,
-                                                                                               wxid=wxid)
-        self.c.execute(sql_command)
-        self.database.commit()  # 提交数据库
+        return self._execute_in_queue(self._set_whitelist, wxid, stat)
+
+    def _set_whitelist(self, wxid, stat):
+        cursor = self.database.cursor()
+
+        try:
+            self._check_user(wxid)
+            sql_command = "UPDATE USERPOINTS SET WHITELIST={whitelist} WHERE WXID='{wxid}'".format(whitelist=stat,
+                                                                                                   wxid=wxid)
+            cursor.execute(sql_command)
+            self.database.commit()  # 提交数据库
+        finally:
+            cursor.close()
 
     def get_whitelist(self, wxid):
-        self._check_user(wxid)
-        sql_command = "SELECT WHITELIST FROM USERPOINTS WHERE WXID='{wxid}'".format(wxid=wxid)
-        self.c.execute(sql_command)
-        result = self.c.fetchall()[0][0]
-        return result
+        return self._execute_in_queue(self._get_whitelist, wxid)
+
+    def _get_whitelist(self, wxid):
+        cursor = self.database.cursor()
+
+        try:
+            self._check_user(wxid)
+            sql_command = "SELECT WHITELIST FROM USERPOINTS WHERE WXID='{wxid}'".format(wxid=wxid)
+            cursor.execute(sql_command)
+            result = cursor.fetchall()[0][0]
+            return result
+        finally:
+            cursor.close()

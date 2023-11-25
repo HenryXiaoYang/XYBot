@@ -1,0 +1,5 @@
+keywords: [ "签到","qd" ]
+plugin_name: "sign_in"
+
+min_points: 3
+max_points: 20

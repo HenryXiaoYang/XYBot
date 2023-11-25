@@ -1,0 +1,5 @@
+keywords: [ "积分转帐","积分转账","转帐","转账","转账积分","转帐积分", "送积分", "转送积分", "积分转送" ]
+plugin_name: "points_trade"
+
+max_points: 100
+min_points: 1

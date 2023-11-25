@@ -1,0 +1,15 @@
+#Version 0.0.3
+#如果不知道自己在干什么请别动这两行
+ip: 127.0.0.1
+port: 5555
+
+admins: [ "" ]
+
+# 建议：(cpu核心数)*5-4
+max_thread: 16
+
+command_prefix: "/"
+
+exclude_plugins: [ "" ]
+
+timezone: "Asia/Shanghai"
