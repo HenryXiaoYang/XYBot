@@ -39,6 +39,8 @@ class points_trade(PluginInterface):
             trader_points = self.db.get_points(trader_wxid)
 
             target_nick = ' '.join(recv['content'][2:])[1:]
+            target_nick = target_nick.replace('\u2005', '')  # 手机端微信会加个\u2005空格
+
             target_wxid = self.at_to_wxid_in_group(roomid, target_nick)
 
             points_num = int(recv['content'][1])

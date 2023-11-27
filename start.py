@@ -32,6 +32,8 @@ def schedule_run_pending():  # 计划等待判定线程
 
 
 if __name__ == "__main__":
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
     ###### log设置 读取设置 ######
     logger.add('logs/log_{time}.log', encoding='utf-8', enqueue=True, retention='2 weeks', rotation='00:01')  # 日志设置
 
