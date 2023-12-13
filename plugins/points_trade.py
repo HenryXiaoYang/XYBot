@@ -36,7 +36,6 @@ class points_trade(PluginInterface):
 
             trader_wxid = recv['id1']
             trader_nick = self.bot.get_chatroom_nickname(roomid, trader_wxid)['nick']
-            trader_points = self.db.get_points(trader_wxid)
 
             target_nick = ' '.join(recv['content'][2:])[1:]
             target_nick = target_nick.replace('\u2005', '')  # 手机端微信会加个\u2005空格
@@ -52,26 +51,28 @@ class points_trade(PluginInterface):
             elif not self.min_points <= points_num <= self.max_points:
                 error_message = '\n-----XYBot-----\n转帐失败❌\n转帐积分无效(最大{max_points} 最小{min_points})'.format(
                     max_points=self.max_points, min_points=self.min_points)
-            elif trader_points < points_num:
-                error_message = '\n-----XYBot-----\n转帐失败❌\n积分不足😭'
 
             if not error_message:
-                self.db.add_points(trader_wxid, points_num * -1)
-                self.db.add_points(target_wxid, points_num)
+                if self.db.safe_trade_points(trader_wxid, target_wxid, points_num):
 
-                logger.success(
-                    '[积分转帐]转帐人:{trader_wxid} {trader_nick}|目标:{target_wxid} {target_nick}|群:{roomid}|积分数:{points_num}'.format(
-                        trader_wxid=trader_wxid, trader_nick=trader_nick, target_wxid=target_wxid,
-                        target_nick=target_nick, roomid=roomid, points_num=points_num))
+                    logger.success(
+                        '[积分转帐]转帐人:{trader_wxid} {trader_nick}|目标:{target_wxid} {target_nick}|群:{roomid}|积分数:{points_num}'.format(
+                            trader_wxid=trader_wxid, trader_nick=trader_nick, target_wxid=target_wxid,
+                            target_nick=target_nick, roomid=roomid, points_num=points_num))
 
-                trader_points = self.db.get_points(trader_wxid)
-                target_points = self.db.get_points(target_wxid)
+                    trader_points = self.db.get_points(trader_wxid)
+                    target_points = self.db.get_points(target_wxid)
 
-                out_message = '\n-----XYBot-----\n转帐成功✅! 你现在有{trader_points}点积分 {target_nick}现在有{target_points}点积分'.format(
-                    trader_points=trader_points, target_nick=target_nick, target_points=target_points)
-                logger.info(
-                    '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=roomid))
-                self.bot.send_at_msg(roomid, trader_wxid, trader_nick, out_message)
+                    out_message = '\n-----XYBot-----\n转帐成功✅! 你现在有{trader_points}点积分 {target_nick}现在有{target_points}点积分'.format(
+                        trader_points=trader_points, target_nick=target_nick, target_points=target_points)
+                    logger.info(
+                        '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=roomid))
+                    self.bot.send_at_msg(roomid, trader_wxid, trader_nick, out_message)
+                else:
+                    out_message = '\n-----XYBot-----\n转帐失败❌\n积分不足😭'
+                    logger.info(
+                        '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=roomid))
+                    self.bot.send_at_msg(roomid, trader_wxid, trader_nick, out_message)
 
             else:
                 logger.info(
@@ -86,14 +87,13 @@ class points_trade(PluginInterface):
     def at_to_wxid_in_group(self, roomid, at):
         member_wxid_list = self.bot.get_chatroom_memberlist(roomid)['member']
         member_nick_to_wxid_dict = {}
-        member_nick_list = []
 
         for wxid in member_wxid_list:
             nick = self.bot.get_chatroom_nickname(roomid, wxid)['nick']
             member_nick_to_wxid_dict[nick] = wxid
-            member_nick_list.append(nick)
 
-        if at in member_nick_to_wxid_dict.keys() and member_nick_list.count(at) == 1:
+        if at in member_nick_to_wxid_dict.keys() and len(set(member_nick_to_wxid_dict.keys())) == len(
+                member_nick_to_wxid_dict.keys()):
             return member_nick_to_wxid_dict[at]
         else:
             return None
