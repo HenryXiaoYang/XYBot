@@ -25,7 +25,7 @@ def threadpool_callback(worker):  # 处理线程结束时，有无错误
 
 
 def schedule_run_pending():  # 计划等待判定线程
-    schedule.run_all()
+    # schedule.run_all()
     while True:
         schedule.run_pending()
         time.sleep(1)

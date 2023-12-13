@@ -1,9 +1,9 @@
 import os
 
+import openai
 import pywxdll
 import yaml
 from loguru import logger
-from openai import OpenAI
 
 from database import BotDatabase
 from plugin_interface import PluginInterface
@@ -111,16 +111,14 @@ class gpt4(PluginInterface):
             self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, out_message)
 
     def chatgpt(self, message, recv):  # ChatGPT请求
-        client = OpenAI(api_key=self.openai_api_key, base_url=self.openai_api_base)
-
+        openai.api_key = self.openai_api_key  # 从设置中获取url和密钥
+        openai.api_base = self.openai_api_base
         try:  # 防止崩溃
-            response = client.chat.completions.create(
+            completion = openai.ChatCompletion.create(
                 model=self.gpt_version,
-                messages=[{"role": "user", "content": message}],
-                temperature=self.gpt_temperature,
-                max_tokens=self.gpt_max_token
+                messages=[{"role": "user", "content": message}]
             )  # 用openai库创建请求
-            return True, response.choices[0].message.content  # 返回答案
+            return True, completion.choices[0].message.content  # 返回答案
         except Exception as error:
             return False, error
 

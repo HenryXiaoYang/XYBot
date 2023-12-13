@@ -4,10 +4,8 @@
 
 高度可自定义!!!😊
 
-
-
-[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-red.svg)](https://opensource.org/licenses/)[![Version](https://img.shields.io/badge/Version-0.0.2-orange.svg)](https://github.com/HenryXiaoYang/XYBot)
-[![Blog](https://img.shields.io/badge/Blog-@HenryXiaoYang-yellow.svg)](http://121.5.152.172/)
+[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-red.svg)](https://opensource.org/licenses/)[![Version](https://img.shields.io/badge/Version-0.0.3-orange.svg)](https://github.com/HenryXiaoYang/XYBot)
+[![Blog](https://img.shields.io/badge/Blog-@HenryXiaoYang-yellow.svg)](https://yangres.com)
 ## 功能列表
 用户功能:
 - 菜单
@@ -19,6 +17,12 @@
 - 白名单
 - 天气查询
 - 新闻查询
+- 积分抽奖
+- 积分转送
+- 积分榜
+- Hypixel玩家数据查询
+- 随机群群成员
+
 管理员功能:
 - 修改积分
 - 修改白名单
