@@ -1,8 +1,8 @@
-pywxdll==0.2.2
+pywxdll==0.2
 schedule==1.2.1
 PyYAML==6.0.1
 loguru==0.7.2
-openai==0.28
+openai==0.28.0
 requests==2.31.0
 beautifulsoup4==4.12.2
 prettytable==3.9.0

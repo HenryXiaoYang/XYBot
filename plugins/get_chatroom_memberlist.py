@@ -49,6 +49,7 @@ class get_chatroom_memberlist(PluginInterface):
 
             # pywxdll 0.2
             data = self.bot.get_chatroom_memberlist(recv['wxid'])
+
             for member_wxid in data['member']:  # for循环成员列表
                 name = self.bot.get_chatroom_nickname(recv['wxid'], member_wxid)['nick']  # 获取成员昵称
                 chart.add_row([name, member_wxid])  # 加入表格中
