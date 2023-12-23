@@ -10,6 +10,6 @@ max_thread: 16
 
 command_prefix: "/"
 
-exclude_plugins: [ "" ]
+excluded_plugins: [ "" ]
 
 timezone: "Asia/Shanghai"

@@ -26,7 +26,6 @@ class get_contact_list(PluginInterface):
         self.ip = main_config['ip']
         self.port = main_config['port']
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-        self.bot.start()  # 开启机器人
 
         self.admin_list = main_config['admins']
 

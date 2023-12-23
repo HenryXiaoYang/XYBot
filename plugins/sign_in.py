@@ -29,10 +29,7 @@ class sign_in(PluginInterface):
         self.port = main_config['port']
         self.timezone = main_config['timezone']
 
-        # timezone(self.timezone)  # cache
-
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-        self.bot.start()  # 开启机器人
 
         self.db = BotDatabase()
 

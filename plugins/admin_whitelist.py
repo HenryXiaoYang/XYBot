@@ -10,10 +10,6 @@ from plugin_interface import PluginInterface
 
 class admin_whitelist(PluginInterface):
     def __init__(self):
-        config_path = os.path.abspath(__file__)[:-3] + '.yml'
-        with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            config = yaml.load(f.read(), Loader=yaml.FullLoader)
-
         current_directory = os.path.dirname(os.path.abspath(__file__))
         main_config_path = os.path.join(current_directory, '../main_config.yml')
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
@@ -22,7 +18,6 @@ class admin_whitelist(PluginInterface):
         self.ip = main_config['ip']
         self.port = main_config['port']
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-        self.bot.start()  # 开启机器人
 
         self.admin_list = main_config['admins']
 

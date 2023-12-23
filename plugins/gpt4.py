@@ -38,7 +38,6 @@ class gpt4(PluginInterface):
         self.sensitive_words = sensitive_words_config['sensitive_words']  # 敏感词列表
 
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人
-        self.bot.start()  # 开启机器人
 
     def run(self, recv):
         self.db = BotDatabase()  # 放在init会不在一个线程上，数据库会报错

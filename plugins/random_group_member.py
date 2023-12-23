@@ -24,7 +24,6 @@ class random_group_member(PluginInterface):
         self.ip = main_config['ip']
         self.port = main_config['port']
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-        self.bot.start()  # 开启机器人
 
     def run(self, recv):
         if recv['id1']:

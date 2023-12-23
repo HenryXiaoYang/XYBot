@@ -20,7 +20,6 @@ class antiautolog(PlansInterface):
         self.port = main_config['port']
         self.timezone = main_config['timezone']
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-        self.bot.start()  # 开启机器人
 
     def job(self):
         out_message = '防微信自动退出登录[{num}]'.format(num=random.randint(1, 9999))  # 组建信息

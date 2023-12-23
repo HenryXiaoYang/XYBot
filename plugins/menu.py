@@ -25,7 +25,6 @@ class menu(PluginInterface):
         self.port = main_config['port']
 
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-        self.bot.start()  # 开启机器人
 
     def run(self, recv):
         if len(recv['content']) == 1:  # 如果命令列表长度为1，那就代表请求主菜单

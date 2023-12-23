@@ -25,7 +25,6 @@ class hypixel_info(PluginInterface):
         self.ip = main_config['ip']
         self.port = main_config['port']
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-        self.bot.start()  # 开启机器人
 
     def run(self, recv):
         headers = {
@@ -37,71 +36,11 @@ class hypixel_info(PluginInterface):
             self.send_friend_or_group(recv, out_message)
 
         elif len(recv['content']) == 2:  # Basic info
-            request_ign = recv['content'][1]
-
-            self.send_friend_or_group(recv,
-                                      '-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂'.format(
-                                          request_ign=request_ign))
-
-            req = requests.get('http://plancke.io/hypixel/player/stats/{request_ign}'.format(request_ign=request_ign),
-                               headers=headers)
-            soup = BeautifulSoup(req.text, 'html.parser')
-
-            if req.status_code != 404 and self.check_valid(soup):
-
-                # basic info
-                in_game_name = self.get_in_game_name(soup)
-                basic_stats = self.get_basic_stats(soup)
-                guild_stat = self.get_guild_stat(soup)
-                status = self.get_status(soup)
-
-                out_message = '-----XYBot-----\n🎮玩家：\n{in_game_name}\n\n--------\n\n⚙️基础信息：\n'.format(
-                    in_game_name=in_game_name)
-                for key, value in basic_stats.items():
-                    out_message = out_message + key + value + '\n'
-                out_message += '\n--------\n\n🏹公会信息：\n'
-                for key, value in guild_stat.items():
-                    out_message = out_message + key + value + '\n'
-                out_message += '\n--------\n\nℹ️当前状态：\n'
-                for key, value in status.items():
-                    out_message = out_message + key + value + '\n'
-
-                self.send_friend_or_group(recv, out_message)
-
-            else:
-                out_message = '-----XYBot-----\n玩家 {request_ign} 不存在！❌'.format(request_ign=request_ign)
-                self.send_friend_or_group(recv, out_message)
+            self.send_basic_info(recv, headers)
 
         elif len(recv['content']) == 3:
             if recv['content'][1] in self.bedwar_keywords:  # bedwar
-                request_ign = recv['content'][2]
-
-                self.send_friend_or_group(recv,
-                                          '-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂'.format(
-                                              request_ign=request_ign))
-
-                req = requests.get(
-                    'http://plancke.io/hypixel/player/stats/{request_ign}'.format(request_ign=request_ign),
-                    headers=headers)
-                soup = BeautifulSoup(req.text, 'html.parser')
-
-                if req.status_code != 404 and self.check_valid(soup):
-
-                    in_game_name = self.get_in_game_name(soup)
-                    bedwar_stat = self.get_bedwar_stat(soup)
-                    out_message = '-----XYBot-----\n🎮玩家：\n{in_game_name}\n\n--------\n\n🛏️起床战争信息：\n'.format(
-                        in_game_name=in_game_name)
-                    table_header = ['⚔️模式：', '击杀：', '死亡：', 'K/D：', '最终击杀：', '最终死亡：', '最终K/D：', '胜利：',
-                                    '失败：', 'W/L：', '破坏床数：']
-                    for row in bedwar_stat:
-                        for cell in range(len(row)):
-                            out_message = out_message + table_header[cell] + row[cell] + '\n'
-                        out_message += '\n'
-
-                    self.send_friend_or_group(recv, out_message)
-                else:
-                    out_message = '-----XYBot-----\n玩家 {request_ign} 不存在！❌'.format(request_ign=request_ign)
-                    self.send_friend_or_group(recv, out_message)
+                self.send_bedwar_info(recv, headers)
 
             else:
                 out_message = '-----XYBot-----\n不存在的游戏！❌'
@@ -173,3 +112,68 @@ class hypixel_info(PluginInterface):
             logger.info(
                 '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
             self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
+
+    def send_basic_info(self, recv, headers):
+        request_ign = recv['content'][1]
+
+        self.send_friend_or_group(recv,
+                                  '-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂'.format(request_ign=request_ign))
+
+        req = requests.get('http://plancke.io/hypixel/player/stats/{request_ign}'.format(request_ign=request_ign),
+                           headers=headers)
+        soup = BeautifulSoup(req.text, 'html.parser')
+
+        if req.status_code != 404 and self.check_valid(soup):
+
+            # basic info
+            in_game_name = self.get_in_game_name(soup)
+            basic_stats = self.get_basic_stats(soup)
+            guild_stat = self.get_guild_stat(soup)
+            status = self.get_status(soup)
+
+            out_message = '-----XYBot-----\n🎮玩家：\n{in_game_name}\n\n--------\n\n⚙️基础信息：\n'.format(
+                in_game_name=in_game_name)
+            for key, value in basic_stats.items():
+                out_message = out_message + key + value + '\n'
+            out_message += '\n--------\n\n🏹公会信息：\n'
+            for key, value in guild_stat.items():
+                out_message = out_message + key + value + '\n'
+            out_message += '\n--------\n\nℹ️当前状态：\n'
+            for key, value in status.items():
+                out_message = out_message + key + value + '\n'
+
+            self.send_friend_or_group(recv, out_message)
+
+        else:
+            out_message = '-----XYBot-----\n玩家 {request_ign} 不存在！❌'.format(request_ign=request_ign)
+            self.send_friend_or_group(recv, out_message)
+
+    def send_bedwar_info(self, recv, headers):
+        request_ign = recv['content'][2]
+
+        self.send_friend_or_group(recv,
+                                  '-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂'.format(
+                                      request_ign=request_ign))
+
+        req = requests.get(
+            'http://plancke.io/hypixel/player/stats/{request_ign}'.format(request_ign=request_ign),
+            headers=headers)
+        soup = BeautifulSoup(req.text, 'html.parser')
+
+        if req.status_code != 404 and self.check_valid(soup):
+
+            in_game_name = self.get_in_game_name(soup)
+            bedwar_stat = self.get_bedwar_stat(soup)
+            out_message = '-----XYBot-----\n🎮玩家：\n{in_game_name}\n\n--------\n\n🛏️起床战争信息：\n'.format(
+                in_game_name=in_game_name)
+            table_header = ['⚔️模式：', '击杀：', '死亡：', 'K/D：', '最终击杀：', '最终死亡：', '最终K/D：', '胜利：', '失败：',
+                            'W/L：', '破坏床数：']
+            for row in bedwar_stat:
+                for cell in range(len(row)):
+                    out_message = out_message + table_header[cell] + row[cell] + '\n'
+                out_message += '\n'
+
+            self.send_friend_or_group(recv, out_message)
+        else:
+            out_message = '-----XYBot-----\n玩家 {request_ign} 不存在！❌'.format(request_ign=request_ign)
+            self.send_friend_or_group(recv, out_message)
