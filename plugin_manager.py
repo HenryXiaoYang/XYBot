@@ -15,7 +15,6 @@ class PluginManager:
             cls._instance = object.__new__(cls, *args, **kw)
         return cls._instance
 
-
     def __init__(self):
         super().__init__()
 

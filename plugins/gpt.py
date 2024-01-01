@@ -115,7 +115,7 @@ class gpt(PluginInterface):
 
             self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, error_message)
 
-    def chatgpt(self, message, recv):  # ChatGPT请求
+    def chatgpt(self, message):  # ChatGPT请求
         openai.api_key = self.openai_api_key  # 从设置中获取url和密钥
         openai.api_base = self.openai_api_base
         try:  # 防止崩溃

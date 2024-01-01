@@ -89,7 +89,7 @@ if __name__ == "__main__":
     logger.success('机器人启动成功！')
     while True:
         try:
-            if len(bot.msg_list) != 0:  # 如果有聊天信息
+            if bot.msg_list:  # 如果有聊天信息
                 recv = bot.msg_list.pop(0)  # 获取信息列表第一项并pop
                 logger.info('[收到消息]:{message}'.format(message=recv))
                 if isinstance(recv['content'], str):  # 判断是否为txt消息
