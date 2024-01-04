@@ -1,3 +1,9 @@
+#  Copyright (c) 2024. Henry Yang
+#
+#  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
+
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
 
@@ -184,5 +190,26 @@ class BotDatabase:
             cursor.execute(sql_command)
             result = cursor.fetchall()[0][0]
             return result
+        finally:
+            cursor.close()
+
+    def safe_trade_points(self, trader_wxid, target_wxid, num):
+        return self._execute_in_queue(self._safe_trade_points, trader_wxid, target_wxid, num)
+
+    def _safe_trade_points(self, trader_wxid, target_wxid, num):
+        cursor = self.database.cursor()
+
+        try:
+            self._check_user(trader_wxid)
+            self._check_user(target_wxid)
+            get_trader_point_sql_command = "SELECT POINTS FROM USERPOINTS WHERE WXID='{wxid}'".format(wxid=trader_wxid)
+            cursor.execute(get_trader_point_sql_command)
+            trader_points = cursor.fetchall()[0][0]
+            if trader_points >= num:
+                self._add_points(trader_wxid, num * -1)
+                self._add_points(target_wxid, num)
+                return True
+            else:
+                return False
         finally:
             cursor.close()

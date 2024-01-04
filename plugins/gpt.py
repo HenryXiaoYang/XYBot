@@ -1,9 +1,15 @@
+#  Copyright (c) 2024. Henry Yang
+#
+#  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
+
 import os
 
+import openai
 import pywxdll
 import yaml
 from loguru import logger
-from openai import OpenAI
 
 from database import BotDatabase
 from plugin_interface import PluginInterface
@@ -38,7 +44,6 @@ class gpt(PluginInterface):
         self.sensitive_words = sensitive_words_config['sensitive_words']  # 敏感词列表
 
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人
-        self.bot.start()  # 开启机器人
 
     def run(self, recv):
         self.db = BotDatabase()  # 放在init会不在一个线程上，数据库会报错
@@ -59,10 +64,18 @@ class gpt(PluginInterface):
 
         message = ' '.join(recv['content'][1:])  # 用户问题
 
-        if (self.db.get_points(user_wxid) >= self.gpt_point_price or self.db.get_whitelist(
-                user_wxid) == 1 or user_wxid in self.admins) and len(
-            recv['content']) >= 2 and self.senstitive_word_check(
-            message):  # 如果(积分足够或在白名单或在管理员)与指令格式正确与敏感词检查通过
+        error_message = ''
+
+        if not (self.db.get_points(user_wxid) >= self.gpt_point_price or self.db.get_whitelist(
+                user_wxid) == 1 or user_wxid in self.admins):  # 积分足够或在白名单或在管理员
+            error_message = '-----XYBot-----\n积分不足,需要{require_points}点⚠️'.format(
+                require_points=self.gpt_point_price)
+        elif len(recv['content']) < 2:  # 指令格式正确
+            error_message = '-----XYBot-----\n参数错误!❌'
+        elif not self.senstitive_word_check(message):  # 敏感词检查
+            error_message = '-----XYBot-----\n内容包含敏感词!⚠️'
+
+        if not error_message:  # 如果(积分足够或在白名单或在管理员)与指令格式正确与敏感词检查通过
 
             out_message = '-----XYBot-----\n已收到指令，处理中，请勿重复发送指令！👍'  # 发送已收到信息，防止用户反复发送命令
             logger.info(
@@ -104,23 +117,19 @@ class gpt(PluginInterface):
                     self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, out_message)  # 判断是群还是私聊
 
         else:  # 参数数量不对
-            out_message = '-----XYBot-----\n参数错误/积分不足,需要{require_points}点/内容包含敏感词⚠️'.format(
-                require_points=self.gpt_point_price)
-            logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=error_message, wxid=recv['wxid']))
 
-            self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, out_message)
+            self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, error_message)
 
-    def chatgpt(self, message, recv):  # ChatGPT请求
-        client = OpenAI(api_key=self.openai_api_key, base_url=self.openai_api_base)
-
+    def chatgpt(self, message):  # ChatGPT请求
+        openai.api_key = self.openai_api_key  # 从设置中获取url和密钥
+        openai.api_base = self.openai_api_base
         try:  # 防止崩溃
-            response = client.chat.completions.create(
+            completion = openai.ChatCompletion.create(
                 model=self.gpt_version,
-                messages=[{"role": "user", "content": message}],
-                temperature=self.gpt_temperature,
-                max_tokens=self.gpt_max_token
+                messages=[{"role": "user", "content": message}]
             )  # 用openai库创建请求
-            return True, response.choices[0].message.content  # 返回答案
+            return True, completion.choices[0].message.content  # 返回答案
         except Exception as error:
             return False, error
 

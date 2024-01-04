@@ -1,3 +1,9 @@
+#  Copyright (c) 2024. Henry Yang
+#
+#  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
+
 import json
 import os
 
@@ -26,7 +32,6 @@ class get_chatroom_memberlist(PluginInterface):
         self.ip = main_config['ip']
         self.port = main_config['port']
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-        self.bot.start()  # 开启机器人
 
         self.admin_list = main_config['admins']
 
@@ -49,6 +54,7 @@ class get_chatroom_memberlist(PluginInterface):
 
             # pywxdll 0.2
             data = self.bot.get_chatroom_memberlist(recv['wxid'])
+
             for member_wxid in data['member']:  # for循环成员列表
                 name = self.bot.get_chatroom_nickname(recv['wxid'], member_wxid)['nick']  # 获取成员昵称
                 chart.add_row([name, member_wxid])  # 加入表格中

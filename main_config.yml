@@ -1,4 +1,4 @@
-#Version 0.0.3
+#Version 0.0.4
 #如果不知道自己在干什么请别动这两行
 ip: 127.0.0.1
 port: 5555
@@ -10,6 +10,6 @@ max_thread: 16
 
 command_prefix: "/"
 
-exclude_plugins: [ "" ]
+excluded_plugins: [ "" ]
 
 timezone: "Asia/Shanghai"

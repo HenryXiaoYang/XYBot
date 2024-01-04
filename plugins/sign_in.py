@@ -1,3 +1,9 @@
+#  Copyright (c) 2024. Henry Yang
+#
+#  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
+
 import os
 import random
 from datetime import datetime
@@ -29,10 +35,7 @@ class sign_in(PluginInterface):
         self.port = main_config['port']
         self.timezone = main_config['timezone']
 
-        # timezone(self.timezone)  # cache
-
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-        self.bot.start()  # 开启机器人
 
         self.db = BotDatabase()
 

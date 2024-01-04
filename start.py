@@ -1,3 +1,9 @@
+#  Copyright (c) 2024. Henry Yang
+#
+#  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
+
 import os
 import threading
 import time
@@ -25,7 +31,7 @@ def threadpool_callback(worker):  # 处理线程结束时，有无错误
 
 
 def schedule_run_pending():  # 计划等待判定线程
-    schedule.run_all()
+    # schedule.run_all()
     while True:
         schedule.run_pending()
         time.sleep(1)
@@ -89,7 +95,7 @@ if __name__ == "__main__":
     logger.success('机器人启动成功！')
     while True:
         try:
-            if len(bot.msg_list) != 0:  # 如果有聊天信息
+            if bot.msg_list:  # 如果有聊天信息
                 recv = bot.msg_list.pop(0)  # 获取信息列表第一项并pop
                 logger.info('[收到消息]:{message}'.format(message=recv))
                 if isinstance(recv['content'], str):  # 判断是否为txt消息

@@ -1,3 +1,9 @@
+#  Copyright (c) 2024. Henry Yang
+#
+#  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
+
 import os
 
 import pywxdll
@@ -10,10 +16,6 @@ from plugin_interface import PluginInterface
 
 class admin_points(PluginInterface):
     def __init__(self):
-        config_path = os.path.abspath(__file__)[:-3] + '.yml'
-        with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            config = yaml.load(f.read(), Loader=yaml.FullLoader)
-
         current_directory = os.path.dirname(os.path.abspath(__file__))
         main_config_path = os.path.join(current_directory, '../main_config.yml')
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
@@ -22,7 +24,6 @@ class admin_points(PluginInterface):
         self.ip = main_config['ip']
         self.port = main_config['port']
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-        self.bot.start()  # 开启机器人
 
         self.admin_list = main_config['admins']
 
@@ -52,12 +53,7 @@ class admin_points(PluginInterface):
 
                 total_points = self.db.get_points(change_wxid)  # 获取修改后积分
                 out_message = '-----XYBot-----\n😊成功给{wxid}{action}了{points}点积分！他现在有{total}点积分！'.format(
-                    wxid=change_wxid,
-                    action=
-                    recv['content'][2],
-                    points=
-                    recv['content'][3],
-                    total=total_points)
+                    wxid=change_wxid, action=recv['content'][2], points=recv['content'][3], total=total_points)
                 logger.info(
                     '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
                 self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
@@ -67,12 +63,7 @@ class admin_points(PluginInterface):
 
                 total_points = self.db.get_points(change_wxid)  # 获取修改后积分
                 out_message = '-----XYBot-----\n😊成功给{wxid}{action}了{points}点积分！他现在有{total}点积分！'.format(
-                    wxid=change_wxid,
-                    action=
-                    recv['content'][2],
-                    points=
-                    recv['content'][3],
-                    total=total_points)
+                    wxid=change_wxid, action=recv['content'][2], points=recv['content'][3], total=total_points)
                 logger.info(
                     '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
                 self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送

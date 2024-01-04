@@ -1,17 +1,41 @@
+#  Copyright (c) 2024. Henry Yang
+#
+#  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
+
 import importlib
 import os
 
 import yaml
+from loguru import logger
 
 from plugin_interface import PluginInterface
 
 
 class PluginManager:
+    _instance = None
+
+    def __new__(cls, *args, **kw):
+        if cls._instance is None:
+            cls._instance = object.__new__(cls, *args, **kw)
+        return cls._instance
+
     def __init__(self):
+        super().__init__()
+
         self.plugins = {}
         self.keywords = {}
 
+        with open('main_config.yml', 'r', encoding='utf-8') as f:  # 读取设置
+            config = yaml.load(f.read(), Loader=yaml.FullLoader)
+
+        self.excluded_plugins = config['excluded_plugins']
+
     def refresh_keywords(self):
+        self.keywords.clear()
         plugins_folder = './plugins'
         plugin_config_path = []
 
@@ -26,14 +50,15 @@ class PluginManager:
         for path in plugin_config_path:
             with open(path, 'r', encoding='utf-8') as f:  # 读取设置
                 config = yaml.load(f.read(), Loader=yaml.FullLoader)
+
             keywords_list = config['keywords']
             plugin_name = config['plugin_name']
 
-            for keyword in keywords_list:
-                self.keywords[keyword] = plugin_name
+            if plugin_name in self.plugins.keys():
+                for keyword in keywords_list:
+                    self.keywords[keyword] = plugin_name
 
     def get_keywords(self):
-        self.refresh_keywords()
         return self.keywords
 
     def load_plugin(self, plugin_name):
@@ -43,18 +68,37 @@ class PluginManager:
             if issubclass(plugin_class, PluginInterface):
                 plugin_instance = plugin_class()
                 self.plugins[plugin_name] = plugin_instance
-        self.refresh_keywords()
+                self.refresh_keywords()
+                logger.debug('+ 已加载插件：{plugin_name}'.format(plugin_name=plugin_name))
+                return True
+
+            return False
+        return False
 
     def load_plugins(self, plugin_dir):
         for plugin_file in os.listdir(plugin_dir):
             if plugin_file.endswith(".py") and plugin_file != "__init__.py" and not plugin_file.startswith('_'):
                 plugin_name = os.path.splitext(plugin_file)[0]
-                self.load_plugin(plugin_name)
+                if plugin_name not in self.excluded_plugins:
+                    self.load_plugin(plugin_name)
 
     def unload_plugin(self, plugin_name):
-        if plugin_name in self.plugins:
+        if plugin_name in self.plugins and plugin_name not in ['manage_plugins']:
             del self.plugins[plugin_name]
-        self.refresh_keywords()
+            self.refresh_keywords()
+            logger.debug('- 已卸载插件：{plugin_name}'.format(plugin_name=plugin_name))
+            return True
+        else:
+            return False
+
+    def reload_plugin(self, plugin_name):
+        if self.unload_plugin(plugin_name):
+            if self.load_plugin(plugin_name):
+                logger.debug('! 已重载插件：{plugin_name}'.format(plugin_name=plugin_name))
+                return True
+            else:
+                logger.debug('! 重载插件失败：{plugin_name}'.format(plugin_name=plugin_name))
+                return False
 
 
 # 实例化插件管理器
