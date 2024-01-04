@@ -3,6 +3,8 @@
 #  This program is licensed under the GNU General Public License v3.0.
 #
 #  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
 
 import importlib
 import os
@@ -75,13 +77,13 @@ class PluginManager:
 
     def load_plugins(self, plugin_dir):
         for plugin_file in os.listdir(plugin_dir):
-            if plugin_file.endswith(".py") and plugin_file != "__init__.py" and not plugin_file.startswith(
-                    '_') and not plugin_file in self.excluded_plugins:
+            if plugin_file.endswith(".py") and plugin_file != "__init__.py" and not plugin_file.startswith('_'):
                 plugin_name = os.path.splitext(plugin_file)[0]
-                self.load_plugin(plugin_name)
+                if plugin_name not in self.excluded_plugins:
+                    self.load_plugin(plugin_name)
 
     def unload_plugin(self, plugin_name):
-        if plugin_name in self.plugins and not plugin_name in ['manage_plugins']:
+        if plugin_name in self.plugins and plugin_name not in ['manage_plugins']:
             del self.plugins[plugin_name]
             self.refresh_keywords()
             logger.debug('- 已卸载插件：{plugin_name}'.format(plugin_name=plugin_name))
