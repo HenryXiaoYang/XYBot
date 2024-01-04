@@ -1,3 +1,9 @@
+#  Copyright (c) 2024. Henry Yang
+#
+#  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
+
 import os
 
 import pywxdll
@@ -47,12 +53,7 @@ class admin_points(PluginInterface):
 
                 total_points = self.db.get_points(change_wxid)  # 获取修改后积分
                 out_message = '-----XYBot-----\n😊成功给{wxid}{action}了{points}点积分！他现在有{total}点积分！'.format(
-                    wxid=change_wxid,
-                    action=
-                    recv['content'][2],
-                    points=
-                    recv['content'][3],
-                    total=total_points)
+                    wxid=change_wxid, action=recv['content'][2], points=recv['content'][3], total=total_points)
                 logger.info(
                     '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
                 self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
@@ -62,12 +63,7 @@ class admin_points(PluginInterface):
 
                 total_points = self.db.get_points(change_wxid)  # 获取修改后积分
                 out_message = '-----XYBot-----\n😊成功给{wxid}{action}了{points}点积分！他现在有{total}点积分！'.format(
-                    wxid=change_wxid,
-                    action=
-                    recv['content'][2],
-                    points=
-                    recv['content'][3],
-                    total=total_points)
+                    wxid=change_wxid, action=recv['content'][2], points=recv['content'][3], total=total_points)
                 logger.info(
                     '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
                 self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送

@@ -5,4 +5,4 @@ max_point: 500
 min_point: 10
 
 max_packet: 25
-max_time: 432000
+max_time: 43200

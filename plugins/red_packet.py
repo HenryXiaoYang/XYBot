@@ -1,3 +1,9 @@
+#  Copyright (c) 2024. Henry Yang
+#
+#  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
+
 import os
 import random
 import time
@@ -74,11 +80,9 @@ class red_packet(PluginInterface):
             red_packet_amount = int(recv['content'][2])
 
             red_packet_sender_nick = self.bot.get_chatroom_nickname(recv['wxid'], red_packet_sender)['nick']
-
             red_packet_points_list = self.split_integer(red_packet_points, red_packet_amount)
 
             chr_5, captcha_path = self.generate_captcha()
-
             captcha_path = os.path.abspath(captcha_path)
 
             red_packet = {'points': red_packet_points, 'amount': red_packet_amount, 'sender': red_packet_sender,

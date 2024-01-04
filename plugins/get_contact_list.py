@@ -1,3 +1,9 @@
+#  Copyright (c) 2024. Henry Yang
+#
+#  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
+
 import json
 import os
 
@@ -66,8 +72,7 @@ class get_contact_list(PluginInterface):
 
             fetch_link = '{url}/r/{code}'.format(url=self.information_post_url, code=fetch_code)  # 创建获取链接
             out_message = '-----XYBot-----\n🤖️机器人的通讯录：\n{fetch_link}\n过期时间：{date_expire}'.format(
-                fetch_link=fetch_link,
-                date_expire=date_expire)  # 组建输出信息
+                fetch_link=fetch_link, date_expire=date_expire)  # 组建输出信息
 
             self.bot.send_txt_msg(recv['wxid'], out_message)
             logger.info(
