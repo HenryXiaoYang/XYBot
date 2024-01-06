@@ -3,6 +3,8 @@
 #  This program is licensed under the GNU General Public License v3.0.
 #
 #  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
 
 import os
 
@@ -84,7 +86,7 @@ class gpt(PluginInterface):
 
             if self.db.get_whitelist(user_wxid) == 1 or user_wxid in self.admins:  # 如果用户在白名单内/是管理员
 
-                chatgpt_answer = self.chatgpt(message, recv)
+                chatgpt_answer = self.chatgpt(message)
                 if chatgpt_answer[0]:
                     out_message = "-----XYBot-----\n因为你在白名单内，所以没扣除积分！👍\nChatGPT回答：\n{res}\n\n⚙️ChatGPT版本：{gpt_version}".format(
                         res=chatgpt_answer[1], gpt_version=self.gpt_version)  # 创建信息并从gpt api获取回答
@@ -100,7 +102,7 @@ class gpt(PluginInterface):
             elif self.db.get_points(user_wxid) >= self.gpt_point_price:  # 用户不在白名单内，并积分数大于等于chatgpt价格
 
                 self.db.add_points(user_wxid, self.gpt_point_price * -1)
-                chatgpt_answer = self.chatgpt(message, recv)
+                chatgpt_answer = self.chatgpt(message)
 
                 if chatgpt_answer[0]:
                     out_message = "-----XYBot-----\n已扣除{gpt_price}点积分，还剩{points_left}点积分👍\nChatGPT回答：\n{res}\n\n⚙️ChatGPT版本：{gpt_version}".format(
