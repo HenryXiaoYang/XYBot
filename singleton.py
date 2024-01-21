@@ -3,7 +3,12 @@
 #  This program is licensed under the GNU General Public License v3.0.
 #
 #  This program is licensed under the GNU General Public License v3.0.
+def singleton(cls):
+    _instance = {}
 
-class PluginInterface:
-    def run(self, recv):
-        raise NotImplementedError("Subclasses must implement the 'run' method.")
+    def inner():
+        if cls not in _instance:
+            _instance[cls] = cls()
+        return _instance[cls]
+
+    return inner

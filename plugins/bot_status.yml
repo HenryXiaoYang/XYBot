@@ -2,4 +2,3 @@ keywords: ["机器人状态","bottest"]
 plugin_name: "bot_status"
 
 status_message: "Bot Running😊"
-bot_version: "v0.0.4"

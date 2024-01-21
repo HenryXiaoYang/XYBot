@@ -8,8 +8,10 @@ import importlib
 import os
 
 from plans_interface import PlansInterface
+from singleton import singleton
 
 
+@singleton
 class PlansManager:
     def __init__(self):
         self.plans = {}

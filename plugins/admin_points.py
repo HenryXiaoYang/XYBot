@@ -26,10 +26,9 @@ class admin_points(PluginInterface):
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
         self.admin_list = main_config['admins']
-
-    def run(self, recv):
         self.db = BotDatabase()
 
+    def run(self, recv):
         if recv['id1']:  # 用于判断是否为管理员
             admin_wxid = recv['id1']  # 是群
         else:

@@ -32,8 +32,6 @@ class random_picture(PluginInterface):
         self.port = main_config['port']
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-        self.max_thread = main_config['max_thread']
-
     def run(self, recv):
         current_directory = os.path.dirname(os.path.abspath(__file__))
 
