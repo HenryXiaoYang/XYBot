@@ -1,23 +1,26 @@
 keywords: [ "抽奖","积分抽奖" ]
 plugin_name: "lucky_draw"
 
+max_draw: 100
+
 lucky_draw_probability: {
-  "小": { "cost": 20, "probability": { "0.05": { "name": "头等奖","points": 40 },
-                                       "0.1": { "name": "二等奖","points": 30 },
-                                       "0.2": { "name": "三等奖","points": 20 },
-                                       "0.3": { "name": "四等奖","points": 15 },
-                                       "0.35": { "name": "参与奖","points": 10 } }
+  "小": { "cost": 20, "probability": { "0.05": { "name": "金","points": 80, "symbol": "🟨" },
+                                       "0.1": { "name": "紫","points": 55, "symbol": "🟪" },
+                                       "0.2": { "name": "蓝","points": 35, "symbol": "🟦" },
+                                       "0.3": { "name": "绿","points": 15, "symbol": "🟩" },
+                                       "0.35": { "name": "白","points": 10, "symbol": "⬜️" } }
   },
-  "中": { "cost": 40, "probability": { "0.05": { "name": "头等奖","points": 70 },
-                                       "0.1": { "name": "二等奖","points": 50 },
-                                       "0.2": { "name": "三等奖","points": 40 },
-                                       "0.3": { "name": "四等奖","points": 30 },
-                                       "0.35": { "name": "参与奖","points": 25 } }
+  "中": { "cost": 40, "probability": { "0.05": { "name": "金","points": 100, "symbol": "🟨" },
+                                       "0.1": { "name": "紫","points": 80, "symbol": "🟪" },
+                                       "0.2": { "name": "蓝","points": 55, "symbol": "🟦" },
+                                       "0.3": { "name": "绿","points": 35, "symbol": "🟩" },
+                                       "0.35": { "name": "白","points": 25, "symbol": "⬜️" } }
   },
-  "大": { "cost": 80, "probability": { "0.05": { "name": "头等奖","points": 130 },
-                                       "0.1": { "name": "二等奖","points": 100 },
-                                       "0.2": { "name": "三等奖","points": 80 },
-                                       "0.3": { "name": "四等奖","points": 70 },
-                                       "0.35": { "name": "参与奖","points": 60 } }
+  "大": { "cost": 80, "probability": { "0.01": { "name": "红", "points": 300, "symbol": "🟥" },
+                                       "0.05": { "name": "金","points": 200, "symbol": "🟨" },
+                                       "0.1": { "name": "紫","points": 100, "symbol": "🟪" },
+                                       "0.2": { "name": "蓝","points": 80, "symbol": "🟦" },
+                                       "0.3": { "name": "绿","points": 70, "symbol": "🟩" },
+                                       "0.34": { "name": "白","points": 60, "symbol": "⬜️" } }
   }
 }

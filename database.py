@@ -9,20 +9,14 @@ from concurrent.futures import ThreadPoolExecutor
 
 from loguru import logger
 
+from singleton import singleton
+
 
 # 2b queue没法获取返回值
 
+@singleton
 class BotDatabase:
-    _instance = None
-
-    def __new__(cls, *args, **kw):
-        if cls._instance is None:
-            cls._instance = object.__new__(cls, *args, **kw)
-        return cls._instance
-
     def __init__(self):
-        super().__init__()
-
         self.database = sqlite3.connect('userpoints.db', check_same_thread=False)  # 连接数据库
         self.wxid_list = self._get_wxid_list()  # 获取已有用户列表
 
