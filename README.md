@@ -11,7 +11,7 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 ✅高度可自定义！
 ✅支持自我编写插件！
 
-[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-red.svg)](https://opensource.org/licenses/)[![Version](https://img.shields.io/badge/Version-0.0.4-orange.svg)](https://github.com/HenryXiaoYang/XYBot)
+[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-red.svg)](https://opensource.org/licenses/)[![Version](https://img.shields.io/badge/Version-0.0.5pre-orange.svg)](https://github.com/HenryXiaoYang/XYBot)
 [![Blog](https://img.shields.io/badge/Blog-@HenryXiaoYang-yellow.svg)](https://yangres.com)
 
 ## 功能列表
