@@ -25,8 +25,8 @@ class gpt(PluginInterface):
         self.openai_api_key = config['openai_api_key']  # openai api 密钥
         self.gpt_version = config['gpt_version']  # gpt版本
         self.gpt_point_price = config['gpt_point_price']  # gpt使用价格（单次）
-        self.gpt_max_token = config['gpt_max_token']
-        self.gpt_temperature = config['gpt_temperature']
+        self.gpt_max_token = config['gpt_max_token']  # gpt 最大token
+        self.gpt_temperature = config['gpt_temperature']  # gpt 温度
 
         current_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -99,12 +99,12 @@ class gpt(PluginInterface):
 
             elif self.db.get_points(user_wxid) >= self.gpt_point_price:  # 用户不在白名单内，并积分数大于等于chatgpt价格
 
-                self.db.add_points(user_wxid, self.gpt_point_price * -1)
-                chatgpt_answer = self.chatgpt(message)
+                self.db.add_points(user_wxid, self.gpt_point_price * -1)  # 减掉积分
+                chatgpt_answer = self.chatgpt(message)  #从chatgpt api 获取回答
 
                 if chatgpt_answer[0]:
                     out_message = "-----XYBot-----\n已扣除{gpt_price}点积分，还剩{points_left}点积分👍\nChatGPT回答：\n{res}\n\n⚙️ChatGPT版本：{gpt_version}".format(
-                        gpt_price=self.gpt_point_price, points_left=self.db.get_points(user_wxid),  # 创建信息并从gpt api获取回答
+                        gpt_price=self.gpt_point_price, points_left=self.db.get_points(user_wxid),  # 创建信息
                         res=chatgpt_answer[1], gpt_version=self.gpt_version)
                     logger.info(
                         '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))

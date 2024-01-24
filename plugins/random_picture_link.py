@@ -27,8 +27,8 @@ class random_picture_link(PluginInterface):
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
             main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
-        self.ip = main_config['ip']
-        self.port = main_config['port']
+        self.ip = main_config['ip']  # 机器人ip
+        self.port = main_config['port']  # 机器人端口
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
     def run(self, recv):

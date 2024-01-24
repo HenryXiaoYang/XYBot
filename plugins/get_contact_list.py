@@ -22,18 +22,18 @@ class get_contact_list(PluginInterface):
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
-        self.information_post_url = config['information_post_url']
+        self.information_post_url = config['information_post_url']  # 获取信息发送api的url (非微信)
 
         current_directory = os.path.dirname(os.path.abspath(__file__))
         main_config_path = os.path.join(current_directory, '../main_config.yml')
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
             main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
-        self.ip = main_config['ip']
-        self.port = main_config['port']
+        self.ip = main_config['ip']  # 机器人ip
+        self.port = main_config['port']  #机器人端口
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-        self.admin_list = main_config['admins']
+        self.admin_list = main_config['admins']  #获取管理员列表
 
     def run(self, recv):
         if recv['id1'] in self.admin_list:  # 判断操作人是否在管理员列表内

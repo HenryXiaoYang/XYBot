@@ -21,13 +21,13 @@ class query_points(PluginInterface):
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
             main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
-        self.ip = main_config['ip']
-        self.port = main_config['port']
+        self.ip = main_config['ip']  # 机器人ip
+        self.port = main_config['port']  # 机器人端口
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-    def run(self, recv):
-        self.db = BotDatabase()
+        self.db = BotDatabase()  # 实例化机器人数据库类
 
+    def run(self, recv):
         if recv['id1']:  # 判断是群还是私聊
             query_wxid = recv['id1']  # 是群
         else:

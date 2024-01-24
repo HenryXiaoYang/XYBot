@@ -25,8 +25,8 @@ class gpt4(PluginInterface):
         self.openai_api_key = config['openai_api_key']  # openai api 密钥
         self.gpt_version = config['gpt_version']  # gpt版本
         self.gpt_point_price = config['gpt_point_price']  # gpt使用价格（单次）
-        self.gpt_max_token = config['gpt_max_token']
-        self.gpt_temperature = config['gpt_temperature']
+        self.gpt_max_token = config['gpt_max_token']  # gpt 最大token
+        self.gpt_temperature = config['gpt_temperature']  # gpt 温度
 
         current_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -76,10 +76,10 @@ class gpt4(PluginInterface):
 
             if self.db.get_whitelist(user_wxid) == 1 or user_wxid in self.admins:  # 如果用户在白名单内/是管理员
 
-                chatgpt_answer = self.chatgpt(message)
+                chatgpt_answer = self.chatgpt(message)  #从chatgpr api获取答案
                 if chatgpt_answer[0]:
                     out_message = "-----XYBot-----\n因为你在白名单内，所以没扣除积分！👍\nChatGPT回答：\n{res}\n\n⚙️ChatGPT版本：{gpt_version}".format(
-                        res=chatgpt_answer[1], gpt_version=self.gpt_version)  # 创建信息并从gpt api获取回答
+                        res=chatgpt_answer[1], gpt_version=self.gpt_version)  # 创建信息
                     logger.info(
                         '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
                     self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, out_message)  # 判断是群还是私聊

@@ -25,8 +25,8 @@ class admin_points(PluginInterface):
         self.port = main_config['port']
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-        self.admin_list = main_config['admins']
-        self.db = BotDatabase()
+        self.admin_list = main_config['admins']  # 获取管理员列表
+        self.db = BotDatabase()  # 实例化数据库类
 
     def run(self, recv):
         if recv['id1']:  # 用于判断是否为管理员
@@ -47,8 +47,8 @@ class admin_points(PluginInterface):
                                                                                      change_wxid=admin_wxid))
                 self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
 
-            elif recv['content'][2] == '加' and len(recv['content']) == 4:
-                self.db.add_points(change_wxid, int(recv['content'][3]))
+            elif recv['content'][2] == '加' and len(recv['content']) == 4:  # 操作是加分
+                self.db.add_points(change_wxid, int(recv['content'][3]))  # 修改积分
 
                 total_points = self.db.get_points(change_wxid)  # 获取修改后积分
                 out_message = '-----XYBot-----\n😊成功给{wxid}{action}了{points}点积分！他现在有{total}点积分！'.format(
@@ -57,8 +57,8 @@ class admin_points(PluginInterface):
                     '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
                 self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
 
-            elif recv['content'][2] == '减' and len(recv['content']) == 4:
-                self.db.add_points(change_wxid, int(recv['content'][3]) * -1)
+            elif recv['content'][2] == '减' and len(recv['content']) == 4:  # 操作是减分
+                self.db.add_points(change_wxid, int(recv['content'][3]) * -1)  # 修改积分
 
                 total_points = self.db.get_points(change_wxid)  # 获取修改后积分
                 out_message = '-----XYBot-----\n😊成功给{wxid}{action}了{points}点积分！他现在有{total}点积分！'.format(

@@ -34,4 +34,4 @@ class antiautolog(PlansInterface):
         self.bot.send_txt_msg("filehelper", out_message)  # 发送
 
     def run(self):
-        schedule.every(10).minutes.do(self.job)
+        schedule.every(10).minutes.do(self.job)  # 每10分钟执行一次

@@ -23,17 +23,17 @@ class sign_in(PluginInterface):
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
-        self.min_points = config['min_points']
-        self.max_points = config['max_points']
+        self.min_points = config['min_points']  # 最小积分
+        self.max_points = config['max_points']  # 最大积分
 
         current_directory = os.path.dirname(os.path.abspath(__file__))
         main_config_path = os.path.join(current_directory, '../main_config.yml')
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
             main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
-        self.ip = main_config['ip']
-        self.port = main_config['port']
-        self.timezone = main_config['timezone']
+        self.ip = main_config['ip']  # 机器人ip
+        self.port = main_config['port']  # 机器人端口
+        self.timezone = main_config['timezone']  # 时区
 
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
@@ -71,15 +71,8 @@ class sign_in(PluginInterface):
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
             self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname, out_message)  # 发送
 
-    def signstat_check(self, signstat):
-        # 如果用户没签到过或者重置冷却过，那么数字应为0，所以需要判断。 老签到的已签到数值是1，也需要判断
-        if signstat == '0' or signstat == '1':
-            signstat = '20000101'  # datetime不让全设为0 我就不信有人能穿越时空签到
-
+    def signstat_check(self, signstat):  # 检查签到状态
+        signstat = '20000101' if signstat in ['0', '1'] else signstat
         last_sign_date = datetime.strptime(signstat, '%Y%m%d').date()
         now_date = datetime.now(tz=ZoneInfo(self.timezone)).date()
-
-        if (now_date - last_sign_date).days >= 1:
-            return True
-        else:
-            return False
+        return (now_date - last_sign_date).days >= 1

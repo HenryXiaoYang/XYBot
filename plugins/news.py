@@ -20,16 +20,16 @@ class news(PluginInterface):
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
-        self.news_urls = config['news_urls']
-        self.news_number = config['news_number']
+        self.news_urls = config['news_urls']  # 新闻url列表
+        self.news_number = config['news_number']  # 要获取的新闻数量
 
         current_directory = os.path.dirname(os.path.abspath(__file__))
         main_config_path = os.path.join(current_directory, '../main_config.yml')
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
             main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
-        self.ip = main_config['ip']
-        self.port = main_config['port']
+        self.ip = main_config['ip']  # 机器人ip
+        self.port = main_config['port']  #机器人端口
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
     def run(self, recv):
@@ -42,6 +42,7 @@ class news(PluginInterface):
             out_message = '-----XYBot新闻-----\n'
             for j in res:  # 从新闻列表for
                 for i in range(self.news_number):  # 从设置中获取单类新闻个数
+                    # 获取新闻的信息
                     dict_key = list(j.keys())
                     news_title = j[dict_key[0]][i].get('title', '❓未知❓')
                     news_type = j[dict_key[0]][i].get('tname', '❓未知❓')
