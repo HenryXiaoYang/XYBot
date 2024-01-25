@@ -1,14 +1,8 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import os
 import time
 
+import aiohttp
 import pywxdll
-import requests
 import yaml
 from loguru import logger
 
@@ -32,18 +26,20 @@ class random_picture(PluginInterface):
         self.port = main_config['port']  # 机器人端口
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-    def run(self, recv):
+    async def run(self, recv):
         current_directory = os.path.dirname(os.path.abspath(__file__))
 
         pic_cache_path_original = os.path.join(current_directory, '../resources/pic_cache/picture_{num}.'.format(
             num=time.time_ns()))  # 图片缓存路径
 
         try:
-            r = requests.get(self.random_picture_url)
-            pic_cache_path = pic_cache_path_original + r.headers['Content-Type'].split('/')[1]
-            with open(pic_cache_path, 'wb') as f:  # 下载并保存
-                f.write(r.content)
-                f.close()
+            conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
+            async with aiohttp.request('GET', url=self.random_picture_url, connector=conn_ssl) as req:
+                pic_cache_path = pic_cache_path_original + req.headers['Content-Type'].split('/')[1]
+                with open(pic_cache_path, 'wb') as file:  # 下载并保存
+                    file.write(await req.read())
+                    file.close()
+                await conn_ssl.close()
 
             logger.info(
                 '[发送信息]{out_message} {path}| [发送到] {wxid}'.format(out_message="(随机图图图片) ",

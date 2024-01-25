@@ -1,9 +1,3 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import os
 
 import pywxdll
@@ -33,7 +27,7 @@ class points_leaderboard(PluginInterface):
 
         self.db = BotDatabase()  # 实例化数据库类
 
-    def run(self, recv):
+    async def run(self, recv):
         data = self.db.get_highest_points(self.leaderboard_top_number)  # 从数据库获取前x名积分数
         out_message = "-----XYBot积分排行榜-----"  # 创建积分
         rank = 1

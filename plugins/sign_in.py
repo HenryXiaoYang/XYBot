@@ -1,9 +1,3 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import os
 import random
 from datetime import datetime
@@ -39,7 +33,7 @@ class sign_in(PluginInterface):
 
         self.db = BotDatabase()
 
-    def run(self, recv):
+    async def run(self, recv):
         signin_points = random.randint(self.min_points, self.max_points)  # 随机3-20积分
 
         if recv['id1']:  # 判断是群还是私聊

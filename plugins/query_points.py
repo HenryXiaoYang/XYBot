@@ -1,9 +1,3 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import os
 
 import pywxdll
@@ -27,7 +21,7 @@ class query_points(PluginInterface):
 
         self.db = BotDatabase()  # 实例化机器人数据库类
 
-    def run(self, recv):
+    async def run(self, recv):
         if recv['id1']:  # 判断是群还是私聊
             query_wxid = recv['id1']  # 是群
         else:

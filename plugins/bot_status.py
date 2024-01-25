@@ -1,9 +1,3 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import base64
 import os
 
@@ -33,7 +27,7 @@ class bot_status(PluginInterface):
         self.port = main_config['port']  # 机器人端口
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-    def run(self, recv):
+    async def run(self, recv):
         b, a = [82, 50, 108, 48, 97, 72, 86, 105, 79, 105, 66, 111, 100, 72, 82, 119, 99, 122, 111, 118, 76, 50, 100,
                 112, 100, 71, 104, 49, 89, 105, 53, 106, 98, 50, 48, 118, 83, 71, 86, 117, 99, 110, 108, 89, 97, 87, 70,
                 118, 87, 87, 70, 117, 90, 121, 57, 89, 87, 85, 74, 118, 100, 65, 61, 61], ''  # 嘿嘿

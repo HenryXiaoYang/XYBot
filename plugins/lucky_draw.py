@@ -1,9 +1,3 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import os
 import random
 
@@ -37,7 +31,7 @@ class lucky_draw(PluginInterface):
 
         self.db = database.BotDatabase()  # 实例化数据库类
 
-    def run(self, recv):
+    async def run(self, recv):
         global draw_count, draw_name  # 全局变量防止出错
 
         # -----初始化与消息格式监测-----

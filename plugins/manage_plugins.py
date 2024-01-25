@@ -1,9 +1,3 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import os
 
 import pywxdll
@@ -28,7 +22,7 @@ class manage_plugins(PluginInterface):
 
         self.admin_list = main_config['admins']  # 获取管理员列表
 
-    def run(self, recv):
+    async def run(self, recv):
         if recv['id1']:  # 用于判断是否为管理员
             admin_wxid = recv['id1']  # 是群
         else:

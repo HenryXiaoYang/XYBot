@@ -1,14 +1,8 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import json
 import os
 
+import aiohttp
 import pywxdll
-import requests
 import yaml
 from loguru import logger
 from prettytable import PrettyTable
@@ -30,29 +24,16 @@ class get_chatroom_memberlist(PluginInterface):
             main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
         self.ip = main_config['ip']  # 机器人ip
-        self.port = main_config['port']  #机器人端口
+        self.port = main_config['port']  # 机器人端口
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-        self.admin_list = main_config['admins']  #获取管理员列表
+        self.admin_list = main_config['admins']  # 获取管理员列表
 
-    def run(self, recv):
+    async def run(self, recv):
         if recv['id1'] in self.admin_list:  # 判断操作元是否是管理员
             heading = ['名字', 'wxid']
             chart = PrettyTable(heading)  # 创建列表
 
-            # pywxdll 0.1.8
-            ''' data = self.bot.get_chatroom_memberlist(recv['wxid'])  # 获取操作所在群的成员列表
-            data = data['content']
-            
-            for i in data:  # for循环获得的数据
-                if i['room_id'] == recv['wxid']:  # 如果群号相同
-                    for j in i['member']:  # for循环成员列表
-                        wxid = j
-                        name = self.bot.get_chatroom_nick(recv['wxid'], j)['content']['nick']  # 获取成员昵称
-                        chart.add_row([name, wxid])  # 加入表格中
-            '''
-
-            # pywxdll 0.2
             data = self.bot.get_chatroom_memberlist(recv['wxid'])
 
             for member_wxid in data['member']:  # for循环成员列表
@@ -65,7 +46,12 @@ class get_chatroom_memberlist(PluginInterface):
             url = self.information_post_url + '/texts'  # 组建url
             headers = {"Content-Type": "application/json",
                        "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36"}
-            reqeust = requests.post(url, data=json_data, headers=headers, verify=False).json()  # 向api发送数据
+
+            conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
+            async with aiohttp.request('POST', url=url, data=json_data, headers=headers, connector=conn_ssl) as req:
+                reqeust = await req.json()
+            await conn_ssl.close()
+
             fetch_code = reqeust['fetch_code']  # 从api获取提取码
             date_expire = reqeust['date_expire']  # 从api获取过期时间
 

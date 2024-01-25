@@ -1,15 +1,9 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import os
 
-import openai
 import pywxdll
 import yaml
 from loguru import logger
+from openai import AsyncOpenAI
 
 from database import BotDatabase
 from plugin_interface import PluginInterface
@@ -45,7 +39,7 @@ class gpt(PluginInterface):
 
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人
 
-    def run(self, recv):
+    async def run(self, recv):
         self.db = BotDatabase()  # 放在init会不在一个线程上，数据库会报错
 
         if recv['id1']:  # 检查是群聊还是私聊
@@ -84,7 +78,8 @@ class gpt(PluginInterface):
 
             if self.db.get_whitelist(user_wxid) == 1 or user_wxid in self.admins:  # 如果用户在白名单内/是管理员
 
-                chatgpt_answer = self.chatgpt(message)
+                chatgpt_answer = await self.chatgpt(message)
+
                 if chatgpt_answer[0]:
                     out_message = "-----XYBot-----\n因为你在白名单内，所以没扣除积分！👍\nChatGPT回答：\n{res}\n\n⚙️ChatGPT版本：{gpt_version}".format(
                         res=chatgpt_answer[1], gpt_version=self.gpt_version)  # 创建信息并从gpt api获取回答
@@ -100,7 +95,7 @@ class gpt(PluginInterface):
             elif self.db.get_points(user_wxid) >= self.gpt_point_price:  # 用户不在白名单内，并积分数大于等于chatgpt价格
 
                 self.db.add_points(user_wxid, self.gpt_point_price * -1)  # 减掉积分
-                chatgpt_answer = self.chatgpt(message)  #从chatgpt api 获取回答
+                chatgpt_answer = await self.chatgpt(message)  # 从chatgpt api 获取回答
 
                 if chatgpt_answer[0]:
                     out_message = "-----XYBot-----\n已扣除{gpt_price}点积分，还剩{points_left}点积分👍\nChatGPT回答：\n{res}\n\n⚙️ChatGPT版本：{gpt_version}".format(
@@ -121,15 +116,24 @@ class gpt(PluginInterface):
 
             self.send_friend_or_group(is_chatgroup, recv, user_wxid, nickname, error_message)
 
-    def chatgpt(self, message):  # ChatGPT请求
-        openai.api_key = self.openai_api_key  # 从设置中获取url和密钥
-        openai.api_base = self.openai_api_base
-        try:  # 防止崩溃
-            completion = openai.ChatCompletion.create(
+    async def chatgpt(self, message):
+        client = AsyncOpenAI(
+            api_key=self.openai_api_key,
+            base_url=self.openai_api_base
+        )
+        try:
+            chat_completion = await client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": message,
+                    }
+                ],
                 model=self.gpt_version,
-                messages=[{"role": "user", "content": message}]
-            )  # 用openai库创建请求
-            return True, completion.choices[0].message.content  # 返回答案
+                temperature=self.gpt_temperature,
+                max_tokens=self.gpt_max_token
+            )
+            return True, chat_completion.choices[0].message.content
         except Exception as error:
             return False, error
 
