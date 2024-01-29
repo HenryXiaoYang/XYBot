@@ -1,9 +1,3 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import os
 
 import pywxdll
@@ -27,9 +21,9 @@ class admin_whitelist(PluginInterface):
 
         self.admin_list = main_config['admins']  # 获取管理员列表
 
-        self.db = BotDatabase()  #实例化数据库类
+        self.db = BotDatabase()  # 实例化数据库类
 
-    def run(self, recv):
+    async def run(self, recv):
         if recv['id1']:  # 判断是群还是私聊
             admin_wxid = recv['id1']  # 是群
         else:
@@ -46,13 +40,13 @@ class admin_whitelist(PluginInterface):
                 out_message = '-----XYBot-----\n未知的操作❌'
                 logger.info(
                     '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
-                self.bot.send_txt_msg(recv['wxid'], out_message)  #发送信息
+                self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送信息
                 return
 
             out_message = '-----XYBot-----\n成功修改{}的白名单！😊'.format(wxid)
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
-            self.bot.send_txt_msg(recv['wxid'], out_message)  #发送信息
+            self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送信息
         else:  # 操作人不在白名单内
             out_message = '-----XYBot-----\n❌你配用这个指令吗？'
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
-            self.bot.send_txt_msg(recv['wxid'], out_message)  #发送信息
+            self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送信息

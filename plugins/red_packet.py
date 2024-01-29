@@ -1,9 +1,3 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import os
 import random
 import time
@@ -41,7 +35,7 @@ class red_packet(PluginInterface):
 
         self.red_packets = {}  # 红包列表
 
-    def run(self, recv):
+    async def run(self, recv):
         self.check_left_red_packet()  # 检查是否有超时红包
 
         if len(recv['content']) == 3:  # 判断是否为红包指令

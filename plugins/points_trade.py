@@ -1,9 +1,3 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import os
 
 import pywxdll
@@ -34,7 +28,7 @@ class points_trade(PluginInterface):
 
         self.db = database.BotDatabase()  # 实例化机器人数据库类
 
-    def run(self, recv):
+    async def run(self, recv):
         if recv['id1'] and len(recv['content']) >= 3 and recv['content'][1].isdigit():  # 判断是否为转账指令
             roomid, trader_wxid = recv['wxid'], recv['id1']  # 获取群号和转账人wxid
             trader_nick = self.bot.get_chatroom_nickname(roomid, trader_wxid)['nick']  # 获取转账人昵称

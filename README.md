@@ -123,3 +123,24 @@ https://github.com/ChisBread/wechat-service/
 https://github.com/cixingguangming55555/wechat-bot
 
 https://github.com/chisbread/wechat-box
+
+##
+
+<picture>
+  <source
+    media="(prefers-color-scheme: dark)"
+    srcset="
+      https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date&theme=dark
+    "
+  />
+  <source
+    media="(prefers-color-scheme: light)"
+    srcset="
+      https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date
+    "
+  />
+  <img
+    alt="XYBot Star History"
+    src="https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date"
+  />
+</picture>

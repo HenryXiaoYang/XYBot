@@ -1,9 +1,3 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import asyncio
 import concurrent.futures
 import json
@@ -22,7 +16,7 @@ from plugin_manager import plugin_manager
 
 
 async def message_handler(recv, handlebot):  # 处理收到的消息
-    handlebot.message_handler(recv)
+    await asyncio.create_task(handlebot.message_handler(recv))
 
 
 def callback(worker):  # 处理线程结束时，有无错误

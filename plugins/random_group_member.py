@@ -1,9 +1,3 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import os
 from random import choices
 
@@ -31,7 +25,7 @@ class random_group_member(PluginInterface):
         self.port = main_config['port']  # 机器人端口
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-    def run(self, recv):
+    async def run(self, recv):
         if recv['id1']:  # 判断是群还是私聊
             member_list = self.bot.get_chatroom_memberlist(recv['wxid'])['member']  # 获取群成员列表
             wxid_list = choices(member_list, k=self.member_count)  # 随机选取群成员

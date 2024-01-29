@@ -1,13 +1,7 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import os
 
+import aiohttp
 import pywxdll
-import requests
 import yaml
 from loguru import logger
 
@@ -29,16 +23,18 @@ class news(PluginInterface):
             main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
         self.ip = main_config['ip']  # 机器人ip
-        self.port = main_config['port']  #机器人端口
+        self.port = main_config['port']  # 机器人端口
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-    def run(self, recv):
+    async def run(self, recv):
         try:
             res = []
-            for i in self.news_urls:  # 从设置中获取链接列表
-                r = requests.get(i, timeout=5000, verify=False)  # 发送请求
-                r.encoding = 'utf-8'
-                res.append(r.json())
+            conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
+            for link in self.news_urls:  # 从设置中获取链接列表
+                async with aiohttp.request('GET', url=link, connector=conn_ssl) as req:
+                    res.append(await req.json())
+            await conn_ssl.close()
+
             out_message = '-----XYBot新闻-----\n'
             for j in res:  # 从新闻列表for
                 for i in range(self.news_number):  # 从设置中获取单类新闻个数
