@@ -1,9 +1,3 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
 import importlib
 import os
 
@@ -21,7 +15,7 @@ class PluginManager:
         self.keywords = {}
 
         with open('main_config.yml', 'r', encoding='utf-8') as f:  # 读取设置
-            config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            config = yaml.safe_load(f.read())
 
         self.excluded_plugins = config['excluded_plugins']
 
@@ -40,7 +34,7 @@ class PluginManager:
 
         for path in plugin_config_path:
             with open(path, 'r', encoding='utf-8') as f:  # 读取设置
-                config = yaml.load(f.read(), Loader=yaml.FullLoader)
+                config = yaml.safe_load(f.read())
 
             keywords_list = config['keywords']
             plugin_name = config['plugin_name']

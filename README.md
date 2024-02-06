@@ -11,7 +11,7 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 ✅高度可自定义！
 ✅支持自我编写插件！
 
-[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-red.svg)](https://opensource.org/licenses/)[![Version](https://img.shields.io/badge/Version-0.0.5pre-orange.svg)](https://github.com/HenryXiaoYang/XYBot)
+[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-red.svg)](https://opensource.org/licenses/)[![Version](https://img.shields.io/badge/Version-0.0.5-orange.svg)](https://github.com/HenryXiaoYang/XYBot)
 [![Blog](https://img.shields.io/badge/Blog-@HenryXiaoYang-yellow.svg)](https://yangres.com)
 
 # 20240106：发现了更强大的微信机器人Hook 下一个版本会花点时间🤔
@@ -102,7 +102,9 @@ ChatGPT
 
 #### ARM架构能不能运行?🤔️
 
-不行😩
+~~不行😩~~
+
+可以是可以是，虚拟层自己套吧
 
 真的不嫌烦吗？
 
@@ -112,7 +114,7 @@ ChatGPT
 
 #### 使用有没有封号风险?🤔️
 
-我连续用了9个月了，没被封😄
+我连续用了~~3 6~~ 9个月了，没被封😄
 
 ## Credit
 
@@ -123,3 +125,24 @@ https://github.com/ChisBread/wechat-service/
 https://github.com/cixingguangming55555/wechat-bot
 
 https://github.com/chisbread/wechat-box
+
+## ⭐️Star History⭐️
+
+<picture>
+  <source
+    media="(prefers-color-scheme: dark)"
+    srcset="
+      https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date&theme=dark
+    "
+  />
+  <source
+    media="(prefers-color-scheme: light)"
+    srcset="
+      https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date
+    "
+  />
+  <img
+    alt="XYBot Star History"
+    src="https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date"
+  />
+</picture>

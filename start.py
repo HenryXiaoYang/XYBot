@@ -1,8 +1,3 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
 import asyncio
 import concurrent.futures
 import json
@@ -21,7 +16,7 @@ from plugin_manager import plugin_manager
 
 
 async def message_handler(recv, handlebot):  # 处理收到的消息
-    handlebot.message_handler(recv)
+    await asyncio.create_task(handlebot.message_handler(recv))
 
 
 def callback(worker):  # 处理线程结束时，有无错误
@@ -42,14 +37,8 @@ async def main():
     # ---- log设置 读取设置 ---- #
     logger.add('logs/log_{time}.log', encoding='utf-8', enqueue=True, retention='2 weeks', rotation='00:01')  # 日志设置
 
-    pic_cache_path = 'resources/pic_cache'  # 检测是否有pic_cache文件夹
-    if not os.path.exists(pic_cache_path):
-        logger.info('检测到未创建pic_cache图片缓存文件夹')
-        os.makedirs(pic_cache_path)
-        logger.info('已创建pic_cach文件夹')
-
     with open('main_config.yml', 'r', encoding='utf-8') as f:  # 读取设置
-        config = yaml.load(f.read(), Loader=yaml.FullLoader)
+        config = yaml.safe_load(f.read())
 
     ip = config['ip']
     port = config['port']

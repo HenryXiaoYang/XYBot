@@ -1,11 +1,3 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
-import os
-
 import pywxdll
 import yaml
 from loguru import logger
@@ -15,24 +7,23 @@ from plugin_interface import PluginInterface
 
 class menu(PluginInterface):
     def __init__(self):
-        config_path = os.path.abspath(__file__)[:-3] + '.yml'
+        config_path = 'plugins/menu.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            config = yaml.safe_load(f.read())
 
         self.main_menu = config['main_menu']
         self.menus = config['menus']
 
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        main_config_path = os.path.join(current_directory, '../main_config.yml')
+        main_config_path = 'main_config.yml'
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            main_config = yaml.safe_load(f.read())
 
         self.ip = main_config['ip']
         self.port = main_config['port']
 
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-    def run(self, recv):
+    async def run(self, recv):
         if len(recv['content']) == 1:  # 如果命令列表长度为1，那就代表请求主菜单
             out_message = self.main_menu
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))

@@ -1,13 +1,5 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
-import os
-
+import aiohttp
 import pywxdll
-import requests
 import yaml
 from loguru import logger
 
@@ -16,24 +8,23 @@ from plugin_interface import PluginInterface
 
 class weather(PluginInterface):
     def __init__(self):
-        config_path = os.path.abspath(__file__)[:-3] + '.yml'
+        config_path = 'plugins/weather.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            config = yaml.safe_load(f.read())
 
         self.weather_api = config['weather_api']
         self.weather_appid = config['weather_appid']
         self.weather_appsecret = config['weather_appsecret']
 
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        main_config_path = os.path.join(current_directory, '../main_config.yml')
+        main_config_path = 'main_config.yml'
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            main_config = yaml.safe_load(f.read())
 
-        self.ip = main_config['ip']
-        self.port = main_config['port']
+        self.ip = main_config['ip']  # 机器人ip
+        self.port = main_config['port']  # 机器人端口
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-    def run(self, recv):
+    async def run(self, recv):
         if len(recv['content']) == 2:
             city = recv['content'][1]  # 获取要查询的天气
             url = "{api}?appid={appid}&appsecret={appsecret}&unescape=1&city={city}".format(api=self.weather_api,
@@ -41,9 +32,11 @@ class weather(PluginInterface):
                                                                                             appsecret=self.weather_appsecret,
                                                                                             city=city)  # 从设置中获取链接，密钥，并构成url
             try:
-                r = requests.get(url)  # 向url发送请求
-                r.encoding = 'utf-8'
-                res = r.json()
+
+                conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
+                async with aiohttp.request('GET', url=url, connector=conn_ssl) as req:
+                    res = await req.json()
+
                 if 'city' in res.keys():
                     out_message = '-----XYBot-----\n城市🌆：{city}\n天气☁️：{weather}\n实时温度🌡️：{temp}°\n白天温度🌡：{temp_day}°\n夜晚温度🌡：{temp_night}°\n空气质量🌬：{air_quality}\n空气湿度💦：{air_humidity}\n风向🌬：{wind_speed}{wind_dir}\n更新时间⌚：{update_time}'.format(
                         city=res['city'], weather=res['wea'], temp=res['tem'], temp_day=res['tem_day'],

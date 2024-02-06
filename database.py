@@ -1,9 +1,4 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
-
+import os
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
 
@@ -17,6 +12,16 @@ from singleton import singleton
 @singleton
 class BotDatabase:
     def __init__(self):
+        if not os.path.exists('userpoints.db'):  # 检查数据库是否存在
+            logger.warning('监测到数据库不存在，正在创建数据库')
+            conn = sqlite3.connect('userpoints.db')
+            c = conn.cursor()
+            c.execute('''CREATE TABLE USERPOINTS (WXID TEXT PRIMARY KEY , POINTS INT, SIGNINSTAT INT, WHITELIST INT)''')
+            conn.commit()
+            c.close()
+            conn.close()
+            logger.warning('已创建数据库')
+
         self.database = sqlite3.connect('userpoints.db', check_same_thread=False)  # 连接数据库
         self.wxid_list = self._get_wxid_list()  # 获取已有用户列表
 

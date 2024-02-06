@@ -1,8 +1,4 @@
-#  Copyright (c) 2024. Henry Yang
-#
-#  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
+import asyncio
 
 import pywxdll
 import yaml
@@ -14,16 +10,16 @@ from plugin_manager import plugin_manager
 class XYBot:
     def __init__(self):
         with open('main_config.yml', 'r', encoding='utf-8') as f:  # 读取设置
-            main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
-        self.command_prefix = main_config['command_prefix']
+            main_config = yaml.safe_load(f.read())
+        self.command_prefix = main_config['command_prefix']  # 命令前缀
 
         self.keywords = plugin_manager.get_keywords()
 
-        self.ip = main_config['ip']
-        self.port = main_config['port']
+        self.ip = main_config['ip']  # 机器人ip
+        self.port = main_config['port']  # 机器人端口
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-    def message_handler(self, recv):
+    async def message_handler(self, recv):
         if recv['content'][0] == self.command_prefix and len(recv['content']) != 1:  # 判断是否为命令
             recv['content'] = recv['content'][1:]  # 去除命令前缀
             recv['content'] = recv['content'].split(' ')  # 分割命令参数
@@ -31,7 +27,7 @@ class XYBot:
             keyword = recv['content'][0]
             if keyword in plugin_manager.get_keywords().keys():
                 plugin_func = plugin_manager.keywords[keyword]
-                plugin_manager.plugins[plugin_func].run(recv)
+                await asyncio.create_task(plugin_manager.plugins[plugin_func].run(recv))
             else:
                 out_message = '该指令不存在！⚠️'
                 logger.info(
