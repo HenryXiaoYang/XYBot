@@ -14,6 +14,8 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-red.svg)](https://opensource.org/licenses/)[![Version](https://img.shields.io/badge/Version-0.0.5-orange.svg)](https://github.com/HenryXiaoYang/XYBot)
 [![Blog](https://img.shields.io/badge/Blog-@HenryXiaoYang-yellow.svg)](https://yangres.com)
 
+# 20240106：发现了更强大的微信机器人Hook 下一个版本会花点时间🤔
+
 ## 功能列表
 
 用户功能:
