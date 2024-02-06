@@ -11,7 +11,7 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 ✅高度可自定义！
 ✅支持自我编写插件！
 
-[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-red.svg)](https://opensource.org/licenses/)[![Version](https://img.shields.io/badge/Version-0.0.5pre-orange.svg)](https://github.com/HenryXiaoYang/XYBot)
+[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-red.svg)](https://opensource.org/licenses/)[![Version](https://img.shields.io/badge/Version-0.0.5-orange.svg)](https://github.com/HenryXiaoYang/XYBot)
 [![Blog](https://img.shields.io/badge/Blog-@HenryXiaoYang-yellow.svg)](https://yangres.com)
 
 ## 功能列表
@@ -102,7 +102,7 @@ ChatGPT
 
 ~~不行😩~~
 
-可以是可以，用PD虚拟机装一个Ubuntu，然后在Ubuntu里面装Docker，再在Docker里面装XYBot
+可以是可以是，虚拟层自己套吧
 
 真的不嫌烦吗？
 
@@ -112,7 +112,7 @@ ChatGPT
 
 #### 使用有没有封号风险?🤔️
 
-我连续用了3个月了，没被封😄
+我连续用了~~3 6~~ 9个月了，没被封😄
 
 ## Credit
 
