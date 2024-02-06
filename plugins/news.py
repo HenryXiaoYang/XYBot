@@ -1,5 +1,3 @@
-import os
-
 import aiohttp
 import pywxdll
 import yaml
@@ -10,15 +8,14 @@ from plugin_interface import PluginInterface
 
 class news(PluginInterface):
     def __init__(self):
-        config_path = os.path.abspath(__file__)[:-3] + '.yml'
+        config_path = 'plugins/news.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
         self.news_urls = config['news_urls']  # 新闻url列表
         self.news_number = config['news_number']  # 要获取的新闻数量
 
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        main_config_path = os.path.join(current_directory, '../main_config.yml')
+        main_config_path = 'main_config.yml'
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 

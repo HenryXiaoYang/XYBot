@@ -1,5 +1,3 @@
-import os
-
 import pywxdll
 import yaml
 from loguru import logger
@@ -11,7 +9,7 @@ from plugin_interface import PluginInterface
 
 class gpt(PluginInterface):
     def __init__(self):
-        config_path = os.path.abspath(__file__)[:-3] + '.yml'
+        config_path = 'plugins/gpt.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -22,9 +20,7 @@ class gpt(PluginInterface):
         self.gpt_max_token = config['gpt_max_token']  # gpt 最大token
         self.gpt_temperature = config['gpt_temperature']  # gpt 温度
 
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-
-        main_config_path = os.path.join(current_directory, '../main_config.yml')
+        main_config_path = 'main_config.yml'
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 
@@ -32,7 +28,7 @@ class gpt(PluginInterface):
         self.port = main_config['port']  # 机器人端口
         self.admins = main_config['admins']  # 管理员列表
 
-        sensitive_words_path = os.path.join(current_directory, '../sensitive_words.yml')  # 加载敏感词yml
+        sensitive_words_path = 'sensitive_words.yml'  # 加载敏感词yml
         with open(sensitive_words_path, 'r', encoding='utf-8') as f:  # 读取设置
             sensitive_words_config = yaml.safe_load(f.read())
         self.sensitive_words = sensitive_words_config['sensitive_words']  # 敏感词列表

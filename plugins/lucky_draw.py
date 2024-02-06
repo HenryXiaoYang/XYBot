@@ -1,4 +1,3 @@
-import os
 import random
 
 import pywxdll
@@ -11,7 +10,7 @@ from plugin_interface import PluginInterface
 
 class lucky_draw(PluginInterface):
     def __init__(self):
-        config_path = os.path.abspath(__file__)[:-3] + '.yml'
+        config_path = 'plugins/lucky_draw.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -20,8 +19,7 @@ class lucky_draw(PluginInterface):
         self.draw_per_guarantee = config['draw_per_guarantee']  # 保底抽奖次数 每个保底需要x抽
         self.guaranteed_max_probability = config['guaranteed_max_probability']
 
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        main_config_path = os.path.join(current_directory, '../main_config.yml')
+        main_config_path = 'main_config.yml'
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 

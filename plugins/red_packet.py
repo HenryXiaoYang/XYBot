@@ -13,7 +13,7 @@ from plugin_interface import PluginInterface
 
 class red_packet(PluginInterface):
     def __init__(self):
-        config_path = os.path.abspath(__file__)[:-3] + '.yml'
+        config_path = 'plugins/red_packet.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -22,8 +22,7 @@ class red_packet(PluginInterface):
         self.max_packet = config['max_packet']  # 最大红包数量
         self.max_time = config['max_time']  # 红包超时时间
 
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        main_config_path = os.path.join(current_directory, '../main_config.yml')
+        main_config_path = 'main_config.yml'
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 
@@ -32,6 +31,12 @@ class red_packet(PluginInterface):
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
         self.db = BotDatabase()  # 实例化机器人数据库类
+
+        pic_cache_path = 'resources/pic_cache'  # 检测是否有pic_cache文件夹
+        if not os.path.exists(pic_cache_path):
+            logger.info('检测到未创建pic_cache图片缓存文件夹')
+            os.makedirs(pic_cache_path)
+            logger.info('已创建pic_cach文件夹')
 
         self.red_packets = {}  # 红包列表
 

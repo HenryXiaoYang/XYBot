@@ -1,5 +1,3 @@
-import os
-
 import pywxdll
 import yaml
 from loguru import logger
@@ -10,15 +8,14 @@ from plugin_interface import PluginInterface
 
 class points_trade(PluginInterface):
     def __init__(self):
-        config_path = os.path.abspath(__file__)[:-3] + '.yml'
+        config_path = 'plugins/points_trade.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
         self.max_points = config['max_points']  # 最多转帐多少积分
         self.min_points = config['min_points']  # 最少转帐多少积分
 
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        main_config_path = os.path.join(current_directory, '../main_config.yml')
+        main_config_path = 'main_config.yml'
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 

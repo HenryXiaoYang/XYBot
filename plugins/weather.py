@@ -1,5 +1,3 @@
-import os
-
 import aiohttp
 import pywxdll
 import yaml
@@ -10,7 +8,7 @@ from plugin_interface import PluginInterface
 
 class weather(PluginInterface):
     def __init__(self):
-        config_path = os.path.abspath(__file__)[:-3] + '.yml'
+        config_path = 'plugins/weather.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -18,8 +16,7 @@ class weather(PluginInterface):
         self.weather_appid = config['weather_appid']
         self.weather_appsecret = config['weather_appsecret']
 
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        main_config_path = os.path.join(current_directory, '../main_config.yml')
+        main_config_path = 'main_config.yml'
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 

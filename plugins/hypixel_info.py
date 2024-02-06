@@ -1,5 +1,4 @@
 import asyncio
-import os
 
 import aiohttp
 import pywxdll
@@ -12,14 +11,13 @@ from plugin_interface import PluginInterface
 
 class hypixel_info(PluginInterface):
     def __init__(self):
-        config_path = os.path.abspath(__file__)[:-3] + '.yml'
+        config_path = 'plugins/hypixel_info.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
         self.bedwar_keywords = config['bedwar_keywords']  # 获取查询bedwar小游戏关键词
 
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        main_config_path = os.path.join(current_directory, '../main_config.yml')
+        main_config_path = 'main_config.yml'
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 

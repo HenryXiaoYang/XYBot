@@ -37,12 +37,6 @@ async def main():
     # ---- log设置 读取设置 ---- #
     logger.add('logs/log_{time}.log', encoding='utf-8', enqueue=True, retention='2 weeks', rotation='00:01')  # 日志设置
 
-    pic_cache_path = 'resources/pic_cache'  # 检测是否有pic_cache文件夹
-    if not os.path.exists(pic_cache_path):
-        logger.info('检测到未创建pic_cache图片缓存文件夹')
-        os.makedirs(pic_cache_path)
-        logger.info('已创建pic_cach文件夹')
-
     with open('main_config.yml', 'r', encoding='utf-8') as f:  # 读取设置
         config = yaml.safe_load(f.read())
 

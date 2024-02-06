@@ -1,5 +1,3 @@
-import os
-
 import aiohttp
 import pywxdll
 import yaml
@@ -10,15 +8,14 @@ from plugin_interface import PluginInterface
 
 class random_picture_link(PluginInterface):
     def __init__(self):
-        config_path = os.path.abspath(__file__)[:-3] + '.yml'
+        config_path = 'plugins/random_picture_link.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
         self.random_pic_link_url = config['random_pic_link_url']  # 随机图片api url
         self.link_count = config['link_count']  # 链接数量
 
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        main_config_path = os.path.join(current_directory, '../main_config.yml')
+        main_config_path = 'main_config.yml'
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 
