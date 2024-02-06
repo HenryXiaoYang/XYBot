@@ -44,7 +44,7 @@ async def main():
         logger.info('已创建pic_cach文件夹')
 
     with open('main_config.yml', 'r', encoding='utf-8') as f:  # 读取设置
-        config = yaml.load(f.read(), Loader=yaml.FullLoader)
+        config = yaml.safe_load(f.read())
 
     ip = config['ip']
     port = config['port']

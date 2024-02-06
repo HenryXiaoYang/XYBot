@@ -16,7 +16,7 @@ class BotDatabase:
             logger.warning('监测到数据库不存在，正在创建数据库')
             conn = sqlite3.connect('userpoints.db')
             c = conn.cursor()
-            c.execute('''CREATE TABLE USERPOINTS (WXID TEXT UNIQUE, POINTS INT, SIGNINSTAT INT, WHITELIST INT)''')
+            c.execute('''CREATE TABLE USERPOINTS (WXID TEXT PRIMARY KEY , POINTS INT, SIGNINSTAT INT, WHITELIST INT)''')
             conn.commit()
             c.close()
             conn.close()

@@ -10,7 +10,7 @@ from plugin_manager import plugin_manager
 class XYBot:
     def __init__(self):
         with open('main_config.yml', 'r', encoding='utf-8') as f:  # 读取设置
-            main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            main_config = yaml.safe_load(f.read())
         self.command_prefix = main_config['command_prefix']  # 命令前缀
 
         self.keywords = plugin_manager.get_keywords()

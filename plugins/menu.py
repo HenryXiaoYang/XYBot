@@ -11,7 +11,7 @@ class menu(PluginInterface):
     def __init__(self):
         config_path = os.path.abspath(__file__)[:-3] + '.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            config = yaml.safe_load(f.read())
 
         self.main_menu = config['main_menu']
         self.menus = config['menus']
@@ -19,7 +19,7 @@ class menu(PluginInterface):
         current_directory = os.path.dirname(os.path.abspath(__file__))
         main_config_path = os.path.join(current_directory, '../main_config.yml')
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            main_config = yaml.safe_load(f.read())
 
         self.ip = main_config['ip']
         self.port = main_config['port']

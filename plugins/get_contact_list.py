@@ -14,14 +14,14 @@ class get_contact_list(PluginInterface):
     def __init__(self):
         config_path = os.path.abspath(__file__)[:-3] + '.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            config = yaml.safe_load(f.read())
 
         self.information_post_url = config['information_post_url']  # 获取信息发送api的url (非微信)
 
         current_directory = os.path.dirname(os.path.abspath(__file__))
         main_config_path = os.path.join(current_directory, '../main_config.yml')
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            main_config = yaml.safe_load(f.read())
 
         self.ip = main_config['ip']  # 机器人ip
         self.port = main_config['port']  # 机器人端口

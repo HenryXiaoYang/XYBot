@@ -13,7 +13,7 @@ class lucky_draw(PluginInterface):
     def __init__(self):
         config_path = os.path.abspath(__file__)[:-3] + '.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            config = yaml.safe_load(f.read())
 
         self.lucky_draw_probability = config['lucky_draw_probability']  # 抽奖概率
         self.max_draw = config['max_draw']  # 连抽最大数量
@@ -23,7 +23,7 @@ class lucky_draw(PluginInterface):
         current_directory = os.path.dirname(os.path.abspath(__file__))
         main_config_path = os.path.join(current_directory, '../main_config.yml')
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            main_config = yaml.safe_load(f.read())
 
         self.ip = main_config['ip']  # 机器人ip
         self.port = main_config['port']  # 机器人端口

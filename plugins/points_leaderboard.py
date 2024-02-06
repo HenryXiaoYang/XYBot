@@ -12,14 +12,14 @@ class points_leaderboard(PluginInterface):
     def __init__(self):
         config_path = os.path.abspath(__file__)[:-3] + '.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            config = yaml.safe_load(f.read())
 
         self.leaderboard_top_number = config['leaderboard_top_number']  # 显示积分榜前x名人
 
         current_directory = os.path.dirname(os.path.abspath(__file__))
         main_config_path = os.path.join(current_directory, '../main_config.yml')
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            main_config = yaml.safe_load(f.read())
 
         self.ip = main_config['ip']  # 机器人ip
         self.port = main_config['port']  # 机器人端口
@@ -32,15 +32,9 @@ class points_leaderboard(PluginInterface):
         out_message = "-----XYBot积分排行榜-----"  # 创建积分
         rank = 1
         for i in data:  # 从数据库获取的数据中for循环
-            # pywxdll 0.1.8
-            '''nickname_req = self.bot.get_chatroom_nick(recv['wxid'], i[0])
-            nickname = nickname_req['content']['nick']  # 获取昵称'''
-
-            # pywxdll 0.2
             nickname_req = self.bot.get_chatroom_nickname(recv['wxid'], i[0])
             nickname = nickname_req['nick']  # 获取昵称
 
-            # if nickname != nickname_req['content']['wxid']: # pywxdll 0.1.8
             if nickname != nickname_req['wxid']:  # pywxdll 0.2
                 out_message += "\n{rank}. {nickname} {points}分 👍".format(rank=rank, nickname=nickname,
                                                                           points=str(i[1]))

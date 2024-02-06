@@ -13,7 +13,7 @@ class gpt4(PluginInterface):
     def __init__(self):
         config_path = os.path.abspath(__file__)[:-3] + '.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            config = yaml.safe_load(f.read())
 
         self.openai_api_base = config['openai_api_base']  # openai api 链接
         self.openai_api_key = config['openai_api_key']  # openai api 密钥
@@ -26,7 +26,7 @@ class gpt4(PluginInterface):
 
         main_config_path = os.path.join(current_directory, '../main_config.yml')
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            main_config = yaml.safe_load(f.read())
 
         self.ip = main_config['ip']  # 机器人ip
         self.port = main_config['port']  # 机器人端口
@@ -34,7 +34,7 @@ class gpt4(PluginInterface):
 
         sensitive_words_path = os.path.join(current_directory, '../sensitive_words.yml')  # 加载敏感词yml
         with open(sensitive_words_path, 'r', encoding='utf-8') as f:  # 读取设置
-            sensitive_words_config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            sensitive_words_config = yaml.safe_load(f.read())
         self.sensitive_words = sensitive_words_config['sensitive_words']  # 敏感词列表
 
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人
@@ -46,10 +46,6 @@ class gpt4(PluginInterface):
             is_chatgroup = True  # 是群聊
             user_wxid = recv['id1']  # 用户的wxid，非群聊id
 
-            # pywxdll 0.1.8
-            '''nickname = self.bot.get_chatroom_nick(recv['wxid'], recv['id1'])['content']['nick']  # 是群聊所以可以获取昵称'''
-
-            # pywxdll 0.2
             nickname = self.bot.get_chatroom_nickname(recv['wxid'], recv['id1'])['nick']  # 是群聊所以可以获取昵称
         else:
             is_chatgroup = False  # 不是群聊

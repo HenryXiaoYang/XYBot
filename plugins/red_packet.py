@@ -15,7 +15,7 @@ class red_packet(PluginInterface):
     def __init__(self):
         config_path = os.path.abspath(__file__)[:-3] + '.yml'
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            config = yaml.safe_load(f.read())
 
         self.max_point = config['max_point']  # 最大积分
         self.min_point = config['min_point']  # 最小积分
@@ -25,7 +25,7 @@ class red_packet(PluginInterface):
         current_directory = os.path.dirname(os.path.abspath(__file__))
         main_config_path = os.path.join(current_directory, '../main_config.yml')
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
-            main_config = yaml.load(f.read(), Loader=yaml.FullLoader)
+            main_config = yaml.safe_load(f.read())
 
         self.ip = main_config['ip']  # 机器人ip
         self.port = main_config['port']  # 机器人端口
@@ -73,6 +73,7 @@ class red_packet(PluginInterface):
         if not error:
             red_packet_points = int(recv['content'][1])  # 红包积分
             red_packet_amount = int(recv['content'][2])  # 红包数量
+            red_packet_chatroom = recv['wxid']  # 红包所在群聊
 
             red_packet_sender_nick = self.bot.get_chatroom_nickname(recv['wxid'], red_packet_sender)['nick']  # 获取昵称
             red_packet_points_list = self.split_integer(red_packet_points, red_packet_amount)  # 随机分红包积分
@@ -80,9 +81,11 @@ class red_packet(PluginInterface):
             chr_5, captcha_path = self.generate_captcha()  # 生成验证码
             captcha_path = os.path.abspath(captcha_path)  # 获取验证码路径
 
-            _red_packet = {'points': red_packet_points, 'amount': red_packet_amount, 'sender': red_packet_sender,
-                           'list': red_packet_points_list, 'grabbed': [], 'time': time.time()}  # 红包信息
-            self.red_packets[chr_5] = _red_packet  # 把红包放入红包列表
+            new_red_packet = {'points': red_packet_points, 'amount': red_packet_amount, 'sender': red_packet_sender,
+                              'list': red_packet_points_list, 'grabbed': [], 'time': time.time(),
+                              'chatroom': red_packet_chatroom, 'sender_nick': red_packet_sender_nick}  # 红包信息
+
+            self.red_packets[chr_5] = new_red_packet  # 把红包放入红包列表
             self.db.add_points(red_packet_sender, red_packet_points * -1)  # 扣除积分
 
             # 组建信息
@@ -180,13 +183,22 @@ class red_packet(PluginInterface):
         return parts
 
     def check_left_red_packet(self):  # 检查是否有超时红包
-        for key in self.red_packets.keys():
+        for key in list(self.red_packets.keys()):
             if time.time() - self.red_packets[key]['time'] > self.max_time:  # 判断是否超时
                 red_packet_sender = self.red_packets[key]['sender']  # 获取红包发送人
                 red_packet_points_left_sum = sum(self.red_packets[key]['list'])  # 获取剩余积分
+                red_packet_chatroom = self.red_packets[key]['chatroom']  # 获取红包所在群聊
+                red_packet_sender_nick = self.red_packets[key]['sender_nick']  # 获取红包发送人昵称
+
                 self.db.add_points(red_packet_sender, red_packet_points_left_sum)  # 归还积分
                 self.red_packets.pop(key)  # 删除红包
                 logger.info('[红包]有红包超时，已归还积分！')  # 记录日志
+
+                # 组建信息并发送
+                out_message = f'-----XYBot-----\n🧧发现有红包 {key} 超时！已归还剩余 {red_packet_points_left_sum} 积分给 {red_packet_sender_nick}'
+                self.bot.send_txt_msg(red_packet_chatroom, out_message)
+                logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message,
+                                                                              wxid=red_packet_chatroom))
 
     def send_friend_or_group(self, recv, out_message='null'):  # 发送信息
         if recv['id1']:  # 判断是群还是私聊
