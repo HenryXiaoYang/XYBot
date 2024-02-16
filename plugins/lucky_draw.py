@@ -41,7 +41,7 @@ class lucky_draw(PluginInterface):
 
         command = recv['content']  # 指令
 
-        target_points = self.db.get_points(target_wxid)  # 获取目标积分
+        target_points = self.db.get_points(target_wxid)  # 获取目标晶元
 
         error = ''
 
@@ -49,23 +49,23 @@ class lucky_draw(PluginInterface):
             draw_name = command[1]  # 抽奖名
             draw_count = 1  # 抽奖次数，单抽设为1
 
-            if draw_name not in self.lucky_draw_probability.keys():  # 判断抽奖是否有效，积分是否够
+            if draw_name not in self.lucky_draw_probability.keys():  # 判断抽奖是否有效，晶元是否够
                 error = '-----XYBot-----\n❌抽奖种类未知或者无效'
             elif draw_name in self.lucky_draw_probability.keys() and target_points < \
                     self.lucky_draw_probability[draw_name][
                         'cost']:
-                error = '-----XYBot-----\n❌积分不足！'
+                error = '-----XYBot-----\n❌晶元不足！'
 
         elif len(command) == 3 and command[2].isdigit():
             draw_name = command[1]
             draw_count = int(command[2])
 
-            if draw_name not in self.lucky_draw_probability.keys():  # 判断抽奖是否有效，积分是否够，连抽要乘次数
+            if draw_name not in self.lucky_draw_probability.keys():  # 判断抽奖是否有效，晶元是否够，连抽要乘次数
                 error = '-----XYBot-----\n❌抽奖种类未知或者无效'
             elif draw_name in self.lucky_draw_probability.keys() and target_points < \
                     self.lucky_draw_probability[draw_name][
                         'cost'] * draw_count:
-                error = '-----XYBot-----\n❌积分不足！'
+                error = '-----XYBot-----\n❌晶元不足！'
         else:  # 指令格式错误
             error = '-----XYBot-----\n❌命令格式错误！请查看菜单获取正确命令格式'
 
@@ -74,11 +74,11 @@ class lucky_draw(PluginInterface):
             # -----抽奖核心部分-----
 
             draw_probability = self.lucky_draw_probability[draw_name]['probability']  # 从设置获取抽奖名概率
-            draw_cost = self.lucky_draw_probability[draw_name]['cost'] * draw_count  # 从设置获取抽奖消耗积分
+            draw_cost = self.lucky_draw_probability[draw_name]['cost'] * draw_count  # 从设置获取抽奖消耗晶元
 
             wins = []  # 赢取列表
 
-            self.db.add_points(target_wxid, -1 * draw_cost)  # 扣取积分
+            self.db.add_points(target_wxid, -1 * draw_cost)  # 扣取晶元
 
             # 保底抽奖
             min_guaranteed = draw_count // self.draw_per_guarantee  # 保底抽奖次数
@@ -112,12 +112,12 @@ class lucky_draw(PluginInterface):
             # -----消息组建-----
 
             total_win_points = 0
-            for win_name, win_points, win_symbol in wins:  # 统计赢取的积分
+            for win_name, win_points, win_symbol in wins:  # 统计赢取的晶元
                 total_win_points += win_points
 
-            self.db.add_points(target_wxid, total_win_points)  # 把赢取的积分加入数据库
+            self.db.add_points(target_wxid, total_win_points)  # 把赢取的晶元加入数据库
             logger.info(
-                f'[抽奖] wxid: {target_wxid} | 抽奖名: {draw_name} | 次数: {draw_count} | 赢取积分: {total_win_points}')
+                f'[抽奖] wxid: {target_wxid} | 抽奖名: {draw_name} | 次数: {draw_count} | 赢取晶元: {total_win_points}')
 
             message = self.make_message(wins, draw_name, draw_count, total_win_points, draw_cost)  # 组建信息
 
@@ -172,6 +172,6 @@ class lucky_draw(PluginInterface):
         for line in lines:
             message += line + '\n'
 
-        message += f"\n\n🎉总计赢取积分: {total_win_points}🎉\n🎉共计消耗积分：{draw_cost}🎉\n\n概率请自行查询菜单⚙️"
+        message += f"\n\n🎉总计赢取晶元: {total_win_points}🎉\n🎉共计消耗晶元：{draw_cost}🎉\n\n概率请自行查询菜单⚙️"
 
         return message

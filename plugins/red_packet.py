@@ -17,8 +17,8 @@ class red_packet(PluginInterface):
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
-        self.max_point = config['max_point']  # 最大积分
-        self.min_point = config['min_point']  # 最小积分
+        self.max_point = config['max_point']  # 最大晶元
+        self.min_point = config['min_point']  # 最小晶元
         self.max_packet = config['max_packet']  # 最大红包数量
         self.max_time = config['max_time']  # 红包超时时间
 
@@ -65,23 +65,23 @@ class red_packet(PluginInterface):
         elif not recv['content'][1].isdigit() or not recv['content'][2].isdigit():
             error = '-----XYBot-----\n❌指令格式错误！请查看菜单！'
         elif int(recv['content'][1]) > self.max_point or int(recv['content'][1]) < self.min_point:
-            error = '-----XYBot-----\n⚠️积分无效！最大{max_points}，最小{min_points}！'.format(max_points=self.max_point,
+            error = '-----XYBot-----\n⚠️晶元无效！最大{max_points}，最小{min_points}！'.format(max_points=self.max_point,
                                                                                             min_points=self.min_point)
         elif int(recv['content'][2]) >= self.max_packet:
             error = '-----XYBot-----\n⚠️红包数量无效！最大{max_packet}！'.format(max_packet=self.max_packet)
 
-        # 判断是否有足够积分
+        # 判断是否有足够晶元
         if not error:
             if self.db.get_points(red_packet_sender) < int(recv['content'][1]):
-                error = '-----XYBot-----\n❌积分不足！'
+                error = '-----XYBot-----\n❌晶元不足！'
 
         if not error:
-            red_packet_points = int(recv['content'][1])  # 红包积分
+            red_packet_points = int(recv['content'][1])  # 红包晶元
             red_packet_amount = int(recv['content'][2])  # 红包数量
             red_packet_chatroom = recv['wxid']  # 红包所在群聊
 
             red_packet_sender_nick = self.bot.get_chatroom_nickname(recv['wxid'], red_packet_sender)['nick']  # 获取昵称
-            red_packet_points_list = self.split_integer(red_packet_points, red_packet_amount)  # 随机分红包积分
+            red_packet_points_list = self.split_integer(red_packet_points, red_packet_amount)  # 随机分红包晶元
 
             chr_5, captcha_path = self.generate_captcha()  # 生成验证码
             captcha_path = os.path.abspath(captcha_path)  # 获取验证码路径
@@ -91,10 +91,10 @@ class red_packet(PluginInterface):
                               'chatroom': red_packet_chatroom, 'sender_nick': red_packet_sender_nick}  # 红包信息
 
             self.red_packets[chr_5] = new_red_packet  # 把红包放入红包列表
-            self.db.add_points(red_packet_sender, red_packet_points * -1)  # 扣除积分
+            self.db.add_points(red_packet_sender, red_packet_points * -1)  # 扣除晶元
 
             # 组建信息
-            out_message = '-----XYBot-----\n{red_packet_sender_nick} 发送了一个红包！\n\n🧧红包金额：{red_packet_points}点积分\n🧧红包数量：{red_packet_amount}个\n\n🧧红包口令请见下图！\n\n快输入指令来抢红包！/抢红包 (口令)'.format(
+            out_message = '-----XYBot-----\n{red_packet_sender_nick} 发送了一个红包！\n\n🧧红包金额：{red_packet_points}点晶元\n🧧红包数量：{red_packet_amount}个\n\n🧧红包口令请见下图！\n\n快输入指令来抢红包！/抢红包 (口令)'.format(
                 red_packet_sender_nick=red_packet_sender_nick, red_packet_points=red_packet_points,
                 red_packet_amount=red_packet_amount)
 
@@ -132,15 +132,15 @@ class red_packet(PluginInterface):
 
         if not error:
             try:  # 抢红包
-                grabbed_points = self.red_packets[req_captcha]['list'].pop()  # 抢到的积分
+                grabbed_points = self.red_packets[req_captcha]['list'].pop()  # 抢到的晶元
                 self.red_packets[req_captcha]['grabbed'].append(red_packet_grabber)  # 把抢红包的人加入已抢列表
                 red_packet_grabber_nick = self.bot.get_chatroom_nickname(recv['wxid'], red_packet_grabber)[
                     'nick']  # 获取昵称
 
-                self.db.add_points(red_packet_grabber, grabbed_points)  # 增加积分
+                self.db.add_points(red_packet_grabber, grabbed_points)  # 增加晶元
 
                 # 组建信息
-                out_message = '-----XYBot-----\n🧧恭喜 {red_packet_grabber_nick} 抢到了 {grabbed_points} 点积分！'.format(
+                out_message = '-----XYBot-----\n🧧恭喜 {red_packet_grabber_nick} 抢到了 {grabbed_points} 点晶元！'.format(
                     red_packet_grabber_nick=red_packet_grabber_nick, grabbed_points=grabbed_points)
                 self.send_friend_or_group(recv, out_message)
 
@@ -191,16 +191,16 @@ class red_packet(PluginInterface):
         for key in list(self.red_packets.keys()):
             if time.time() - self.red_packets[key]['time'] > self.max_time:  # 判断是否超时
                 red_packet_sender = self.red_packets[key]['sender']  # 获取红包发送人
-                red_packet_points_left_sum = sum(self.red_packets[key]['list'])  # 获取剩余积分
+                red_packet_points_left_sum = sum(self.red_packets[key]['list'])  # 获取剩余晶元
                 red_packet_chatroom = self.red_packets[key]['chatroom']  # 获取红包所在群聊
                 red_packet_sender_nick = self.red_packets[key]['sender_nick']  # 获取红包发送人昵称
 
-                self.db.add_points(red_packet_sender, red_packet_points_left_sum)  # 归还积分
+                self.db.add_points(red_packet_sender, red_packet_points_left_sum)  # 归还晶元
                 self.red_packets.pop(key)  # 删除红包
-                logger.info('[红包]有红包超时，已归还积分！')  # 记录日志
+                logger.info('[红包]有红包超时，已归还晶元！')  # 记录日志
 
                 # 组建信息并发送
-                out_message = f'-----XYBot-----\n🧧发现有红包 {key} 超时！已归还剩余 {red_packet_points_left_sum} 积分给 {red_packet_sender_nick}'
+                out_message = f'-----XYBot-----\n🧧发现有红包 {key} 超时！已归还剩余 {red_packet_points_left_sum} 晶元给 {red_packet_sender_nick}'
                 self.bot.send_txt_msg(red_packet_chatroom, out_message)
                 logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message,
                                                                               wxid=red_packet_chatroom))

@@ -2,9 +2,11 @@
 
 XYBot是一个基于docker和pywxdll hook注入的微信机器人。😊 具有高度可自定义性，支持自我编写插件。🚀
 
-XYBot提供了多种功能，包括获取天气🌤️、获取新闻📰、ChatGPT聊天🗣️、Hypixel玩家查询🎮、随机图片📷、随机链接🔗、随机群成员👥、签到✅、查询积分📊、积分榜🏆、积分转送💰、积分抽奖🎁、积分红包🧧等。🎉
+XYBot提供了多种功能，包括获取天气🌤️、获取新闻📰、ChatGPT聊天🗣️、Hypixel玩家查询🎮、随机图片📷、随机链接🔗、随机群成员👥、签到✅、查询晶元📊、晶元榜🏆、晶元转送💰、晶元抽奖🎁、晶元红包🧧等。🎉
 
-XYBot还提供了管理员功能，包括修改积分💰、修改白名单📝、重置签到状态🔄、获取机器人通讯录📚、获取群成员列表👥、热加载/卸载/重载插件🔄等。🔒
+XYBot拥有独立的经济系统，其中基础货币称为”晶元“。💰
+
+XYBot还提供了管理员功能，包括修改晶元💰、修改白名单📝、重置签到状态🔄、获取机器人通讯录📚、获取群成员列表👥、热加载/卸载/重载插件🔄等。🔒
 
 XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot还支持自我编写插件，用户可以根据自己的需求和创造力编写自定义插件，进一步扩展机器人的功能。💡
 
@@ -28,15 +30,15 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 - 随机链接🔗
 - 随机群成员👥
 - 签到✅
-- 查询积分📊
-- 积分榜🏆
-- 积分转送💰
-- 积分抽奖🎁
-- 积分红包🧧
+- 查询晶元📊
+- 晶元榜🏆
+- 晶元转送💰
+- 晶元抽奖🎁
+- 晶元红包🧧
 
 管理员功能:
 
-- 修改积分💰
+- 修改晶元💰
 - 修改白名单📝
 - 重置签到状态🔄
 - 获取机器人通讯录📚
@@ -62,7 +64,7 @@ _[⭐️XYBot用户功能介绍WIKI⭐️](https://github.com/HenryXiaoYang/XYBo
 群签到
 ![image](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/XYBot_3_Signin.gif?raw=true)
 
-积分榜
+晶元榜
 ![image](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/XYBot_4_pointrank.gif?raw=true)
 
 ChatGPT

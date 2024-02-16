@@ -16,8 +16,8 @@ class sign_in(PluginInterface):
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
-        self.min_points = config['min_points']  # 最小积分
-        self.max_points = config['max_points']  # 最大积分
+        self.min_points = config['min_points']  # 最小晶元
+        self.max_points = config['max_points']  # 最大晶元
 
         main_config_path = 'main_config.yml'
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
@@ -32,7 +32,7 @@ class sign_in(PluginInterface):
         self.db = BotDatabase()
 
     async def run(self, recv):
-        signin_points = random.randint(self.min_points, self.max_points)  # 随机3-20积分
+        signin_points = random.randint(self.min_points, self.max_points)  # 随机3-20晶元
 
         if recv['id1']:  # 判断是群还是私聊
             sign_wxid = recv['id1']  # 是群
@@ -48,15 +48,15 @@ class sign_in(PluginInterface):
         nickname = self.bot.get_chatroom_nickname(recv['wxid'], sign_wxid)['nick']  # 获取签到人昵称
 
         if self.signstat_check(signstat):  # 如果今天未签到
-            self.db.add_points(sign_wxid, signin_points)  # 在数据库加积分
+            self.db.add_points(sign_wxid, signin_points)  # 在数据库加晶元
             now_datetime = datetime.now(tz=ZoneInfo(self.timezone)).strftime("%Y%m%d")  # 获取现在格式化后时间
             self.db.set_stat(sign_wxid, now_datetime)  # 设置签到状态为现在格式化后时间
 
-            out_message = '\n-----XYBot-----\n签到成功！你领到了{points}个积分！✅'.format(points=signin_points)  # 创建发送信息
+            out_message = '\n-----XYBot-----\n签到成功！你领到了{points}个晶元！✅'.format(points=signin_points)  # 创建发送信息
             logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
             self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname, out_message)  # 发送
 
-        else:  # 今天已签到，不加积分
+        else:  # 今天已签到，不加晶元
             last_sign_date_formated = datetime.strptime(signstat, '%Y%m%d').strftime('%Y年%m月%d日')
             out_message = '\n-----XYBot-----\n❌你今天已经签到过了，每日凌晨刷新签到哦！上次签到日期：{last_sign_date_formated}'.format(
                 last_sign_date_formated=last_sign_date_formated)  # 创建信息

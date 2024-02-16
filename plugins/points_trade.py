@@ -12,8 +12,8 @@ class points_trade(PluginInterface):
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
-        self.max_points = config['max_points']  # 最多转帐多少积分
-        self.min_points = config['min_points']  # 最少转帐多少积分
+        self.max_points = config['max_points']  # 最多转帐多少晶元
+        self.min_points = config['min_points']  # 最少转帐多少晶元
 
         main_config_path = 'main_config.yml'
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
@@ -33,7 +33,7 @@ class points_trade(PluginInterface):
             target_nick = ' '.join(recv['content'][2:])[1:].replace('\u2005', '')  # 获取转账目标昵称
             target_wxid = self.at_to_wxid_in_group(roomid, target_nick)  # 获取转账目标wxid
 
-            points_num = int(recv['content'][1])  # 获取转账积分数
+            points_num = int(recv['content'][1])  # 获取转账晶元数
 
             error_message = self.get_error_message(target_wxid, points_num)  # 获取是否有错误信息
             if not error_message and self.db.safe_trade_points(trader_wxid, target_wxid,
@@ -44,23 +44,23 @@ class points_trade(PluginInterface):
                 self.log_and_send_error_message(roomid, trader_wxid, trader_nick, error_message)  # 记录日志和发送错误信息
         else:
             self.bot.send_txt_msg(recv['wxid'],
-                                  '-----XYBot-----\n转帐失败❌\n指令格式错误/在私聊转帐积分(仅可在群聊中转帐积分)❌')  # 发送错误信息
+                                  '-----XYBot-----\n转帐失败❌\n指令格式错误/在私聊转帐晶元(仅可在群聊中转帐晶元)❌')  # 发送错误信息
 
     def get_error_message(self, target_wxid, points_num):  # 获取错误信息
         if not target_wxid:
             return '\n-----XYBot-----\n转帐失败❌\n转帐人不存在(仅可转账群内成员)或⚠️转帐目标昵称重复⚠️'
         elif not self.min_points <= points_num <= self.max_points:
-            return '\n-----XYBot-----\n转帐失败❌\n转帐积分无效(最大{max_points} 最小{min_points})'.format(
+            return '\n-----XYBot-----\n转帐失败❌\n转帐晶元无效(最大{max_points} 最小{min_points})'.format(
                 max_points=self.max_points, min_points=self.min_points)
 
     def log_and_send_success_message(self, roomid, trader_wxid, trader_nick, target_wxid, target_nick,
                                      points_num):  # 记录日志和发送成功信息
         logger.success(
-            '[积分转帐]转帐人:{trader_wxid} {trader_nick}|目标:{target_wxid} {target_nick}|群:{roomid}|积分数:{points_num}'.format(
+            '[晶元转帐]转帐人:{trader_wxid} {trader_nick}|目标:{target_wxid} {target_nick}|群:{roomid}|晶元数:{points_num}'.format(
                 trader_wxid=trader_wxid, trader_nick=trader_nick, target_wxid=target_wxid, target_nick=target_nick,
                 roomid=roomid, points_num=points_num))
         trader_points, target_points = self.db.get_points(trader_wxid), self.db.get_points(target_wxid)
-        out_message = '\n-----XYBot-----\n转帐成功✅! 你现在有{trader_points}点积分 {target_nick}现在有{target_points}点积分'.format(
+        out_message = '\n-----XYBot-----\n转帐成功✅! 你现在有{trader_points}点晶元 {target_nick}现在有{target_points}点晶元'.format(
             trader_points=trader_points, target_nick=target_nick, target_points=target_points)
         logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=roomid))
         self.bot.send_at_msg(roomid, trader_wxid, trader_nick, out_message)
