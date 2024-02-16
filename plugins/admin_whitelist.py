@@ -35,15 +35,14 @@ class admin_whitelist(PluginInterface):
                 self.db.set_whitelist(wxid, 0)  # 修改数据库白名单信息
             else:  # 命令格式错误
                 out_message = '-----XYBot-----\n未知的操作❌'
-                logger.info(
-                    '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+                logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
                 self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送信息
                 return
 
-            out_message = '-----XYBot-----\n成功修改{}的白名单！😊'.format(wxid)
-            logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            out_message = f'-----XYBot-----\n成功修改{wxid}的白名单！😊'
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
             self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送信息
         else:  # 操作人不在白名单内
             out_message = '-----XYBot-----\n❌你配用这个指令吗？'
-            logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
             self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送信息

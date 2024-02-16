@@ -34,8 +34,8 @@ class random_picture(PluginInterface):
     async def run(self, recv):
         current_directory = os.path.dirname(os.path.abspath(__file__))
 
-        pic_cache_path_original = os.path.join(current_directory, '../resources/pic_cache/picture_{num}.'.format(
-            num=time.time_ns()))  # 图片缓存路径
+        pic_cache_path_original = os.path.join(current_directory,
+                                               f'../resources/pic_cache/picture_{time.time_ns()}')  # 图片缓存路径
 
         try:
             conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
@@ -46,11 +46,9 @@ class random_picture(PluginInterface):
                     file.close()
                 await conn_ssl.close()
 
-            logger.info(
-                '[发送信息]{out_message} {path}| [发送到] {wxid}'.format(out_message="(随机图图图片) ",
-                                                                         path=pic_cache_path, wxid=recv['wxid']))
+            logger.info(f'[发送信息](随机图图图片) {pic_cache_path}| [发送到] {recv["wxid"]}')
             self.bot.send_pic_msg(recv['wxid'], os.path.abspath(pic_cache_path))  # 发送图片
         except Exception as error:
-            out_message = '-----XYBot-----\n出现错误❌！{error}'.format(error=error)
-            logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            out_message = f'-----XYBot-----\n出现错误❌！{error}'
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
             self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送

@@ -129,10 +129,10 @@ class lucky_draw(PluginInterface):
     def send_friend_or_group(self, recv, out_message='null'):
         if recv['id1']:  # 判断是群还是私聊
             nickname = self.bot.get_chatroom_nickname(recv['wxid'], recv['id1'])['nick']
-            logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
             self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname, '\n' + out_message)  # 发送
         else:
-            logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
             self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
 
     @staticmethod

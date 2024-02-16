@@ -113,21 +113,17 @@ class hypixel_info(PluginInterface):
 
     def send_friend_or_group(self, recv, out_message='null'):
         if recv['id1']:  # 判断是群还是私聊
-            logger.info(
-                '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
-            self.bot.send_at_msg(recv['wxid'], recv['id1'],
-                                 self.bot.get_chatroom_nickname(recv['wxid'], recv['id1'])['nick'],
-                                 '\n' + out_message)  # 发送
+            nickname = self.bot.get_chatroom_nickname(recv['wxid'], recv['id1'])['nick']
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
+            self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname, '\n' + out_message)  # 发送
         else:
-            logger.info(
-                '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
             self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
 
     async def send_basic_info(self, recv, headers):
         request_ign = recv['content'][1]  # 请求的玩家ign (游戏内名字 in game name)
 
-        self.send_friend_or_group(recv,
-                                  '-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂'.format(request_ign=request_ign))
+        self.send_friend_or_group(recv, f'-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂')
 
         conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
         async with aiohttp.request('GET', url=f'http://plancke.io/hypixel/player/stats/{request_ign}', headers=headers,
@@ -144,8 +140,7 @@ class hypixel_info(PluginInterface):
             status = self.get_status(soup)
 
             # 组建消息
-            out_message = '-----XYBot-----\n🎮玩家：\n{in_game_name}\n\n--------\n\n⚙️基础信息：\n'.format(
-                in_game_name=in_game_name)
+            out_message = f'-----XYBot-----\n🎮玩家：\n{in_game_name}\n\n--------\n\n⚙️基础信息：\n'
             for key, value in basic_stats.items():
                 out_message = out_message + key + value + '\n'
             out_message += '\n--------\n\n🏹公会信息：\n'
@@ -159,15 +154,13 @@ class hypixel_info(PluginInterface):
             self.send_friend_or_group(recv, out_message)
 
         else:  # 玩家不存在
-            out_message = '-----XYBot-----\n玩家 {request_ign} 不存在！❌'.format(request_ign=request_ign)
+            out_message = f'-----XYBot-----\n玩家 {request_ign} 不存在！❌'
             self.send_friend_or_group(recv, out_message)
 
     async def send_bedwar_info(self, recv, headers):  # 获取玩家bedwar信息
         request_ign = recv['content'][2]  # 请求的玩家ign (游戏内名字 in game name)
 
-        self.send_friend_or_group(recv,
-                                  '-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂'.format(
-                                      request_ign=request_ign))  # 发送查询确认，让用户等待
+        self.send_friend_or_group(recv, f'-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂')  # 发送查询确认，让用户等待
 
         conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
         async with aiohttp.request('GET', url=f'http://plancke.io/hypixel/player/stats/{request_ign}', headers=headers,
@@ -181,8 +174,7 @@ class hypixel_info(PluginInterface):
             bedwar_stat = self.get_bedwar_stat(soup)  # 从爬虫获取玩家bedwar信息
 
             # 组建信息
-            out_message = '-----XYBot-----\n🎮玩家：\n{in_game_name}\n\n--------\n\n🛏️起床战争信息：\n'.format(
-                in_game_name=in_game_name)
+            out_message = f'-----XYBot-----\n🎮玩家：\n{in_game_name}\n\n--------\n\n🛏️起床战争信息：\n'
             table_header = ['⚔️模式：', '击杀：', '死亡：', 'K/D：', '最终击杀：', '最终死亡：', '最终K/D：', '胜利：', '失败：',
                             'W/L：', '破坏床数：']
             for row in bedwar_stat:
@@ -193,5 +185,5 @@ class hypixel_info(PluginInterface):
             # 发送
             self.send_friend_or_group(recv, out_message)
         else:  # 玩家不存在
-            out_message = '-----XYBot-----\n玩家 {request_ign} 不存在！❌'.format(request_ign=request_ign)
+            out_message = f'-----XYBot-----\n玩家 {request_ign} 不存在！❌'
             self.send_friend_or_group(recv, out_message)

@@ -9,3 +9,4 @@ beautifulsoup4==4.12.3
 prettytable==3.9.0
 websockets==12.0
 china-idiom==0.0.3
+pyyaml==6.0.1

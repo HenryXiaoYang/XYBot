@@ -1,6 +1,8 @@
 import importlib
 import os
 
+from loguru import logger
+
 from plans_interface import PlansInterface
 from singleton import singleton
 
@@ -18,8 +20,10 @@ class PlansManager:
                 plan_cinstance = plan_class()
                 self.plans[plan_name] = plan_cinstance
             self.plans[plan_name].run()
+            logger.info(f'+ 已加载计划：{plan_name}')
 
     def load_plans(self, plan_dir):
+        logger.info('开始加载所有计划')
         for plan_file in os.listdir(plan_dir):
             if plan_file.endswith(".py") and plan_file != "__init__.py" and not plan_file.startswith('_'):
                 plan_name = os.path.splitext(plan_file)[0]
@@ -28,6 +32,7 @@ class PlansManager:
     def unload_plan(self, plan_name):
         if plan_name in self.plans:
             del self.plans[plan_name]
+            logger.info(f'- 已卸载计划{plan_name}')
 
 
 # 实例化插件管理器

@@ -43,15 +43,13 @@ class news(PluginInterface):
                     news_description = j[dict_key[0]][i].get('digest', '无😔')
                     news_url = j[dict_key[0]][i].get('url', '无😔')
 
-                    news_output = '{title}\n类型：{type}\n来源：{source}\n{description}...\n链接🔗：{url}\n----------\n'.format(
-                        title=news_title, type=news_type, source=news_source, description=news_description,
-                        url=news_url)  # 创建信息
+                    news_output = f'{news_title}\n类型：{news_type}\n来源：{news_source}\n{news_description}...\n链接🔗：{news_url}\n----------\n'
                     out_message += news_output  # 加入最后输出字符串
 
-            logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
             self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送
 
         except Exception as error:  # 错误处理
-            out_message = '出现错误！⚠️{error}'.format(error=error)
-            logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            out_message = f'出现错误！⚠️{error}'
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
             self.bot.send_txt_msg(recv['wxid'], out_message)

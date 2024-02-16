@@ -22,9 +22,8 @@ class antiautolog(PlansInterface):
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
     def job(self):
-        out_message = '防微信自动退出登录[{num}]'.format(num=random.randint(1, 9999))  # 组建信息
-        logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message,
-                                                                      wxid="filehelper"))  # 直接发到文件传输助手，这样就不用单独键个群辣
+        out_message = f'防微信自动退出登录[{random.randint(1, 9999)}]'  # 组建信息
+        logger.info(f'[发送信息]{out_message}| [发送到] {"filehelper"}')  # 直接发到文件传输助手，这样就不用单独键个群辣
         self.bot.send_txt_msg("filehelper", out_message)  # 发送
 
     def run(self):

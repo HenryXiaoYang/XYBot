@@ -35,11 +35,9 @@ class random_group_member(PluginInterface):
             nick = self.bot.get_chatroom_nickname(recv['wxid'], recv['id1'])['nick']
 
             # 发送信息
-            logger.info(
-                '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
             self.bot.send_at_msg(recv['wxid'], recv['id1'], nick, out_message)
         else:  # 私聊
             out_message = '-----XYBot-----\n此功能仅可在群内使用！❌'
-            logger.info(
-                '[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
             self.bot.send_txt_msg(recv['wxid'], out_message)

@@ -24,12 +24,8 @@ class query_points(PluginInterface):
         else:
             query_wxid = recv['wxid']  # 是私聊
 
-        # pywxdll 0.1.8
-        '''nickname = self.bot.get_chatroom_nick(recv['wxid'], recv['id1'])['content']['nick']  # 获取昵称'''
-
-        # pywxdll 0.2
         nickname = self.bot.get_chatroom_nickname(recv['wxid'], recv['id1'])['nick']  # 获取昵称
 
-        out_message = '-----XYBot-----\n你有{}点晶元！👍'.format(self.db.get_points(query_wxid))  # 从数据库获取晶元数并创建信息
-        logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+        out_message = f'-----XYBot-----\n你有{self.db.get_points(query_wxid)}点晶元！👍'  # 从数据库获取晶元数并创建信息
+        logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
         self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname, out_message)  # 发送

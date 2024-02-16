@@ -52,15 +52,14 @@ class sign_in(PluginInterface):
             now_datetime = datetime.now(tz=ZoneInfo(self.timezone)).strftime("%Y%m%d")  # 获取现在格式化后时间
             self.db.set_stat(sign_wxid, now_datetime)  # 设置签到状态为现在格式化后时间
 
-            out_message = '\n-----XYBot-----\n签到成功！你领到了{points}个晶元！✅'.format(points=signin_points)  # 创建发送信息
-            logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            out_message = f"\n-----XYBot-----\n签到成功！你领到了{signin_points}个晶元！✅"  # 创建发送信息
+            logger.info(f"[发送信息]{out_message}| [发送到] {recv['wxid']}")
             self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname, out_message)  # 发送
 
         else:  # 今天已签到，不加晶元
             last_sign_date_formated = datetime.strptime(signstat, '%Y%m%d').strftime('%Y年%m月%d日')
-            out_message = '\n-----XYBot-----\n❌你今天已经签到过了，每日凌晨刷新签到哦！上次签到日期：{last_sign_date_formated}'.format(
-                last_sign_date_formated=last_sign_date_formated)  # 创建信息
-            logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            out_message = f"\n-----XYBot-----\n❌你今天已经签到过了，每日凌晨刷新签到哦！上次签到日期：{last_sign_date_formated}"  # 创建信息
+            logger.info(f"[发送信息]{out_message}| [发送到] {recv['wxid']}")
             self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname, out_message)  # 发送
 
     def signstat_check(self, signstat):  # 检查签到状态

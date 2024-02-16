@@ -9,7 +9,7 @@ admins: [ "" ]
 
 max_worker: 25
 
-command_prefix: "/"
+command_prefix: "/" #如果需要前缀，则必须为一个字符  如果不需要前缀可设置为空，即 ""
 
 excluded_plugins: [ "" ]
 

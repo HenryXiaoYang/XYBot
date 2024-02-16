@@ -65,10 +65,9 @@ class red_packet(PluginInterface):
         elif not recv['content'][1].isdigit() or not recv['content'][2].isdigit():
             error = '-----XYBot-----\n❌指令格式错误！请查看菜单！'
         elif int(recv['content'][1]) > self.max_point or int(recv['content'][1]) < self.min_point:
-            error = '-----XYBot-----\n⚠️晶元无效！最大{max_points}，最小{min_points}！'.format(max_points=self.max_point,
-                                                                                            min_points=self.min_point)
+            error = f'-----XYBot-----\n⚠️晶元无效！最大{self.max_point}，最小{self.min_point}！'
         elif int(recv['content'][2]) >= self.max_packet:
-            error = '-----XYBot-----\n⚠️红包数量无效！最大{max_packet}！'.format(max_packet=self.max_packet)
+            error = f'-----XYBot-----\n⚠️红包数量无效！最大{self.max_packet}！'
 
         # 判断是否有足够晶元
         if not error:
@@ -94,16 +93,11 @@ class red_packet(PluginInterface):
             self.db.add_points(red_packet_sender, red_packet_points * -1)  # 扣除晶元
 
             # 组建信息
-            out_message = '-----XYBot-----\n{red_packet_sender_nick} 发送了一个红包！\n\n🧧红包金额：{red_packet_points}点晶元\n🧧红包数量：{red_packet_amount}个\n\n🧧红包口令请见下图！\n\n快输入指令来抢红包！/抢红包 (口令)'.format(
-                red_packet_sender_nick=red_packet_sender_nick, red_packet_points=red_packet_points,
-                red_packet_amount=red_packet_amount)
+            out_message = f'-----XYBot-----\n{red_packet_sender_nick} 发送了一个红包！\n\n🧧红包金额：{red_packet_points}点晶元\n🧧红包数量：{red_packet_amount}个\n\n🧧红包口令请见下图！\n\n快输入指令来抢红包！/抢红包 (口令)'
 
             # 发送信息
             self.bot.send_txt_msg(recv['wxid'], out_message)
-            logger.info(
-                '[发送信息] (红包验证码图片) {path} | [发送到] {wxid}'.format(path=captcha_path,
-                                                                              out_message=out_message,
-                                                                              wxid=recv['wxid']))
+            logger.info(f'[发送信息] (红包验证码图片) {captcha_path} | [发送到] {recv["wxid"]}')
             self.bot.send_pic_msg(recv['wxid'], captcha_path)
 
         else:
@@ -140,8 +134,7 @@ class red_packet(PluginInterface):
                 self.db.add_points(red_packet_grabber, grabbed_points)  # 增加晶元
 
                 # 组建信息
-                out_message = '-----XYBot-----\n🧧恭喜 {red_packet_grabber_nick} 抢到了 {grabbed_points} 点晶元！'.format(
-                    red_packet_grabber_nick=red_packet_grabber_nick, grabbed_points=grabbed_points)
+                out_message = f'-----XYBot-----\n🧧恭喜 {red_packet_grabber_nick} 抢到了 {grabbed_points} 点晶元！'
                 self.send_friend_or_group(recv, out_message)
 
                 # 判断是否抢完
@@ -164,7 +157,7 @@ class red_packet(PluginInterface):
                    '7', '8', '9']
         chr_5 = ''.join(random.sample(chr_all, 5))
         captcha_image = ImageCaptcha().generate_image(chr_5)
-        path = 'resources/pic_cache/{captcha}.jpg'.format(captcha=chr_5)
+        path = f'resources/pic_cache/{chr_5}.jpg'
         captcha_image.save(path)
 
         return chr_5, path
@@ -202,14 +195,13 @@ class red_packet(PluginInterface):
                 # 组建信息并发送
                 out_message = f'-----XYBot-----\n🧧发现有红包 {key} 超时！已归还剩余 {red_packet_points_left_sum} 晶元给 {red_packet_sender_nick}'
                 self.bot.send_txt_msg(red_packet_chatroom, out_message)
-                logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message,
-                                                                              wxid=red_packet_chatroom))
+                logger.info(f'[发送信息]{out_message}| [发送到] {red_packet_chatroom}')
 
     def send_friend_or_group(self, recv, out_message='null'):  # 发送信息
         if recv['id1']:  # 判断是群还是私聊
             nickname = self.bot.get_chatroom_nickname(recv['wxid'], recv['id1'])['nick']
-            logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
             self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname, '\n' + out_message)  # 发送
         else:
-            logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
             self.bot.send_txt_msg(recv['wxid'], out_message)  # 发送

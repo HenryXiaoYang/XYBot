@@ -33,10 +33,9 @@ class points_leaderboard(PluginInterface):
             nickname = nickname_req['nick']  # 获取昵称
 
             if nickname != nickname_req['wxid']:  # pywxdll 0.2
-                out_message += "\n{rank}. {nickname} {points}分 👍".format(rank=rank, nickname=nickname,
-                                                                          points=str(i[1]))
+                out_message += f"\n{rank}. {nickname} {i[1]}分 👍"
                 rank += 1
                 # 组建晶元榜信息
 
-        logger.info('[发送信息]{out_message}| [发送到] {wxid}'.format(out_message=out_message, wxid=recv['wxid']))
+        logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
         self.bot.send_txt_msg(recv['wxid'], out_message)
