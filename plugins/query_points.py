@@ -26,6 +26,6 @@ class query_points(PluginInterface):
 
         nickname = self.bot.get_chatroom_nickname(recv['wxid'], recv['id1'])['nick']  # 获取昵称
 
-        out_message = f'-----XYBot-----\n你有{self.db.get_points(query_wxid)}点晶元！👍'  # 从数据库获取晶元数并创建信息
+        out_message = f'-----XYBot-----\n你有{self.db.get_points(query_wxid)}点积分！👍'  # 从数据库获取积分数并创建信息
         logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
         self.bot.send_at_msg(recv['wxid'], recv['id1'], nickname, out_message)  # 发送

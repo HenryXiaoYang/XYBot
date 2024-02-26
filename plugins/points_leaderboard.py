@@ -12,7 +12,7 @@ class points_leaderboard(PluginInterface):
         with open(config_path, 'r', encoding='utf-8') as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
-        self.leaderboard_top_number = config['leaderboard_top_number']  # 显示晶元榜前x名人
+        self.leaderboard_top_number = config['leaderboard_top_number']  # 显示积分榜前x名人
 
         main_config_path = 'main_config.yml'
         with open(main_config_path, 'r', encoding='utf-8') as f:  # 读取设置
@@ -25,8 +25,8 @@ class points_leaderboard(PluginInterface):
         self.db = BotDatabase()  # 实例化数据库类
 
     async def run(self, recv):
-        data = self.db.get_highest_points(self.leaderboard_top_number)  # 从数据库获取前x名晶元数
-        out_message = "-----XYBot晶元排行榜-----"  # 创建晶元
+        data = self.db.get_highest_points(self.leaderboard_top_number)  # 从数据库获取前x名积分数
+        out_message = "-----XYBot积分排行榜-----"  # 创建积分
         rank = 1
         for i in data:  # 从数据库获取的数据中for循环
             nickname_req = self.bot.get_chatroom_nickname(recv['wxid'], i[0])
@@ -35,7 +35,7 @@ class points_leaderboard(PluginInterface):
             if nickname != nickname_req['wxid']:  # pywxdll 0.2
                 out_message += f"\n{rank}. {nickname} {i[1]}分 👍"
                 rank += 1
-                # 组建晶元榜信息
+                # 组建积分榜信息
 
         logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
         self.bot.send_txt_msg(recv['wxid'], out_message)

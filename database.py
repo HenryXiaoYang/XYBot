@@ -48,7 +48,7 @@ class BotDatabase:
     def _check_user(self, wxid):
         cursor = self.database.cursor()
         try:
-            if not (wxid,) in self.wxid_list:  # 不存在，创建用户并设置晶元为增加的晶元
+            if not (wxid,) in self.wxid_list:  # 不存在，创建用户并设置积分为增加的积分
                 sql_command = "INSERT INTO USERPOINTS VALUES {}".format((wxid, 0, 0, 0))
                 cursor.execute(sql_command)
                 self.database.commit()  # 提交数据库
