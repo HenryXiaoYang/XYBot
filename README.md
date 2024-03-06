@@ -118,7 +118,7 @@ ChatGPT
 
 ## XYBot交流群
 
-![586D7EAB-C661-48F5-B998-384D92334552](https://github.com/HenryXiaoYang/XYBot/assets/83214045/f5575eae-85ad-4d4c-83bb-2605452414f1)
+![xybot-wechatgroup](https://file.yangres.com/xybot-wechatgroup.jpeg)
 
 ## Credit
 
