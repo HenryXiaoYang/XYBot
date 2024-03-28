@@ -1,5 +1,7 @@
-#Version 0.0.5
-bot_version: "v0.0.5"
+#Version 0.0.6
+bot_version: "v0.0.6"
+
+# XYBot主设置
 
 #如果不知道自己在干什么请别动这两行
 ip: 127.0.0.1
@@ -14,3 +16,11 @@ command_prefix: "/" #如果需要前缀，则必须为一个字符  如果不需
 excluded_plugins: [ "" ]
 
 timezone: "Asia/Shanghai"
+
+
+# 白名单/黑名单设置
+mode: "whitelist" # 可以是 黑名单blacklist 白名单whitelist 无none
+
+# 请填入群号或者wxid
+blacklist: [ ]
+whitelist: [ ]

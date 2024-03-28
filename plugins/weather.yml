@@ -1,4 +1,4 @@
-keywords: ["天气", "获取天气"]
+keywords: [ "天气", "获取天气" ]
 plugin_name: "weather"
 
 weather_api: "https://v1.yiketianqi.com/free/day"

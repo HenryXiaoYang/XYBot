@@ -1,31 +1,42 @@
+#  Copyright (c) 2024. Henry Yang
+#
+#  This program is licensed under the GNU General Public License v3.0.
+
 import os
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
 
 from loguru import logger
 
-from singleton import singleton
+from utils.singleton import singleton
 
 
 # 2b queue没法获取返回值
 
+
 @singleton
 class BotDatabase:
     def __init__(self):
-        if not os.path.exists('userpoints.db'):  # 检查数据库是否存在
-            logger.warning('监测到数据库不存在，正在创建数据库')
-            conn = sqlite3.connect('userpoints.db')
+        if not os.path.exists("userpoints.db"):  # 检查数据库是否存在
+            logger.warning("监测到数据库不存在，正在创建数据库")
+            conn = sqlite3.connect("userpoints.db")
             c = conn.cursor()
-            c.execute('''CREATE TABLE USERPOINTS (WXID TEXT PRIMARY KEY , POINTS INT, SIGNINSTAT INT, WHITELIST INT)''')
+            c.execute(
+                """CREATE TABLE USERPOINTS (WXID TEXT PRIMARY KEY , POINTS INT, SIGNINSTAT INT, WHITELIST INT)"""
+            )
             conn.commit()
             c.close()
             conn.close()
-            logger.warning('已创建数据库')
+            logger.warning("已创建数据库")
 
-        self.database = sqlite3.connect('userpoints.db', check_same_thread=False)  # 连接数据库
+        self.database = sqlite3.connect(
+            "userpoints.db", check_same_thread=False
+        )  # 连接数据库
         self.wxid_list = self._get_wxid_list()  # 获取已有用户列表
 
-        self.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='database')  # 用来当queue用
+        self.executor = ThreadPoolExecutor(
+            max_workers=1, thread_name_prefix="database"
+        )  # 用来当queue用
 
     def _execute_in_queue(self, method, *args, **kwargs):
         future = self.executor.submit(method, *args, **kwargs)
@@ -40,7 +51,7 @@ class BotDatabase:
         cursor = self.database.cursor()
 
         try:
-            cursor.execute('select u.WXID from USERPOINTS u;')  # 获取已有用户列表
+            cursor.execute("select u.WXID from USERPOINTS u;")  # 获取已有用户列表
             return cursor.fetchall()
         finally:
             cursor.close()
@@ -52,7 +63,7 @@ class BotDatabase:
                 sql_command = "INSERT INTO USERPOINTS VALUES {}".format((wxid, 0, 0, 0))
                 cursor.execute(sql_command)
                 self.database.commit()  # 提交数据库
-            cursor.execute('select u.WXID from USERPOINTS u;')  # 刷新已有用户列表
+            cursor.execute("select u.WXID from USERPOINTS u;")  # 刷新已有用户列表
             self.wxid_list = cursor.fetchall()  # 刷新已有用户列表
         finally:
             cursor.close()
@@ -65,11 +76,16 @@ class BotDatabase:
 
         try:
             self._check_user(wxid)
-            sql_command = "SELECT POINTS FROM USERPOINTS WHERE WXID='{wxid}'".format(wxid=wxid)
+            sql_command = "SELECT POINTS FROM USERPOINTS WHERE WXID='{wxid}'".format(
+                wxid=wxid
+            )
             cursor.execute(sql_command)
             new_points = cursor.fetchall()[0][0] + num
-            sql_command = "UPDATE USERPOINTS SET POINTS={point} WHERE WXID='{wxid}'".format(point=new_points,
-                                                                                            wxid=wxid)
+            sql_command = (
+                "UPDATE USERPOINTS SET POINTS={point} WHERE WXID='{wxid}'".format(
+                    point=new_points, wxid=wxid
+                )
+            )
             cursor.execute(sql_command)
             self.database.commit()
         finally:
@@ -83,8 +99,11 @@ class BotDatabase:
 
         try:
             self._check_user(wxid)
-            sql_command = "UPDATE USERPOINTS SET POINTS={point} WHERE WXID='{wxid}'".format(point=num,
-                                                                                            wxid=wxid)
+            sql_command = (
+                "UPDATE USERPOINTS SET POINTS={point} WHERE WXID='{wxid}'".format(
+                    point=num, wxid=wxid
+                )
+            )
             cursor.execute(sql_command)
             self.database.commit()
         finally:
@@ -98,7 +117,9 @@ class BotDatabase:
 
         try:
             self._check_user(wxid)
-            sql_command = "SELECT POINTS FROM USERPOINTS WHERE WXID='{wxid}'".format(wxid=wxid)
+            sql_command = "SELECT POINTS FROM USERPOINTS WHERE WXID='{wxid}'".format(
+                wxid=wxid
+            )
             cursor.execute(sql_command)
             result = cursor.fetchall()[0][0]
             return result
@@ -113,7 +134,11 @@ class BotDatabase:
 
         try:
             self._check_user(wxid)
-            sql_command = "SELECT SIGNINSTAT FROM USERPOINTS WHERE WXID='{wxid}'".format(wxid=wxid)
+            sql_command = (
+                "SELECT SIGNINSTAT FROM USERPOINTS WHERE WXID='{wxid}'".format(
+                    wxid=wxid
+                )
+            )
             cursor.execute(sql_command)
             result = cursor.fetchall()[0][0]
             return result
@@ -128,8 +153,9 @@ class BotDatabase:
 
         try:
             self._check_user(wxid)
-            sql_command = "UPDATE USERPOINTS SET SIGNINSTAT={SIGNINSTAT} WHERE WXID='{wxid}'".format(SIGNINSTAT=num,
-                                                                                                     wxid=wxid)
+            sql_command = "UPDATE USERPOINTS SET SIGNINSTAT={SIGNINSTAT} WHERE WXID='{wxid}'".format(
+                SIGNINSTAT=num, wxid=wxid
+            )
             cursor.execute(sql_command)
             self.database.commit()  # 提交数据库
         finally:
@@ -155,7 +181,9 @@ class BotDatabase:
         cursor = self.database.cursor()
 
         try:
-            sql_command = 'select * from USERPOINTS order by POINTS DESC, SIGNINSTAT LIMIT 0,{limit}'.format(limit=num)
+            sql_command = "select * from USERPOINTS order by POINTS DESC, SIGNINSTAT LIMIT 0,{limit}".format(
+                limit=num
+            )
             cursor.execute(sql_command)
             result = cursor.fetchall()
             return result
@@ -170,8 +198,9 @@ class BotDatabase:
 
         try:
             self._check_user(wxid)
-            sql_command = "UPDATE USERPOINTS SET WHITELIST={whitelist} WHERE WXID='{wxid}'".format(whitelist=stat,
-                                                                                                   wxid=wxid)
+            sql_command = "UPDATE USERPOINTS SET WHITELIST={whitelist} WHERE WXID='{wxid}'".format(
+                whitelist=stat, wxid=wxid
+            )
             cursor.execute(sql_command)
             self.database.commit()  # 提交数据库
         finally:
@@ -185,7 +214,9 @@ class BotDatabase:
 
         try:
             self._check_user(wxid)
-            sql_command = "SELECT WHITELIST FROM USERPOINTS WHERE WXID='{wxid}'".format(wxid=wxid)
+            sql_command = "SELECT WHITELIST FROM USERPOINTS WHERE WXID='{wxid}'".format(
+                wxid=wxid
+            )
             cursor.execute(sql_command)
             result = cursor.fetchall()[0][0]
             return result
@@ -193,7 +224,9 @@ class BotDatabase:
             cursor.close()
 
     def safe_trade_points(self, trader_wxid, target_wxid, num):
-        return self._execute_in_queue(self._safe_trade_points, trader_wxid, target_wxid, num)
+        return self._execute_in_queue(
+            self._safe_trade_points, trader_wxid, target_wxid, num
+        )
 
     def _safe_trade_points(self, trader_wxid, target_wxid, num):
         cursor = self.database.cursor()
@@ -201,7 +234,11 @@ class BotDatabase:
         try:
             self._check_user(trader_wxid)
             self._check_user(target_wxid)
-            get_trader_point_sql_command = "SELECT POINTS FROM USERPOINTS WHERE WXID='{wxid}'".format(wxid=trader_wxid)
+            get_trader_point_sql_command = (
+                "SELECT POINTS FROM USERPOINTS WHERE WXID='{wxid}'".format(
+                    wxid=trader_wxid
+                )
+            )
             cursor.execute(get_trader_point_sql_command)
             trader_points = cursor.fetchall()[0][0]
             if trader_points >= num:
@@ -210,5 +247,31 @@ class BotDatabase:
                 return True
             else:
                 return False
+        finally:
+            cursor.close()
+
+    def get_user_list(self) -> list:
+        return self._execute_in_queue(self._get_user_list)
+
+    def _get_user_list(self) -> list:
+        cursor = self.database.cursor()
+
+        try:
+            cursor.execute("select * from USERPOINTS")
+            result = cursor.fetchall()
+            return result
+        finally:
+            cursor.close()
+
+    def get_user_count(self) -> int:
+        return self._execute_in_queue(self._get_user_count)
+
+    def _get_user_count(self) -> int:
+        cursor = self.database.cursor()
+
+        try:
+            cursor.execute("select count(*) from USERPOINTS")
+            result = cursor.fetchall()[0][0]
+            return result
         finally:
             cursor.close()
