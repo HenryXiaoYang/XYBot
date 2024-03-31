@@ -38,7 +38,7 @@ class get_chatroom_memberlist(PluginInterface):
         error = ''
         if admin_wxid not in self.admin_list:
             error = "-----XYBot-----\n❌你配用这个指令吗？"
-        elif recv['id1'] and recv['wxid']:
+        elif not recv['id1'] and recv['wxid']:
             error = "-----XYBot-----\n⚠️私聊无法使用这个命令！"
 
         if not error:  # 判断操作元是否是管理员

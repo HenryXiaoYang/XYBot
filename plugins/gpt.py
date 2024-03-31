@@ -102,16 +102,14 @@ class gpt(PluginInterface):
                 chatgpt_answer = await self.chatgpt(message)  # 从chatgpt api 获取回答
 
                 if chatgpt_answer[0]:
-                    out_message = "-----XYBot-----\n已扣除{self.gpt_point_price}点积分，还剩{self.db.get_points(user_wxid)}点积分👍\nChatGPT回答：\n{chatgpt_answer[1]}\n\n⚙️ChatGPT版本：{self.gpt_version}"  # 创建信息
+                    out_message = f"-----XYBot-----\n已扣除{self.gpt_point_price}点积分，还剩{self.db.get_points(user_wxid)}点积分👍\nChatGPT回答：\n{chatgpt_answer[1]}\n\n⚙️ChatGPT版本：{self.gpt_version}"  # 创建信息
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
                     self.send_friend_or_group(
                         is_chatgroup, recv, user_wxid, nickname, out_message
                     )
                 else:
                     self.db.add_points(user_wxid, self.gpt_point_price)
-                    out_message = (
-                        "-----XYBot-----\n出现错误，已补回积分！⚠️{chatgpt_answer}"
-                    )
+                    out_message = f"-----XYBot-----\n出现错误，已补回积分！⚠️{chatgpt_answer}"
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
                     self.send_friend_or_group(
                         is_chatgroup, recv, user_wxid, nickname, out_message
