@@ -59,9 +59,6 @@ async def main():
     )  # 日志设置
     logger.info("已设置日志")
 
-    asyncio.create_task(start_api_server()).add_done_callback(callback)  # 开启web api服务
-    web_api_data = WebApiData()
-
     with open("main_config.yml", "r", encoding="utf-8") as f:  # 读取设置
         config = yaml.safe_load(f.read())
 
@@ -93,6 +90,9 @@ async def main():
     logger.info("已确认微信已登陆，开始启动XYBot")
 
     bot.start()  # 开启机器人
+
+    asyncio.create_task(start_api_server()).add_done_callback(callback)  # 开启web api服务
+    web_api_data = WebApiData()
 
     handlebot = xybot.XYBot()
 
