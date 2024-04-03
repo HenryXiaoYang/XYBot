@@ -56,7 +56,6 @@ class PluginManager:
         if (
                 plugin_name not in self.plugins
                 and plugin_name not in self.excluded_plugins
-                and plugin_name != "manage_plugins"
         ):
             module = importlib.import_module(f"plugins.{plugin_name}")
             plugin_class = getattr(module, plugin_name)
