@@ -52,26 +52,27 @@ class PluginManager:
     def get_keywords(self):
         return self.keywords
 
-    def load_plugin(self, plugin_name, launchload=False):
+    def load_plugin(self, plugin_name, no_refresh=False, silent=False):
         if (
                 plugin_name not in self.plugins
                 and plugin_name not in self.excluded_plugins
-                and plugin_name != ["manage_plugins"]
+                and plugin_name != "manage_plugins"
         ):
             module = importlib.import_module(f"plugins.{plugin_name}")
             plugin_class = getattr(module, plugin_name)
             if issubclass(plugin_class, PluginInterface):
                 plugin_instance = plugin_class()
                 self.plugins[plugin_name] = plugin_instance
-                logger.info(f"+ 已加载插件：{plugin_name}")
-                if not launchload:
+                if not silent:
+                    logger.info(f"+ 已加载插件：{plugin_name}")
+                if not no_refresh:
                     self.refresh_keywords()
                 return True
 
             return False
         return False
 
-    def load_plugins(self, plugin_dir, launchload=False):
+    def load_plugins(self, plugin_dir):
         logger.info("开始加载所有插件")
         for plugin_file in os.listdir(plugin_dir):
             if (
@@ -80,31 +81,52 @@ class PluginManager:
                     and not plugin_file.startswith("_")
             ):
                 plugin_name = os.path.splitext(plugin_file)[0]
-                self.load_plugin(plugin_name, launchload=launchload)
+                self.load_plugin(plugin_name, no_refresh=True)
         self.refresh_keywords()
 
-    def unload_plugin(self, plugin_name):
-        if plugin_name in self.plugins and plugin_name != ["manage_plugins"]:
+    def unload_plugin(self, plugin_name, no_refresh=False, silent=False):
+        if plugin_name in self.plugins and plugin_name != "manage_plugins":
             del self.plugins[plugin_name]
-            self.refresh_keywords()
-            logger.info(f"- 已卸载插件：{plugin_name}")
-            self.refresh_keywords()
+            if not silent:
+                logger.info(f"- 已卸载插件：{plugin_name}")
+            if not no_refresh:
+                self.refresh_keywords()
             return True
         else:
             return False
 
-    def reload_plugin(self, plugin_name):
-        if self.unload_plugin(plugin_name) and plugin_name != ["manage_plugins"]:
-            if self.load_plugin(plugin_name):
-                logger.info(f"! 已重载插件：{plugin_name}")
-                self.refresh_keywords()
-                return True
+    def unload_plugins(self):
+        logger.info("开始卸载所有插件")
+        for plugin_name in list(self.plugins.keys()):
+            if plugin_name != "manage_plugins":
+                if not self.unload_plugin(plugin_name, no_refresh=True):
+                    return False
+        self.refresh_keywords()
+        return True
+
+    def reload_plugin(self, plugin_name, no_refresh=False):
+        if plugin_name != "manage_plugins":
+            if self.unload_plugin(plugin_name, no_refresh=True, silent=True):
+                if self.load_plugin(plugin_name, no_refresh=True, silent=True):
+                    logger.info(f"! 已重载插件：{plugin_name}")
+                    if not no_refresh:
+                        self.refresh_keywords()
+                    return True
+                else:
+                    logger.info(f"! 重载插件失败：{plugin_name}")
+                    return False
             else:
                 logger.info(f"! 重载插件失败：{plugin_name}")
                 return False
-        else:
-            logger.info(f"! 重载插件失败：{plugin_name}")
-            return False
+
+    def reload_plugins(self):
+        logger.info("开始重载所有插件")
+        for plugin_name in list(self.plugins.keys()):
+            if plugin_name != "manage_plugins":
+                if not self.reload_plugin(plugin_name, no_refresh=True):
+                    return False
+        self.refresh_keywords()
+        return True
 
 
 # 实例化插件管理器
