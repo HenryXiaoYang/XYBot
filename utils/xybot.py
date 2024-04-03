@@ -52,15 +52,15 @@ class XYBot:
             return True
         elif self.ignorance_mode == 'blacklist':  # 如果设置了黑名单
             # 如果是群与发送人不在黑名单内，或者不是群与发送人不在黑名单内，则返回通过
-            if (recv['id1'] and recv['id1'] not in self.ignorance_blacklist) or (
-                    not recv['id1'] and recv['wxid'] not in self.ignorance_blacklist):
+            if (recv['id1'] and (recv['wxid'] not in self.ignorance_blacklist)) or (
+                    (not recv['id1']) and (recv['wxid'] not in self.ignorance_blacklist)):
                 return True
             else:
                 return False
         elif self.ignorance_mode == 'whitelist':
             # 如果是群与发送人在白名单内，或者不是群与发送人不在白名单内，则返回通过
-            if (recv['id1'] and recv['id1'] in self.ignorance_whitelist) or (
-                    not recv['id1'] and recv['wxid'] in self.ignorance_whitelist):
+            if (recv['id1'] and (recv['wxid'] in self.ignorance_whitelist)) or (
+                    (not recv['id1']) and (recv['wxid'] in self.ignorance_whitelist)):
                 return True
             else:
                 return False
