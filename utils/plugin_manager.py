@@ -72,9 +72,9 @@ class PluginManager:
             return False
         return False
 
-    def load_plugins(self, plugin_dir):
+    def load_plugins(self):
         logger.info("开始加载所有插件")
-        for plugin_file in os.listdir(plugin_dir):
+        for plugin_file in os.listdir('plugins'):
             if (
                     plugin_file.endswith(".py")
                     and plugin_file != "__init__.py"
