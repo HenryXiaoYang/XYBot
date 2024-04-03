@@ -1,2 +1,7 @@
 keywords: [ "管理插件" ]
 plugin_name: "manage_plugins"
+
+load_sub_keywords: [ "加载", "load" ]
+unload_sub_keywords: [ "卸载", "unload" ]
+reload_sub_keywords: [ "重载", "reload" ]
+list_sub_keywords: [ "列表", "list" ]

@@ -99,8 +99,7 @@ async def main():
     # ---- 加载插件 加载计划 ---- #
 
     # 加载所有插件
-    plugin_dir = "plugins"  # 插件目录的路径
-    plugin_manager.load_plugins(plugin_dir)  # 加载所有插件
+    plugin_manager.load_plugins()  # 加载所有插件
     logger.info("已加载所有插件")
 
     plans_dir = "plans"
