@@ -4,6 +4,7 @@
 
 import importlib
 import os
+import sys
 
 import yaml
 from loguru import logger
@@ -86,6 +87,7 @@ class PluginManager:
     def unload_plugin(self, plugin_name, no_refresh=False, silent=False):
         if plugin_name in self.plugins and plugin_name != "manage_plugins":
             del self.plugins[plugin_name]
+            del sys.modules[f"plugins.{plugin_name}"]
             if not silent:
                 logger.info(f"- 已卸载插件：{plugin_name}")
             if not no_refresh:
