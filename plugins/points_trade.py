@@ -41,14 +41,15 @@ class points_trade(PluginInterface):
                 roomid, target_nick
             )  # 获取转账目标wxid
 
-            points_num = int(recv["content"][1])  # 获取转账积分数
+            points_num = recv["content"][1]  # 获取转账积分数
 
             error_message = self.get_error_message(
                 target_wxid, points_num
             )  # 获取是否有错误信息
-            if not error_message and self.db.safe_trade_points(
-                    trader_wxid, target_wxid, points_num
-            ):  # 判断是否有错误信息和是否转账成功
+
+            if not error_message:  # 判断是否有错误信息和是否转账成功
+                points_num = int(points_num)
+                self.db.safe_trade_points(trader_wxid, target_wxid, points_num)
                 self.log_and_send_success_message(
                     roomid,
                     trader_wxid,
@@ -68,10 +69,13 @@ class points_trade(PluginInterface):
             )  # 发送错误信息
             # 记录发送了信息
 
-    def get_error_message(self, target_wxid, points_num):  # 获取错误信息
+    def get_error_message(self, target_wxid, points_num: str):  # 获取错误信息
         if not target_wxid:
             return "\n-----XYBot-----\n转帐失败❌\n转帐人不存在(仅可转账群内成员)或⚠️转帐目标昵称重复⚠️"
-        elif not self.min_points <= points_num <= self.max_points:
+        elif not points_num.isdigit():
+            return "\n-----XYBot-----\n转帐失败❌\n转帐积分无效(必须为正整数!)"
+        points_num = int(points_num)
+        if not self.min_points <= points_num <= self.max_points:
             return f"\n-----XYBot-----\n转帐失败❌\n转帐积分无效(最大{self.max_points} 最小{self.min_points})"
         elif self.db.get_points(target_wxid) < points_num:
             return f"\n-----XYBot-----\n积分不足！❌\n需要{points_num}点！"
