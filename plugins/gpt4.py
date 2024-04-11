@@ -13,8 +13,6 @@ class gpt4(PluginInterface):
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
-        self.openai_api_base = config["openai_api_base"]  # openai api 链接
-        self.openai_api_key = config["openai_api_key"]  # openai api 密钥
         self.gpt_version = config["gpt_version"]  # gpt版本
         self.gpt_point_price = config["gpt_point_price"]  # gpt使用价格（单次）
         self.gpt_max_token = config["gpt_max_token"]  # gpt 最大token
@@ -27,6 +25,9 @@ class gpt4(PluginInterface):
         self.ip = main_config["ip"]  # 机器人ip
         self.port = main_config["port"]  # 机器人端口
         self.admins = main_config["admins"]  # 管理员列表
+
+        self.openai_api_base = main_config["openai_api_base"]  # openai api 链接
+        self.openai_api_key = main_config["openai_api_key"]  # openai api 密钥
 
         sensitive_words_path = "sensitive_words.yml"  # 加载敏感词yml
         with open(sensitive_words_path, "r", encoding="utf-8") as f:  # 读取设置

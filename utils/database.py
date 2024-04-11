@@ -1,7 +1,7 @@
 #  Copyright (c) 2024. Henry Yang
 #
 #  This program is licensed under the GNU General Public License v3.0.
-
+import json
 import os
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
@@ -11,18 +11,18 @@ from loguru import logger
 from utils.singleton import singleton
 
 
-# 2b queue没法获取返回值
+# sb queue内置库没法获取返回值
 
 
 @singleton
 class BotDatabase:
     def __init__(self):
         if not os.path.exists("userpoints.db"):  # 检查数据库是否存在
-            logger.warning("监测到数据库不存在，正在创建数据库")
+            logger.warning("检测到数据库不存在，正在创建数据库")
             conn = sqlite3.connect("userpoints.db")
             c = conn.cursor()
             c.execute(
-                """CREATE TABLE USERPOINTS (WXID TEXT PRIMARY KEY , POINTS INT, SIGNINSTAT INT, WHITELIST INT)"""
+                """CREATE TABLE USERPOINTS (WXID TEXT PRIMARY KEY , POINTS INT, SIGNINSTAT INT, WHITELIST INT, PRIVATE_GPT_DATA TEXT)"""
             )
             conn.commit()
             c.close()
@@ -32,6 +32,18 @@ class BotDatabase:
         self.database = sqlite3.connect(
             "userpoints.db", check_same_thread=False
         )  # 连接数据库
+
+        # 检测数据库是否有正确的列
+        correct_columns = {'WXID': ' TEXT PRIMARY KEY', 'POINTS': ' INT', 'SIGNINSTAT': ' INT', 'WHITELIST': ' INT',
+                           'PRIVATE_GPT_DATA': ' TEXT'}
+        cursor = self.database.cursor()
+        cursor.execute("PRAGMA table_info(USERPOINTS)")
+        columns = cursor.fetchall()
+        column_names = [column[1] for column in columns]
+        for c in correct_columns.keys():
+            if c not in column_names:
+                cursor.execute(f"ALTER TABLE USERPOINTS ADD COLUMN {c}{correct_columns[c]}")
+
         self.wxid_list = self._get_wxid_list()  # 获取已有用户列表
 
         self.executor = ThreadPoolExecutor(
@@ -60,7 +72,7 @@ class BotDatabase:
         cursor = self.database.cursor()
         try:
             if not (wxid,) in self.wxid_list:  # 不存在，创建用户并设置积分为增加的积分
-                sql_command = "INSERT INTO USERPOINTS VALUES {}".format((wxid, 0, 0, 0))
+                sql_command = "INSERT INTO USERPOINTS VALUES {}".format((wxid, 0, 0, 0, '{}'))
                 cursor.execute(sql_command)
                 self.database.commit()  # 提交数据库
             cursor.execute("select u.WXID from USERPOINTS u;")  # 刷新已有用户列表
@@ -88,6 +100,7 @@ class BotDatabase:
             )
             cursor.execute(sql_command)
             self.database.commit()
+            logger.info(f"[数据库] {wxid} 积分已加 {num} 点，当前积分{new_points}")
         finally:
             cursor.close()
 
@@ -106,6 +119,7 @@ class BotDatabase:
             )
             cursor.execute(sql_command)
             self.database.commit()
+            logger.info(f"[数据库] {wxid} 积分已设置为 {num} 点")
         finally:
             cursor.close()
 
@@ -158,6 +172,7 @@ class BotDatabase:
             )
             cursor.execute(sql_command)
             self.database.commit()  # 提交数据库
+            logger.info(f"[数据库] {wxid} 签到状态已设置为 {num}")
         finally:
             cursor.close()
 
@@ -171,6 +186,7 @@ class BotDatabase:
             sql_command = "UPDATE USERPOINTS SET SIGNINSTAT=0"
             cursor.execute(sql_command)
             self.database.commit()  # 提交数据库
+            logger.info("[数据库] 签到状态已重置")
         finally:
             cursor.close()
 
@@ -203,6 +219,7 @@ class BotDatabase:
             )
             cursor.execute(sql_command)
             self.database.commit()  # 提交数据库
+            logger.info(f"[数据库] {wxid} 白名单状态已设置为 {stat}")
         finally:
             cursor.close()
 
@@ -273,5 +290,42 @@ class BotDatabase:
             cursor.execute("select count(*) from USERPOINTS")
             result = cursor.fetchall()[0][0]
             return result
+        finally:
+            cursor.close()
+
+    def get_private_gpt_data(self, wxid: str) -> dict:
+        return self._execute_in_queue(self._get_private_gpt_data, wxid)
+
+    def _get_private_gpt_data(self, wxid: str) -> dict:
+        cursor = self.database.cursor()
+
+        try:
+            self._check_user(wxid)
+            sql_command = "SELECT PRIVATE_GPT_DATA FROM USERPOINTS WHERE WXID='{wxid}'".format(
+                wxid=wxid
+            )
+            cursor.execute(sql_command)
+            json_string = cursor.fetchone()[0]
+            json_data = json.loads(json_string)
+            return json_data
+        finally:
+            cursor.close()
+
+    def save_private_gpt_data(self, wxid: str, data: dict) -> None:
+        return self._execute_in_queue(self._save_private_gpt_data, wxid, data)
+
+    def _save_private_gpt_data(self, wxid: str, data: dict) -> None:
+        cursor = self.database.cursor()
+
+        try:
+            self._check_user(wxid)
+            json_string = json.dumps(data)
+
+            sql_command = "UPDATE USERPOINTS SET PRIVATE_GPT_DATA='{json_data}' WHERE WXID='{wxid}'".format(
+                json_data=json_string, wxid=wxid)
+
+            cursor.execute(sql_command)
+            self.database.commit()  # 提交数据库
+            logger.info(f"[数据库] {wxid} 私聊GPT数据已保存")
         finally:
             cursor.close()

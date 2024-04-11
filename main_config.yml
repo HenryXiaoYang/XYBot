@@ -11,16 +11,41 @@ admins: [ "" ]
 
 max_worker: 25
 
-command_prefix: "/" #如果需要前缀，则必须为一个字符  如果不需要前缀可设置为空，即 ""
+command_prefix: "/" #如果需要前缀，则必须为一个字符。如果不需要前缀可设置为空，即 ""。如果前缀为空，则私聊GPT功能无法使用。
 
 excluded_plugins: [ "" ]
 
 timezone: "Asia/Shanghai"
 
+# ------------------------------------------------------------------------------ #
 
 # 白名单/黑名单设置
-mode: "none" # 可以是 黑名单blacklist 白名单whitelist 无none
+mode: "whitelist" # 可以是 黑名单blacklist 白名单whitelist 无none
 
 # 请填入群号或者wxid
 blacklist: [ ]
 whitelist: [ ]
+
+# ------------------------------------------------------------------------------ #
+# 全局chatgpt设置，插件使用到，私聊gpt也使用到
+
+#ChatGPT的API网址
+openai_api_base: ""
+#ChatGPT API的Key
+openai_api_key: ""
+
+# ------------------------------------------------------------------------------ #
+# 私聊gpt设置（不用指令，直接问答）
+
+# 是否开启私聊gpt
+enable_private_chat_gpt: True # 可为 True 或者 False
+
+dialogue_count: 3 # 上下文记忆轮数，0为关闭。连续对话消耗的token较多，谨慎设置！
+private_chat_gpt_price: 3 # 每次对话消耗的积分，0为关闭
+
+clear_dialogue_keyword: [ "清除对话", "重置对话", "新建对话","清除对话记录" ]
+
+# gpt请求模型设置
+gpt_version: 'gpt-3.5-turbo' # 连续对话消耗的token较多，谨慎设置！
+gpt_max_token: 1000
+gpt_temperature: 0.5

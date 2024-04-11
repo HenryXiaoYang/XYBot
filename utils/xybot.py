@@ -9,6 +9,7 @@ from loguru import logger
 
 import pywxdll
 from utils.plugin_manager import plugin_manager
+from utils.private_chat_gpt import private_chat_gpt
 from utils.singleton import singleton
 
 
@@ -31,9 +32,22 @@ class XYBot:
         self.ignorance_blacklist = main_config['blacklist']
         self.ignorance_whitelist = main_config['whitelist']
 
+        self.enable_private_chat_gpt = main_config['enable_private_chat_gpt']
+
     async def message_handler(self, recv) -> None:
+        if not self.ignorance_check(recv):  # 判断是否不在屏蔽内
+            return
+
+        # 如果不是命令且不是群聊 这里特殊处理，如果设置中指令前缀为空，那么不会执行私聊gpt
+        if recv['content'][0] != self.command_prefix and not recv['id1'] and self.command_prefix != "":
+            if not isinstance(self.enable_private_chat_gpt, bool):
+                raise Exception('Unknown enable_private_chat_gpt 未知的私聊gpt设置！')
+            elif self.enable_private_chat_gpt is True:  # 设置中开启了私聊gpt，是私聊，所以调用私聊gpt函数
+                await asyncio.create_task(private_chat_gpt.run(recv))
+                return
+
         if (recv["content"][0] == self.command_prefix or self.command_prefix == "") and len(
-                recv["content"]) != 1 and self.ignorance_check(recv):  # 判断是否为命令 判断是否不在屏蔽内
+                recv["content"]) != 1:  # 判断是否为命令
             if self.command_prefix != "":  # 特殊处理，万一用户想要使用空前缀
                 recv["content"] = recv["content"][1:]  # 去除命令前缀
             recv["content"] = recv["content"].split(" ")  # 分割命令参数
