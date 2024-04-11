@@ -162,6 +162,7 @@ cython_debug/
 
 # XYBot
 userpoints.db
+resources/web_api_data.json
 
 #Github
 .github/
