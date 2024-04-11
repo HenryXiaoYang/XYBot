@@ -96,7 +96,7 @@ class PrivateChatGpt:
     def compose_gpt_dialogue_request_content(self, wxid: str, new_message: str) -> list:
         json_data = self.db.get_private_gpt_data(wxid)  # 从数据库获得到之前的对话
 
-        if "data" not in json_data.keys():  # 如果没有对话数据，则初始化
+        if not json_data or "data" not in json_data.keys():  # 如果没有对话数据，则初始化
             init_data = {"data": []}
             json_data = init_data
 

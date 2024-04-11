@@ -308,8 +308,11 @@ class BotDatabase:
             )
             cursor.execute(sql_command)
             json_string = cursor.fetchone()[0]
-            json_data = json.loads(json_string)
-            return json_data
+            if not json_string:
+                return {}
+            else:
+                json_data = json.loads(json_string)
+                return json_data
         finally:
             cursor.close()
 
