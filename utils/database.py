@@ -34,6 +34,7 @@ class BotDatabase:
         )  # 连接数据库
 
         # 检测数据库是否有正确的列
+        logger.info("[数据库]正在检测数据库是否有正确的列")
         correct_columns = {'WXID': ' TEXT PRIMARY KEY', 'POINTS': ' INT', 'SIGNINSTAT': ' INT', 'WHITELIST': ' INT',
                            'PRIVATE_GPT_DATA': ' TEXT'}
         cursor = self.database.cursor()
@@ -43,6 +44,7 @@ class BotDatabase:
         for c in correct_columns.keys():
             if c not in column_names:
                 cursor.execute(f"ALTER TABLE USERPOINTS ADD COLUMN {c}{correct_columns[c]}")
+                logger.info(f"[数据库]已添加列 {c}")
 
         self.wxid_list = self._get_wxid_list()  # 获取已有用户列表
 
