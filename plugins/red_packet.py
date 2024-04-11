@@ -67,8 +67,8 @@ class red_packet(PluginInterface):
         elif not recv["content"][1].isdigit() or not recv["content"][2].isdigit():
             error = "-----XYBot-----\n❌指令格式错误！请查看菜单！"
         elif (
-                int(recv["content"][1]) > self.max_point
-                or int(recv["content"][1]) < self.min_point
+                int(recv["content"][1]) >= self.max_point
+                or int(recv["content"][1]) <= self.min_point
         ):
             error = f"-----XYBot-----\n⚠️积分无效！最大{self.max_point}，最小{self.min_point}！"
         elif int(recv["content"][2]) >= self.max_packet:
@@ -93,8 +93,8 @@ class red_packet(PluginInterface):
                 red_packet_points, red_packet_amount
             )  # 随机分红包积分
 
-            chr_5, captcha_path = self.generate_captcha()  # 生成验证码
-            captcha_path = os.path.abspath(captcha_path)  # 获取验证码路径
+            chr_5, captcha_path = self.generate_captcha()  # 生成口令
+            captcha_path = os.path.abspath(captcha_path)  # 获取口令路径
 
             new_red_packet = {
                 "points": red_packet_points,
@@ -116,7 +116,7 @@ class red_packet(PluginInterface):
             # 发送信息
             self.bot.send_txt_msg(recv["wxid"], out_message)
             logger.info(
-                f'[发送信息] (红包验证码图片) {captcha_path} | [发送到] {recv["wxid"]}'
+                f'[发送信息] (红包口令图片) {captcha_path} | [发送到] {recv["wxid"]}'
             )
 
             self.bot.send_pic_msg(recv["wxid"], captcha_path)
@@ -183,7 +183,7 @@ class red_packet(PluginInterface):
             return
 
     @staticmethod
-    def generate_captcha():  # 生成验证码
+    def generate_captcha():  # 生成口令
         chr_all = [
             "a",
             "b",
@@ -221,7 +221,7 @@ class red_packet(PluginInterface):
         # 生成 num_parts-1 个随机数
         random_numbers = []
         for _ in range(num_parts - 1):
-            random_numbers.append(random.randint(1, n))
+            random_numbers.append(random.randint(1, n - num_parts + 1))
         random_numbers.sort()
 
         # 计算每份的数量
