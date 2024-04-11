@@ -20,7 +20,7 @@ timezone: "Asia/Shanghai"
 # ------------------------------------------------------------------------------ #
 
 # 白名单/黑名单设置
-mode: "whitelist" # 可以是 黑名单blacklist 白名单whitelist 无none
+mode: "none" # 可以是 黑名单blacklist 白名单whitelist 无none
 
 # 请填入群号或者wxid
 blacklist: [ ]
