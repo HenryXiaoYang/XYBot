@@ -1,5 +1,9 @@
 # XYBot 微信机器人
 
+<div style="text-align: center;">
+    <img alt="XYBot微信机器人logo" width="240" src="https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/logo/xybot_logo.png?raw=true">
+</div>
+
 XYBot是一个基于docker和pywxdll hook注入的微信机器人。😊 具有高度可自定义性，支持自我编写插件。🚀
 
 XYBot提供了多种功能，包括获取天气🌤️、获取新闻📰、ChatGPT聊天🗣️、Hypixel玩家查询🎮、随机图片📷、随机链接🔗、随机群成员👥、签到✅、查询积分📊、积分榜🏆、积分转送💰、积分抽奖🎁、积分红包🧧等。🎉
@@ -13,10 +17,11 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 ✅高度可自定义！
 ✅支持自我编写插件！
 
-[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-red.svg)](https://opensource.org/licenses/)[![Version](https://img.shields.io/badge/Version-0.0.5-orange.svg)](https://github.com/HenryXiaoYang/XYBot)
-[![Blog](https://img.shields.io/badge/Blog-@HenryXiaoYang-yellow.svg)](https://yangres.com)
-
-# 20240106：发现了更强大的微信机器人Hook 下一个版本会花点时间🤔
+<div style="text-align: center;">
+    <a href="https://opensource.org/licenses/"><img src="https://img.shields.io/badge/License-GPL%20v3-red.svg" alt="GPLv3 License"></a>
+    <a href="https://github.com/HenryXiaoYang/XYBot"><img src="https://img.shields.io/badge/Version-0.0.5-orange.svg" alt="Version"></a>
+    <a href="https://yangres.com"><img src="https://img.shields.io/badge/Blog-@HenryXiaoYang-yellow.svg" alt="Blog"></a>
+</div>
 
 ## 功能列表
 
@@ -120,7 +125,9 @@ ChatGPT
 
 ## XYBot交流群
 
-![586D7EAB-C661-48F5-B998-384D92334552](https://github.com/HenryXiaoYang/XYBot/assets/83214045/f5575eae-85ad-4d4c-83bb-2605452414f1)
+<div style="text-align: center;">
+    <img alt="XYBot交流群二维码" width="360" src="https://file.yangres.com/xybot-wechatgroup.jpeg">
+</div>
 
 ## Credit
 
@@ -134,21 +141,25 @@ https://github.com/chisbread/wechat-box
 
 ## ⭐️Star History⭐️
 
-<picture>
-  <source
-    media="(prefers-color-scheme: dark)"
-    srcset="
-      https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date&theme=dark
-    "
-  />
-  <source
-    media="(prefers-color-scheme: light)"
-    srcset="
-      https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date
-    "
-  />
-  <img
-    alt="XYBot Star History"
-    src="https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date"
-  />
-</picture>
+<div style="text-align: center">
+    <picture>
+      <source
+        media="(prefers-color-scheme: dark)"
+        srcset="
+          https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date&theme=dark
+        "
+      />
+      <source
+        media="(prefers-color-scheme: light)"
+        srcset="
+          https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date
+        "
+      />
+      <img
+        alt="XYBot Star History"
+        width="600"
+        src="https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date"
+      />
+    </picture>
+</div>
+
