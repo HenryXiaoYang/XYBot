@@ -38,8 +38,8 @@ class XYBot:
         if not self.ignorance_check(recv):  # 判断是否不在屏蔽内
             return
 
-        # 如果不是命令且不是群聊 这里特殊处理，如果设置中指令前缀为空，那么不会执行私聊gpt
-        if recv['content'][0] != self.command_prefix and not recv['id1'] and self.command_prefix != "":
+        # 如果不是命令且不是群聊，执行私聊gpt。这里特殊处理，如果设置中指令前缀为空，那么不会执行私聊gpt
+        if recv['content'][0] != self.command_prefix and recv['wxid'][-9:] != '@chatroom' and self.command_prefix != "":
             if not isinstance(self.enable_private_chat_gpt, bool):
                 raise Exception('Unknown enable_private_chat_gpt 未知的私聊gpt设置！')
             elif self.enable_private_chat_gpt is True:  # 设置中开启了私聊gpt，是私聊，所以调用私聊gpt函数
