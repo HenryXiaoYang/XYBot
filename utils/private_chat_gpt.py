@@ -50,7 +50,8 @@ class PrivateChatGpt:
         wxid = recv["wxid"]
 
         error = ''
-        if (self.db.get_points(wxid) < self.private_chat_gpt_price) and (wxid not in self.admins):
+        if (self.db.get_points(wxid) < self.private_chat_gpt_price) and (wxid not in self.admins) and (
+                not self.db.get_whitelist(wxid)):
             error = f"您的积分不足{self.private_chat_gpt_price}点，无法使用私聊GPT功能！⚠️"
         elif not self.senstitive_word_check(gpt_request_message):
             error = "您的问题中包含敏感词，请重新输入！⚠️"
@@ -66,7 +67,8 @@ class PrivateChatGpt:
                 if gpt_answer[0]:  # 如果没有错误
                     self.bot.send_txt_msg(wxid, gpt_answer[1])  # 发送回答
                     logger.info(f'[发送信息]{gpt_answer[1]}| [发送到] {wxid}')
-                    if wxid not in self.admins: self.db.add_points(wxid, -self.private_chat_gpt_price)  # 扣除积分，管理员不扣
+                    if wxid not in self.admins or not self.db.get_whitelist(wxid):
+                        self.db.add_points(wxid, -self.private_chat_gpt_price)  # 扣除积分，管理员不扣
                 else:
                     out_message = f"出现错误⚠️！\n{gpt_answer[1]}"  # 如果有错误，发送错误信息
                     self.bot.send_txt_msg(wxid, out_message)
