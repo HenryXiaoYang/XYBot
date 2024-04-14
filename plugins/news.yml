@@ -1,6 +1,4 @@
 keywords: [ "新闻", "news", "new", "获取新闻" ]
 plugin_name: "news"
 
-#可更改 参考：https://blog.csdn.net/qq_41212530/article/details/85693158
-news_urls: [ "http://c.m.163.com/nc/article/headline/T1348647853363/0-20.html", "https://c.m.163.com/nc/article/headline/T1348649580692/0-20.html", "http://c.3g.163.com/nc/article/list/T1348648517839/0-20.html" ]
-news_number: 3
+news_count: 3

@@ -1,5 +1,9 @@
+from re import finditer
+
 import aiohttp
 import yaml
+from bs4 import BeautifulSoup as bs
+from html2text import html2text
 from loguru import logger
 
 import pywxdll
@@ -12,8 +16,7 @@ class news(PluginInterface):
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
-        self.news_urls = config["news_urls"]  # 新闻url列表
-        self.news_number = config["news_number"]  # 要获取的新闻数量
+        self.news_count = config["news_count"]  # 要获取的新闻数量
 
         main_config_path = "main_config.yml"
         with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
@@ -25,32 +28,53 @@ class news(PluginInterface):
 
     async def run(self, recv):
         try:
-            res = []
+            url = 'https://i.news.qq.com/trpc.qqnews_web.kv_srv.kv_srv_http_proxy/list?sub_srv_id=24hours&srv_id=pc&offset=0&limit=190&strategy=1&ext={"pool":["top","hot"],"is_filter":7,"check_type":true}'
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"}
+
+            # 异步请求新闻数据
             conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
-            for link in self.news_urls:  # 从设置中获取链接列表
-                async with aiohttp.request("GET", url=link, connector=conn_ssl) as req:
-                    res.append(await req.json())
+            async with aiohttp.request('GET', url, headers=headers, connector=conn_ssl) as resp:
+                news_list = await resp.json()
+                await conn_ssl.close()
+
+            out_message = '-----XYBot新闻-----'
+
+            news_list = news_list["data"]["list"]
+
+            for i in range(self.news_count):
+                news_title = news_list[i]["title"]
+                news_url = news_list[i]["url"]
+                media_name = news_list[i]["media_name"]
+                publish_time = news_list[i]["publish_time"]
+
+                news_brief_content = await self.get_news_brief_content(news_url, news_title)
+
+                out_message += f'\n\n📰 {news_title}\nℹ️{news_brief_content}......\n📺{media_name} {publish_time}\n🔗{news_url}'
+
+            self.bot.send_txt_msg(recv['wxid'], out_message)
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
+        except Exception as error:
+            out_message = f'获取新闻失败!⚠️\n{error}'
+            self.bot.send_txt_msg(recv['wxid'], out_message)
+            logger.error(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
+
+    @staticmethod
+    async def get_news_brief_content(url, news_title) -> str:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"}
+        conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
+        async with aiohttp.request('GET', url, headers=headers, connector=conn_ssl) as resp:
+            news_raw_text = await resp.text()
             await conn_ssl.close()
 
-            out_message = "-----XYBot新闻-----\n"
-            for j in res:  # 从新闻列表for
-                for i in range(self.news_number):  # 从设置中获取单类新闻个数
-                    # 获取新闻的信息
-                    dict_key = list(j.keys())
-                    news_title = j[dict_key[0]][i].get("title", "❓未知❓")
-                    news_type = j[dict_key[0]][i].get("tname", "❓未知❓")
-                    news_source = j[dict_key[0]][i].get("source", "无😔")
-                    news_description = j[dict_key[0]][i].get("digest", "无😔")
-                    news_url = j[dict_key[0]][i].get("url", "无😔")
+        soup = bs(news_raw_text, "html.parser")
+        news_text = str(soup.select("div.LEFT div.content.clearfix")[0])
+        news_text = html2text(news_text).replace('\n', ' ').replace(news_title, '').strip()
 
-                    news_output = f"{news_title}\n类型：{news_type}\n来源：{news_source}\n{news_description}...\n链接🔗：{news_url}\n----------\n"
-                    out_message += news_output  # 加入最后输出字符串
+        pattern = r"!\[\]\((.*?)\)"
+        matches = finditer(pattern, news_text)
+        for match in matches:
+            news_text = news_text.replace(match.group(), '')
 
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_txt_msg(recv["wxid"], out_message)  # 发送
-
-
-        except Exception as error:  # 错误处理
-            out_message = f"出现错误！⚠️{error}"
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_txt_msg(recv["wxid"], out_message)
+        return news_text[4:200]
