@@ -3,7 +3,7 @@
 #  This program is licensed under the GNU General Public License v3.0.
 import asyncio
 import os
-from uuid import uuid4
+from random import sample
 
 import yaml
 from PIL import Image, ImageDraw
@@ -76,7 +76,7 @@ class gomoku(PluginInterface):
                 return
 
             # 邀请五子棋游戏
-            game_id = str(uuid4())
+            game_id = self.random_6_char()
             self.gomoku_players[inviter_wxid] = game_id
             self.gomoku_players[invitee_wxid] = game_id
 
@@ -358,6 +358,14 @@ class gomoku(PluginInterface):
 
             out_message = f'-----XYBot-----\n{loser_nick} 落子超时！\n🏆 {player_nick} 获胜！'  # 发送超时信息
             self.send_friend_or_group(recv, out_message, at_to_wxid=winner)
+
+    def random_6_char(self) -> str:
+        while True:
+            chars = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
+                     'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+            char = "".join(sample(chars, 6))
+            if char not in self.gomoku_games.keys():
+                return char
 
     def send_friend_or_group(self, recv, out_message="null", at_to_wxid=''):
         if recv["id1"]:  # 判断是群还是私聊
