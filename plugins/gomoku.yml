@@ -4,6 +4,6 @@ plugin_name: "gomoku"
 create_game_sub_keywords: [ "创建游戏", "创建", "create","邀请","invite" ]
 accept_game_sub_keywords: [ "接受", "accept" ]
 
-play_sub_keywords: [ "下棋", "play" ]
+play_sub_keywords: [ "下棋", "play", "落子" ]
 
 global_timeout: 60 # 单位为秒
