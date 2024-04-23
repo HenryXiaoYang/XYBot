@@ -42,15 +42,18 @@ class news(PluginInterface):
 
             news_list = news_list["data"]["list"]
 
-            for i in range(self.news_count):
-                news_title = news_list[i]["title"]
-                news_url = news_list[i]["url"]
-                media_name = news_list[i]["media_name"]
-                publish_time = news_list[i]["publish_time"]
+            if self.news_count <= len(news_list):
+                for i in range(self.news_count):
+                    news_title = news_list[i]["title"]
+                    news_url = news_list[i]["url"]
+                    media_name = news_list[i]["media_name"]
+                    publish_time = news_list[i]["publish_time"]
 
-                news_brief_content = await self.get_news_brief_content(news_url, news_title)
+                    news_brief_content = await self.get_news_brief_content(news_url, news_title)
 
-                out_message += f'\n\n📰 {news_title}\nℹ️{news_brief_content}......\n📺{media_name} {publish_time}\n🔗{news_url}'
+                    out_message += f'\n\n📰 {news_title}\nℹ️{news_brief_content}......\n📺{media_name} {publish_time}\n🔗{news_url}'
+            else:
+                out_message = '暂无更多新闻!⚠️'
 
             self.bot.send_txt_msg(recv['wxid'], out_message)
             logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
