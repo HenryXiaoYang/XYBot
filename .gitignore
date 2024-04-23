@@ -163,6 +163,7 @@ cython_debug/
 # XYBot
 userpoints.db
 resources/web_api_data.json
+gomoku_board.psd
 
 #Github
-.github/
+
