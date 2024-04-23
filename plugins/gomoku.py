@@ -226,13 +226,13 @@ class gomoku(PluginInterface):
                 if winning[1] == 'black':
                     winner = self.gomoku_games[game_id]['black']
                     winner_nick = self.bot.get_chatroom_nickname(recv["wxid"], winner)["nick"]
-                    out_message = f'-----XYBot-----\n🎉五子棋游戏 {game_id} 结束！🥳\n\n⚫️黑方：{winner} 获胜！🏆'
-                    logger.info(f'[五子棋]游戏 {game_id} 结束 | 胜利者：黑方 {winner_nick}')
+                    out_message = f'-----XYBot-----\n🎉五子棋游戏 {game_id} 结束！🥳\n\n⚫️黑方：{winner_nick} 获胜！🏆'
+                    logger.info(f'[五子棋]游戏 {game_id} 结束 | 胜利者：黑方 {winner}')
                 elif winning[1] == 'white':
                     winner = self.gomoku_games[game_id]['white']
                     winner_nick = self.bot.get_chatroom_nickname(recv["wxid"], winner)["nick"]
-                    out_message = f'-----XYBot-----\n🎉五子棋游戏 {game_id} 结束！🥳\n\n⚪️白方：{winner} 获胜！🏆'
-                    logger.info(f'[五子棋]游戏 {game_id} 结束 | 胜利者：白方 {winner_nick}')
+                    out_message = f'-----XYBot-----\n🎉五子棋游戏 {game_id} 结束！🥳\n\n⚪️白方：{winner_nick} 获胜！🏆'
+                    logger.info(f'[五子棋]游戏 {game_id} 结束 | 胜利者：白方 {winner}')
                 elif winning[1] == 'draw':
                     out_message = f'-----XYBot-----\n🎉五子棋游戏 {game_id} 结束！🥳\n\n平局！⚖️'
                 self.send_friend_or_group(recv, out_message)
