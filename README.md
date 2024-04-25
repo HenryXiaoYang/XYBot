@@ -56,9 +56,7 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 
 这里只展示了一小部分功能，所有功能请见wiki
 
-*
-*[⭐️XYBot用户功能介绍WIKI⭐️](https://github.com/HenryXiaoYang/XYBot/wiki/%E7%94%A8%E6%88%B7%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D)
-**
+**[⭐️XYBot用户功能介绍WIKI⭐️](https://github.com/HenryXiaoYang/XYBot/wiki/%E7%94%A8%E6%88%B7%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D)**
 
 用户功能:🧑‍🏫
 
