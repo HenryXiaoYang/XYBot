@@ -1,12 +1,12 @@
 # XYBot 微信机器人
 
-<div style="text-align: center;">
+<p align="center">
     <img alt="XYBot微信机器人logo" width="240" src="https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/logo/xybot_logo.png?raw=true">
-</div>
+</p>
 
 XYBot是一个基于docker和pywxdll hook注入的微信机器人。😊 具有高度可自定义性，支持自我编写插件。🚀
 
-XYBot提供了多种功能，包括获取天气🌤️、获取新闻📰、ChatGPT聊天🗣️、Hypixel玩家查询🎮、随机图片📷、随机链接🔗、随机群成员👥、签到✅、查询积分📊、积分榜🏆、积分转送💰、积分抽奖🎁、积分红包🧧等。🎉
+XYBot提供了多种功能，包括获取天气🌤️、获取新闻📰、ChatGPT聊天🗣️、Hypixel玩家查询🎮、随机图片📷、随机链接🔗、随机群成员👥、五子棋♟️、签到✅、查询积分📊、积分榜🏆、积分转送💰、积分抽奖🎁、积分红包🧧等。🎉
 
 XYBot拥有独立的经济系统，其中基础货币称为”积分“。💰
 
@@ -17,11 +17,11 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 ✅高度可自定义！
 ✅支持自我编写插件！
 
-<div style="text-align: center;">
+<p align="center">
     <a href="https://opensource.org/licenses/"><img src="https://img.shields.io/badge/License-GPL%20v3-red.svg" alt="GPLv3 License"></a>
     <a href="https://github.com/HenryXiaoYang/XYBot"><img src="https://img.shields.io/badge/Version-0.0.5-orange.svg" alt="Version"></a>
     <a href="https://yangres.com"><img src="https://img.shields.io/badge/Blog-@HenryXiaoYang-yellow.svg" alt="Blog"></a>
-</div>
+</p>
 
 ## 功能列表
 
@@ -34,6 +34,7 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 - 随机图图📷
 - 随机链接🔗
 - 随机群成员👥
+- 五子棋♟️
 - 签到✅
 - 查询积分📊
 - 积分榜🏆
@@ -49,6 +50,7 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 - 获取机器人通讯录📚
 - 获取群成员列表👥
 - 热加载/卸载/重载插件🔄
+- 查看已加载插件ℹ️
 
 ## 功能演示
 
@@ -109,11 +111,7 @@ ChatGPT
 
 #### ARM架构能不能运行?🤔️
 
-~~不行😩~~
-
-可以是可以是，虚拟层自己套吧
-
-真的不嫌烦吗？
+不行
 
 #### 用的什么微信版本?🤔️
 
@@ -125,9 +123,9 @@ ChatGPT
 
 ## XYBot交流群
 
-<div style="text-align: center;">
+<p align="center">
     <img alt="XYBot交流群二维码" width="360" src="https://file.yangres.com/xybot-wechatgroup.jpeg">
-</div>
+</p>
 
 ## Credit
 
@@ -141,7 +139,7 @@ https://github.com/chisbread/wechat-box
 
 ## ⭐️Star History⭐️
 
-<div style="text-align: center">
+<p align="center">
     <picture>
       <source
         media="(prefers-color-scheme: dark)"
@@ -161,5 +159,5 @@ https://github.com/chisbread/wechat-box
         src="https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date"
       />
     </picture>
-</div>
+</p>
 
