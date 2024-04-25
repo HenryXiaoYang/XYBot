@@ -56,8 +56,8 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 
 这里只展示了一小部分功能，所有功能请见wiki
 
-**
-_[⭐️XYBot用户功能介绍WIKI⭐️](https://github.com/HenryXiaoYang/XYBot/wiki/%E7%94%A8%E6%88%B7%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D)_
+*
+*[⭐️XYBot用户功能介绍WIKI⭐️](https://github.com/HenryXiaoYang/XYBot/wiki/%E7%94%A8%E6%88%B7%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D)
 **
 
 用户功能:🧑‍🏫
@@ -87,13 +87,13 @@ ChatGPT
 
 详细教程请查看Wiki
 
-**_[⭐️XYBot部署教程Wiki⭐️](https://github.com/HenryXiaoYang/XYBot/wiki/%E9%83%A8%E7%BD%B2%E6%95%99%E7%A8%8B)_**
+**[⭐️XYBot部署教程Wiki⭐️](https://github.com/HenryXiaoYang/XYBot/wiki/%E9%83%A8%E7%BD%B2%E6%95%99%E7%A8%8B)**
 
 ## 自我编写插件🧑‍💻
 
 请参考模板插件：
 
-**_[⭐️模板插件仓库⭐️](https://github.com/HenryXiaoYang/XYBot-Plugin-Framework)_**
+**[⭐️模板插件仓库⭐️](https://github.com/HenryXiaoYang/XYBot-Plugin-Framework)**
 
 ## FAQ❓❓❓
 
