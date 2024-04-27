@@ -108,6 +108,10 @@ XYBot内置了防微信自动退出登录功能，可以保持长时间运行。
     <img alt="XYBot交流群二维码" width="360" src="https://file.yangres.com/xybot-wechatgroup.jpeg">
 </p>
 
+## XYBot交流群
+
+![xybot-wechatgroup](https://file.yangres.com/xybot-wechatgroup.jpeg)
+
 ## Credit
 
 https://github.com/HenryXiaoYang/pywxdll
