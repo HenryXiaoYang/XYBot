@@ -52,46 +52,6 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 - 热加载/卸载/重载插件🔄
 - 查看已加载插件ℹ️
 
-## 功能演示
-
-这里只展示了一小部分功能，所有功能请见wiki
-
-*
-*[⭐️XYBot用户功能介绍WIKI⭐️](https://github.com/HenryXiaoYang/XYBot/wiki/%E7%94%A8%E6%88%B7%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D)
-**
-
-用户功能:🧑‍🏫
-
-菜单
-![Readme Example Menu](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/readme/readme_menu.png?raw=true)
-
-随机图片
-![Readme Example Random Picture](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/readme/readme_random_pic.png?raw=true)
-
-ChatGPT
-![Readme Example ChatGPT](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/readme/readme_gpt.png?raw=true)
-
-私聊ChatGPT
-![Readme Example Private ChatGPT](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/readme/readme_private_gpt.png?raw=true)
-
-天气查询
-![Readme Example weather](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/readme/readme_weather.png?raw=true)
-
-积分红包
-![Readme Example Red Packet](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/readme/readme_red_packer.png?raw=true)
-
-## XYBot 文档 📄
-
-文档中有完整的功能介绍，部署教程，配置教程，插件编写教程。
-
-**[🔗XYBot 文档](https://henryxiaoyang.github.io/XYBot)**
-
-## 自我编写插件🧑‍💻
-
-请参考模板插件：
-
-**[🔗模板插件仓库️](https://github.com/HenryXiaoYang/XYBot-Plugin-Framework)**
-
 ## FAQ❓❓❓
 
 #### ARM架构能不能运行?🤔️
@@ -116,7 +76,7 @@ XYBot内置了防微信自动退出登录功能，可以保持长时间运行。
     <img alt="XYBot交流群二维码" width="360" src="https://file.yangres.com/xybot-wechatgroup.jpeg">
 </p>
 
-## Credit
+## 特别感谢
 
 https://github.com/HenryXiaoYang/pywxdll
 
