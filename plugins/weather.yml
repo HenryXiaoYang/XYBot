@@ -1,6 +1,7 @@
-keywords: ["天气", "获取天气"]
+keywords: [ "天气", "获取天气" ]
 plugin_name: "weather"
 
-weather_api: "https://v1.yiketianqi.com/free/day"
-weather_appid: ""
-weather_appsecret: ""
+weather_api_key: ""
+
+# 老api改收费了 新的api需要申请，链接：https://dev.qweather.com/
+# 项目订阅选免费订阅即可，把获得到的Key (不是Public ID 而是Private KEY) 填到上面引号中

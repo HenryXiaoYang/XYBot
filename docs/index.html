@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XYBot文档</title>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+    <meta content="Description" name="description">
+    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0" name="viewport">
+
+    <link href="xybot_logo_32x32.png" rel="shortcut icon">
+
+    <link href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css" rel="stylesheet">
+    <link href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar-folder.min.css" rel="stylesheet"/>
+</head>
+<body>
+<div id="app">🏃加载中...🏃</div>
+<script>
+    window.$docsify = {
+        name: 'XYBot🤖',
+        repo: 'https://github.com/HenryXiaoYang/XYBot',
+
+        mergeNavbar: true,
+
+        search: {
+            paths: 'auto',
+            placeholder: '🔍 搜索',
+            noData: '😒 找不到结果',
+            // Headline depth, 1 - 6
+            depth: 6,
+            maxAge: 86400000, // 过期时间，单位毫秒，默认一天
+        },
+
+        chat: {
+            title: 'XYBot🤖',
+            users: [
+                {nickname: 'HenryXiaoYang', avatar: 'https://avatars.githubusercontent.com/u/83214045?v=4&size=100'},
+                {
+                    nickname: 'XYBot',
+                    avatar: 'https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/logo/xybot_logo_tiny.png?raw=true'
+                },
+                {
+                    nickname: 'XYBot(好友私聊)',
+                    avatar: 'https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/logo/xybot_logo_tiny.png?raw=true'
+                },
+                {
+                    nickname: 'JoshuaZ',
+                    avatar: 'https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/wiki/function_introduction/joshuaz_avatar.jpg?raw=true'
+                },
+                {nickname: 'Omitted', avatar: ''}
+            ],
+        },
+
+        count: {
+            countable: true,
+            position: 'top',
+            margin: '10px',
+            float: 'left',
+            fontsize: '0.9em',
+            color: 'rgb(90,90,90)',
+            language: 'chinese',
+            localization: {
+                words: "",
+                minute: ""
+            },
+            isExpected: true
+        },
+
+        loadSidebar: true,
+        alias: {
+            '/.*/_sidebar.md': '/_sidebar.md',
+        },
+        subMaxLevel: 3,
+        sidebarDisplayLevel: 1
+    }
+</script>
+
+<!-- Docsify -->
+<script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
+
+<!-- Dociify Search -->
+<script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+
+<!-- Docsify Chat -->
+<script src="//cdn.jsdelivr.net/npm/docsify-chat/lib/docsify-chat.min.js"></script>
+
+<!-- Docsify Word Count -->
+<script src="//cdn.jsdelivr.net/npm/docsify-count@latest/dist/countable.min.js"></script>
+
+<!-- Docsify Image Zoom -->
+<script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+
+<!-- Emoji Support -->
+<script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
+
+<!-- Click to Copy -->
+<script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+
+<!-- Pangu -->
+<script src="//cdn.jsdelivr.net/npm/docsify-pangu/lib/pangu.min.js"></script>
+
+<!-- Docsify Sidebar Collapse -->
+<script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+
+<!-- Multiple tab support -->
+<script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1/dist/docsify-tabs.min.js"></script>
+
+</body>
+</html>

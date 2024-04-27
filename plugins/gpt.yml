@@ -1,11 +1,6 @@
 keywords: [ "gpt","GPT","ChatGPT","chatgpt","CHATGPT","gpt3","GPT3","ChatGPT3","chatgpt3","CHATGPT3","gpt3.5","GPT3.5","ChatGPT3.5","chatgpt3.5","CHATGPT3.5" ]
 plugin_name: "gpt"
 
-#ChatGPT的API网址
-openai_api_base: ""
-#ChatGPT API的Key
-openai_api_key: ""
-
 gpt_point_price: 3
 
 gpt_version: 'gpt-3.5-turbo'

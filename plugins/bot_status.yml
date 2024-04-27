@@ -1,4 +1,4 @@
-keywords: ["机器人状态","bottest"]
+keywords: [ "机器人状态","bottest" ]
 plugin_name: "bot_status"
 
 status_message: "Bot Running😊"
