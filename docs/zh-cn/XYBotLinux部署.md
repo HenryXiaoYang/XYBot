@@ -63,7 +63,7 @@ docker run -it --name wechat-service-xybot  \
     -e TARGET_AUTO_RESTART="yes" \
     -e INJ_CONDITION="[ \"\`sudo netstat -tunlp | grep 5555\`\" != '' ] && exit 0 ; sleep 5 ; curl 'http://127.0.0.1:8680/hi' 2>/dev/null | grep -P 'code.:0'" \
     -e TARGET_CMD=wechat-start \
-    -p 4001:8080 -p 5556:5555 -p 5901:5900 \
+    -p 4000:8080 -p 5555:5555 -p 5900:5900 \
     --add-host=dldir1.qq.com:127.0.0.1 \
     -v XYBot:/home/app/XYBot \
     henryxiaoyang/wechat-service-xybot:latest
