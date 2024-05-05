@@ -73,7 +73,15 @@ docker run -it --name wechat-service-xybot  \
 
 在浏览器中打开`http://<你的ip地址>:4000/vnc.html`访问VNC。
 
+![VNC Bypass Version Check](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/wiki/xybot_linux_deployment/vnc_bypass_ver_check_1.jpg?raw=true)
+
+如图，把窗口中`原版本号`修改为`3.6.0.18`。
+
+点击右边`微信低版本通杀`启动微信。
+
 扫描微信二维码并登录。
+
+!>如果遇到微信崩溃，可以重启容器重新按步骤登陆。
 
 ### 6. 配置XYBot设置
 
@@ -94,6 +102,10 @@ docker restart wechat-service-xybot
 修改主设置后需要重启容器。重启后需要访问VNC重新扫码并登陆微信！
 
 ### 8. 测试是否部署成功
+
+登陆后等待大约1分钟后，微信hook的dll会自动注入。注入后XYBot开始运行。
+
+?> 可查看docker容器日志确认是否成功注入。
 
 在微信中向XYBot私聊`/菜单`，如果返回菜单则部署成功。
 
