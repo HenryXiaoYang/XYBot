@@ -9,4 +9,4 @@
 - 非常多的功能：天气🌤️、获取新闻📰、ChatGPT聊天🗣️、Hypixel玩家查询🎮、随机图片📷、随机链接🔗、随机群成员👥、五子棋♟️、签到✅、查询积分📊、积分榜🏆、积分转送💰、积分抽奖🎁、积分红包🧧等 
 
 [GitHub](https://github.com/HenryXiaoYang/XYBot)
-[开始使用](#XYBot介绍)
+[开始使用](README.md)
