@@ -34,7 +34,7 @@ class BotDatabase:
         )  # 连接数据库
 
         # 检测数据库是否有正确的列
-        logger.info("[数据库]正在检测数据库是否有正确的列")
+        logger.info("[数据库]检测数据库是否有正确的列")
         correct_columns = {'WXID': ' TEXT PRIMARY KEY', 'POINTS': ' INT', 'SIGNINSTAT': ' INT', 'WHITELIST': ' INT',
                            'PRIVATE_GPT_DATA': ' TEXT'}
         cursor = self.database.cursor()
@@ -334,3 +334,43 @@ class BotDatabase:
             logger.info(f"[数据库] {wxid} 私聊GPT数据已保存")
         finally:
             cursor.close()
+
+    def _add_column(self, column_name: str, column_type: str) -> None:
+        cursor = self.database.cursor()
+
+        try:
+            cursor.execute(f"ALTER TABLE USERPOINTS ADD COLUMN {column_name} {column_type}")
+            self.database.commit()
+            logger.info(f"[数据库] 已添加列 {column_name}")
+        finally:
+            cursor.close()
+
+    def add_column(self, column_name: str, column_type: str) -> None:
+        return self._execute_in_queue(self._add_column, column_name, column_type)
+
+    def _remove_column(self, column_name: str) -> None:
+        cursor = self.database.cursor()
+
+        try:
+            cursor.execute(f"ALTER TABLE USERPOINTS DROP COLUMN {column_name}")
+            self.database.commit()
+            logger.info(f"[数据库] 已删除列 {column_name}")
+        finally:
+            cursor.close()
+
+    def remove_column(self, column_name: str) -> None:
+        return self._execute_in_queue(self._remove_column, column_name)
+
+    def _get_columns(self) -> list:
+        cursor = self.database.cursor()
+
+        try:
+            cursor.execute("PRAGMA table_info(USERPOINTS)")
+            columns = cursor.fetchall()
+            column_names = [column[1] for column in columns]
+            return column_names
+        finally:
+            cursor.close()
+
+    def get_columns(self) -> list:
+        return self._execute_in_queue(self._get_columns)
