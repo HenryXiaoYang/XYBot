@@ -84,7 +84,7 @@ async def main():
                 logger.success("机器人微信账号已登录！")
         except:
             logger.warning(
-                f"机器人微信账号未登录！请使用浏览器访问 http://{ip}:4000/vnc.html 扫码登陆微信"
+                f"机器人微信账号未登录！如果使用了Docker部署，请使用浏览器访问 http://{ip}:4000/vnc.html 扫码登陆微信"
             )
             time.sleep(3)
     logger.info("已确认微信已登陆，开始启动XYBot")
