@@ -89,8 +89,6 @@ async def main():
             time.sleep(3)
     logger.info("已确认微信已登陆，开始启动XYBot")
 
-    bot.start()  # 开启机器人
-
     asyncio.create_task(start_api_server()).add_done_callback(callback)  # 开启web api服务
     web_api_data = WebApiData()
 
