@@ -49,6 +49,9 @@ class gomoku(PluginInterface):
             await self.accept_game(recv)
         elif sub_keyword in self.play_game_sub_keywords:
             await self.play_game(recv)
+        else:
+            out_message = '-----XYBot-----\n❌指令格式错误!'
+            self.send_friend_or_group(recv, out_message)
 
     async def create_game(self, recv):
         error = ''
