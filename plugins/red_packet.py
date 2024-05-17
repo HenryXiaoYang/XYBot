@@ -2,6 +2,7 @@ import os
 import random
 import time
 
+import schedule
 import yaml
 from captcha.image import ImageCaptcha
 from loguru import logger
@@ -40,9 +41,10 @@ class red_packet(PluginInterface):
 
         self.red_packets = {}  # 红包列表
 
-    async def run(self, recv):
-        self.check_left_red_packet()  # 检查是否有超时红包
+        # 定时任务 检查是否有超时红包
+        schedule.every(self.max_time).seconds.do(self.check_left_red_packet)
 
+    async def run(self, recv):
         if len(recv["content"]) == 3:  # 判断是否为红包指令
             self.send_red_packet(recv)
         elif len(recv["content"]) == 2:  # 判断是否为抢红包指令
@@ -235,6 +237,7 @@ class red_packet(PluginInterface):
         return parts
 
     def check_left_red_packet(self):  # 检查是否有超时红包
+        logger.info("[计划任务]检查是否有超时的红包")
         for key in list(self.red_packets.keys()):
             if (
                     time.time() - self.red_packets[key]["time"] > self.max_time
