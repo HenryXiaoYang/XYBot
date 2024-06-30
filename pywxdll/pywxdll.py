@@ -1,7 +1,7 @@
+import platform
 import subprocess
 
 import requests
-from pymem import Pymem
 
 from utils.web_api_data import WebApiData
 from .pywxdll_json import *
@@ -21,7 +21,7 @@ class Pywxdll:
         self.windows_wechat_start_path = "pywxdll/StartWxAndInject_Windows.exe"
         self.dll_path = "pywxdll/wxhelper-3.9.5.81-v11.dll"
         self.injection_process_name = "WeChat.exe"
-        self.wechatVersionFixPath = "pywxdll/wechatVersionFix.exe"
+        self.wechatVersionFixPath = "pywxdll/fixWechatVersion.py"
 
         self._web_api_data = WebApiData()
 
@@ -58,27 +58,16 @@ class Pywxdll:
         This function is to fix the WeChat version
         :return: True if success, Flase if failed.
         """
-        ADDRS = [0x3A70FD4, 0x3A878DC, 0x3AA0508, 0x3AC85F0, 0x3ACF3D8, 0x3AD1908]
+        if platform.system() == 'Windows':
+            pythonCommand = 'python'
+        else:
+            pythonCommand = 'wine python'
 
-        try:
-            pm = Pymem("WeChat.exe")
-            WeChatWindll_base = 0
-            for m in list(pm.list_modules()):
-                path = m.filename
-                if path.endswith("WeChatWin.dll"):
-                    WeChatWindll_base = m.lpBaseOfDll
-                    break
+        result = subprocess.run(f"{pythonCommand} {self.wechatVersionFixPath}", shell=True, stdout=subprocess.PIPE)
 
-            for offset in ADDRS:
-                addr = WeChatWindll_base + offset
-                v = pm.read_uint(addr)
-                if v != 0x63090551:
-                    raise Exception("Wrong wechat version, need 3.9.5.81")
-                else:
-                    pm.write_uint(addr, 0x63090A13)
-
+        if 'Fix Success' in result:
             return True
-        except:
+        else:
             return False
 
     def rawIsLoggedIn(self) -> dict:
