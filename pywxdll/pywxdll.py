@@ -25,7 +25,7 @@ class Pywxdll:
 
         self._web_api_data = WebApiData()
 
-    def _inject_dll(self):
+    def docker_inject_dll(self):
         """
         This function is to inject the wxhelper dll into WeChat process in Docker environment
         :return: True if success, False if failed.
@@ -36,12 +36,13 @@ class Pywxdll:
 
         # The injector has a bug that it returns Call to LoadLibraryW
         # in remote process failed even if the injection is successful.
+        result = str(result.stdout)
         if "Call to LoadLibraryW in remote process failed." in result or "Successfully injected module!" in result:
             return True
         else:
             return False
 
-    def _start_wechat_and_inject(self):
+    def windows_start_wechat_and_inject(self):
         """
         This function is to start WeChat and inject the wxhelper dll on Windows environment
         :return:
@@ -49,12 +50,12 @@ class Pywxdll:
         result = subprocess.run(f"{self.windows_wechat_start_path} {self.dll_path} {self.port}", shell=True,
                                 stdout=subprocess.PIPE)
 
-        if result:
+        if str(result.stdout):
             return True
         else:
             return False
 
-    def _fix_wechat_version(self) -> bool:
+    def fix_wechat_version(self) -> bool:
         """
         This function is to fix the WeChat version
         :return: True if success, Flase if failed.
@@ -66,7 +67,7 @@ class Pywxdll:
 
         result = subprocess.run(f"{pythonCommand} {self.wechat_version_fix_path}", shell=True, stdout=subprocess.PIPE)
 
-        if 'Fix Success' in result:
+        if 'Fix Success' in str(result.stdout):
             return True
         else:
             return False
