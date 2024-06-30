@@ -4,19 +4,19 @@ import json
 # 发送txt消息到个人或群 wxid为用户id或群id content为发送内容  Send txt message to a wxid(perosnal or group)
 
 
-def jsonIsLoggedIn():
+def json_is_logged_in():
     para = {
     }
     return json.dumps(para)
 
 
-def jsonGetLoggedInAccountInfo():
+def json_get_logged_in_account_info():
     para = {
     }
     return json.dumps(para)
 
 
-def jsonSendTextMsg(wxid: str, msg: str):
+def json_send_text_msg(wxid: str, msg: str):
     para = {
         "wxid": wxid,
         "msg": msg
@@ -24,260 +24,260 @@ def jsonSendTextMsg(wxid: str, msg: str):
     return json.dumps(para)
 
 
-def jsonSendImageMsg(wxid: str, imagePath: str):
+def json_send_image_msg(wxid: str, image_path: str):
     para = {
         "wxid": wxid,
-        "imagePath": imagePath
+        "imagePath": image_path
     }
     return json.dumps(para)
 
 
-def jsonSendFileMsg(wxid: str, filePath: str):
+def json_send_file_msg(wxid: str, file_path: str):
     para = {
         "wxid": wxid,
-        "filePath": filePath
+        "filePath": file_path
     }
     return json.dumps(para)
 
 
-def jsonStartHookMsg(port: int, ip: str, url: str, timeout: int, enableHttp: bool):
+def json_start_hook_msg(port: int, ip: str, url: str, timeout: int, enable_http: bool):
     para = {
         "port": str(port),
         "ip": ip,
         "url": url,
         "timeout": str(timeout),
-        "enableHttp": str(int(enableHttp))
+        "enableHttp": str(int(enable_http))
     }
     return json.dumps(para)
 
 
-def jsonStopHookMsg():
+def json_stop_hook_msg():
     para = {}
     return json.dumps(para)
 
 
-def jsonGetContactList():
+def json_get_contact_list():
     para = {}
     return json.dumps(para)
 
 
-def jsonGetDBInfo():
+def json_get_db_info():
     para = {}
     return json.dumps(para)
 
 
-def jsonExecSql(dbHandle: int, sql: str):
+def json_exec_sql(db_handle: int, sql: str):
     para = {
-        "dbHandle": dbHandle,
+        "dbHandle": db_handle,
         "sql": sql
     }
     return json.dumps(para)
 
 
-def jsonGetChatRoomDetailInfo(chatRoomId: str):
+def json_get_chatroom_detail_info(chatroom_id: str):
     para = {
-        "chatRoomId": chatRoomId
+        "chatRoomId": chatroom_id
     }
     return json.dumps(para)
 
 
-def jsonAddMemberToChatRoom(chatRoomId: str, wxids: list):
+def json_add_member_to_chatroom(chatroom_id: str, wxids: list):
     para = {
-        "chatRoomId": chatRoomId,
+        "chatRoomId": chatroom_id,
         "memberIds": ','.join(wxids)
     }
     return json.dumps(para)
 
 
-def jsonModifyNickname(chatRoomId: str, wxid: str, nickName: str):
+def json_modify_nickname(chatroom_id: str, wxid: str, nickname: str):
     para = {
-        "chatRoomId": chatRoomId,
+        "chatRoomId": chatroom_id,
         "wxid": wxid,
-        "nickName": nickName
+        "nickName": nickname
     }
     return json.dumps(para)
 
 
-def jsonDelMemberFromChatRoom(chatRoomId: str, wxids: list):
+def json_del_member_from_chatroom(chatroom_id: str, wxids: list):
     para = {
-        "chatRoomId": chatRoomId,
+        "chatRoomId": chatroom_id,
         "memberIds": ','.join(wxids)
     }
     return json.dumps(para)
 
 
-def jsonGetMemberFromChatRoom(chatRoomId: str):
+def json_get_member_from_chatroom(chatroom_id: str):
     para = {
-        "chatRoomId": chatRoomId
+        "chatRoomId": chatroom_id
     }
     return json.dumps(para)
 
 
-def jsonTopMsg(msgId: str):
+def json_top_msg(msg_id: str):
     para = {
-        "msgId": msgId
+        "msgId": msg_id
     }
     return json.dumps(para)
 
 
-def jsonRemoveTopMsg(msgId: str, chatRoomId: str):
+def json_remove_top_msg(msg_id: str, chatroom_id: str):
     para = {
-        "msgId": msgId,
-        "chatRoomId": chatRoomId
+        "msgId": msg_id,
+        "chatRoomId": chatroom_id
     }
     return json.dumps(para)
 
 
-def jsonInviteMemberToChatRoom(chatRoomId: str, wxids: list):
+def json_invite_member_to_chatroom(chatroom_id: str, wxids: list):
     para = {
-        "chatRoomId": chatRoomId,
+        "chatRoomId": chatroom_id,
         "memberIds": ','.join(wxids)
     }
     return json.dumps(para)
 
 
-def jsonHookLog():
+def json_hook_log():
     para = {}
     return json.dumps(para)
 
 
-def jsonUnhookLog():
+def json_unhook_log():
     para = {}
     return json.dumps(para)
 
 
-def jsonCreateChatroom(wxids: list):
+def json_create_chatroom(wxids: list):
     para = {
         "memberIds": ','.join(wxids)
     }
     return json.dumps(para)
 
 
-def jsonQuitChatroom(chatRoomId: str):
+def json_quit_chatroom(chatroom_id: str):
     para = {
-        "chatRoomId": chatRoomId
+        "chatRoomId": chatroom_id
     }
     return json.dumps(para)
 
 
-def jsonForwardMsg(wxid: str, msgId: str):
+def json_forward_msg(wxid: str, msg_id: str):
     para = {
         "wxid": wxid,
-        "msgId": msgId
+        "msgId": msg_id
     }
     return json.dumps(para)
 
 
-def jsonGetSNSFirstPage():
+def json_get_sns_first_page():
     para = {}
     return json.dumps(para)
 
 
-def jsonGetSNSNextPage(snsId: int):
+def json_get_sns_next_page(sns_id: int):
     para = {
-        "snsId": snsId
+        "snsId": sns_id
     }
     return json.dumps(para)
 
 
-def jsonAddFavFromMsg(msgId: str):
+def json_add_fav_from_msg(msg_id: str):
     para = {
-        "msgId": msgId
+        "msgId": msg_id
     }
     return json.dumps(para)
 
 
-def jsonAddFavFromImage(wxid: str, imagePath: str):
+def json_add_fav_from_image(wxid: str, image_path: str):
     para = {
         "wxid": wxid,
-        "imagePath": imagePath
+        "imagePath": image_path
     }
     return json.dumps(para)
 
 
-def jsonSendAtMsg(chatRoomId: str, msg: str, wxids: list):
+def json_send_at_msg(chatroom_id: str, msg: str, wxids: list):
     para = {
-        "chatRoomId": chatRoomId,
+        "chatRoomId": chatroom_id,
         "msg": msg,
         "wxids": ','.join(wxids)
     }
     return json.dumps(para)
 
 
-def jsonGetContactProfile(wxid: str):
+def json_get_contact_profile(wxid: str):
     para = {
         "wxid": wxid
     }
     return json.dumps(para)
 
 
-def jsonSendPublicMsg(wxid: str, appName: str, userName: str, title: str, url: str, thumbUrl: str, digest: str):
+def json_send_public_msg(wxid: str, app_name: str, username: str, title: str, url: str, thumb_url: str, digest: str):
     para = {
         "wxid": wxid,
-        "appName": appName,
-        "userName": userName,
+        "appName": app_name,
+        "userName": username,
         "title": title,
         "url": url,
-        "thumbUrl": thumbUrl,
+        "thumbUrl": thumb_url,
         "digest": digest
     }
     return json.dumps(para)
 
 
-def jsonForwardPublicMsgByMsgId(wxid: str, msgId: str):
+def json_forward_public_msg_by_msg_id(wxid: str, msg_id: str):
     para = {
         "wxid": wxid,
-        "msgId": msgId
+        "msgId": msg_id
     }
     return json.dumps(para)
 
 
-def jsonDownloadAttach(msgId: str):
+def json_download_attach(msg_id: str):
     para = {
-        "msgId": msgId,
+        "msgId": msg_id,
     }
     return json.dumps(para)
 
 
-def jsonDecodeImage(filePath: str, storeDir: str):
+def json_decode_image(file_path: str, store_dir: str):
     para = {
-        "filePath": filePath,
-        "storeDir": storeDir
+        "filePath": file_path,
+        "storeDir": store_dir
     }
     return json.dumps(para)
 
 
-def jsonGetVoiceByMsgId(msgId: str, storeDir: str):
+def json_get_voice_by_msg_id(msg_id: str, store_dir: str):
     para = {
-        "msgId": msgId,
-        "storeDir": storeDir
+        "msgId": msg_id,
+        "storeDir": store_dir
     }
     return json.dumps(para)
 
 
-def jsonSendCustomEmotion(wxid: str, filePath: str):
-    para = {
-        "wxid": wxid,
-        "filePath": filePath
-    }
-    return json.dumps(para)
-
-
-def jsonSendApplet(wxid: str, waidConcat: str, appletWxid: str, jsonParam: str, headImgUrl: str, mainImg: str,
-                   indexPage: str):
+def json_send_custom_emotion(wxid: str, file_path: str):
     para = {
         "wxid": wxid,
-        "waidConcat": waidConcat,
-        "appletWxid": appletWxid,
-        "jsonParam": jsonParam,
-        "headImgUrl": headImgUrl,
-        "mainImg": mainImg,
-        "indexPage": indexPage
+        "filePath": file_path
     }
     return json.dumps(para)
 
 
-def jsonSendPatMsg(wxid: str, patter: str):
+def json_send_applet(wxid: str, waid_concat: str, applet_wxid: str, json_param: str, head_img_url: str, main_img: str,
+                     index_page: str):
+    para = {
+        "wxid": wxid,
+        "waidConcat": waid_concat,
+        "appletWxid": applet_wxid,
+        "jsonParam": json_param,
+        "headImgUrl": head_img_url,
+        "mainImg": main_img,
+        "indexPage": index_page
+    }
+    return json.dumps(para)
+
+
+def json_send_pat_msg(wxid: str, patter: str):
     para = {
         "wxid": wxid,
         "receiver": patter
@@ -285,8 +285,8 @@ def jsonSendPatMsg(wxid: str, patter: str):
     return json.dumps(para)
 
 
-def jsonOCR(imagePath: str):
+def json_ocr(image_path: str):
     para = {
-        "imagePath": imagePath
+        "imagePath": image_path
     }
     return json.dumps(para)
