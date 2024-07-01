@@ -1,17 +1,18 @@
-#Version 0.0.6
-bot_version: "v0.0.6"
+#Version 0.0.7
+bot_version: "v0.0.7"
 
 # XYBot主设置
 
 #如果不知道自己在干什么请别动这两行
 ip: 127.0.0.1
-port: 5555
+port: 19088
+tcp_server_port: 19089
 
 admins: [ "" ]
 
 max_worker: 25
 
-command_prefix: "/" #如果需要前缀，则必须为一个字符。如果不需要前缀可设置为空，即 ""。如果前缀为空，则私聊GPT功能无法使用。
+command_prefix: "" #如果需要前缀，则必须为一个字符。如果不需要前缀可设置为空，即 ""。
 
 excluded_plugins: [ "" ]
 

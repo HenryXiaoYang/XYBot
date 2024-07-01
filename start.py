@@ -66,6 +66,7 @@ async def main():
 
     ip = config["ip"]
     port = config["port"]
+    tcp_server_port = config["tcp_server_port"]
 
     max_worker = config["max_worker"]
 
@@ -111,6 +112,7 @@ async def main():
         logger.error("修复微信版本过低问题失败！")
         sys.exit(1)
 
+
     # 检查是否登陆了微信
     logger.info("开始检测微信是否登陆")
     while not bot.is_logged_in():
@@ -139,6 +141,8 @@ async def main():
     logger.info("已加载所有计划，并开始后台运行")
 
     # ---- 启动tcp服务器并开始接受处理消息 ---- #
+    bot.start_hook_msg(tcp_server_port, '127.0.0.1')
+
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind(('127.0.0.1', port))
     server_socket.listen(max_worker)
