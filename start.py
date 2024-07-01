@@ -157,11 +157,11 @@ async def main():
 
                 message = b""
                 while True:
-                    message += client_socket.recv(1024).decode('utf-8')
+                    message += client_socket.recv(1024)
                     if len(message) == 0 or message[-1] == 0xA:
                         break
                 client_socket.close()
-                message_json = json.loads(message)
+                message_json = json.loads(message.decode('utf-8'))
                 logger.info(f"[收到消息]:{message_json}")
                 web_api_data.update_data('received_message_count',web_api_data.get_data()['received_message_count'] + 1)
                 asyncio.create_task(
