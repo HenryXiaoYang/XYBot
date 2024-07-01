@@ -68,6 +68,8 @@ class XYBot:
 
             recv['atUserList'] = []
 
+        logger.info(f"[收到文本消息]:{recv}")
+
         # 开始处理
         if not self.ignorance_check(recv):  # 判断是否不在屏蔽内
             return
@@ -106,7 +108,7 @@ class XYBot:
             else:
                 return False
 
-        elif self.ignorance_mode == 'whitelist': # 白名单
+        elif self.ignorance_mode == 'whitelist':  # 白名单
             if recv['sender'] in self.ignorance_whitelist:
                 return True
             else:

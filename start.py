@@ -38,7 +38,6 @@ async def message_handler(client_socket, handlebot, web_api_data):  # 处理收�
             break
     client_socket.close()
     message_json = json.loads(message.decode('utf-8'))
-    logger.info(f"[收到消息]:{message_json}")
     web_api_data.update_data('received_message_count', web_api_data.get_data()['received_message_count'] + 1)
 
     await asyncio.create_task(handlebot.message_handler(message_json))
