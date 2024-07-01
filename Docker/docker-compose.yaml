@@ -1,0 +1,16 @@
+version: "3.3"
+
+services:
+    xybot:
+        image: "henryxiaoyang/xybot:latest"
+        restart: unless-stopped
+        container_name: "XYBot"
+        environment:
+            WC_AUTO_RESTART: "yes"
+        ports:
+            - "4000:8080"
+            - "19088:19088"
+        volumes:
+              - "XYBot:/home/app/XYBot/"
+              - "XYBot-wechatfiles:/home/app/WeChat Files/"
+        tty: true

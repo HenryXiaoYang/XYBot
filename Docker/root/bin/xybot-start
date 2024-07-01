@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+cd /home/app/XYBot || exit
+python3 start.py
