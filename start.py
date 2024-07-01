@@ -91,17 +91,25 @@ async def main():
         logger.error(possible_error)
         sys.exit(1)
 
+    inject_result = False
     if system == "Windows":
-        bot.windows_start_wechat_and_inject()
+        inject_result = bot.windows_start_wechat_and_inject()
     elif system == "Linux":
-        bot.docker_inject_dll()
+        inject_result = bot.docker_inject_dll()
 
     time.sleep(5)  # 等待注入完毕
-    logger.info("已注入微信Hook")
+    if inject_result:
+        logger.info("已注入微信Hook")
+    else:
+        logger.error("注入微信Hook失败！")
+        sys.exit(1)
 
     # 修复微信版本过低问题
-    bot.fix_wechat_version()
-    logger.info("已修复微信版本过低问题")
+    if bot.fix_wechat_version():
+        logger.info("已修复微信版本过低问题")
+    else:
+        logger.error("修复微信版本过低问题失败！")
+        sys.exit(1)
 
     # 检查是否登陆了微信
     logger.info("开始检测微信是否登陆")
