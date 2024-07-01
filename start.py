@@ -146,7 +146,7 @@ async def main():
     bot.start_hook_msg(tcp_server_port, '127.0.0.1')
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(('127.0.0.1', port))
+    server_socket.bind(('127.0.0.1', tcp_server_port))
     server_socket.listen(max_worker)
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_worker):
         logger.success("机器人启动成功！")
