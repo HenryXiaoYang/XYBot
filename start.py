@@ -2,10 +2,12 @@ import asyncio
 import concurrent.futures
 import json
 import os
+import platform
+import socket
+import sys
 import time
 
 import schedule
-import websockets
 import yaml
 from loguru import logger
 from uvicorn import Config, Server
@@ -69,25 +71,45 @@ async def main():
 
     logger.info("读取设置成功")
 
-    # ---- 机器人实例化 登陆监测 机器人启动 ---- #
+    # ---- 微信Hook注入 修复微信版本过低问题 机器人实例化 登陆监测 机器人启动 ---- #
 
     bot = pywxdll.Pywxdll(ip, port)
     logger.info("机器人实例化成功")
 
+    # 微信Hook注入
+    logger.info("开始注入Hook")
+    possible_error = ''
+    system = platform.system()
+    if platform.architecture()[0] != "64bit":
+        possible_error = "不支持的操作系统，需要64位。"
+    elif not (sys.maxsize > 2 ** 32):
+        possible_error = "需要64位Python。"
+    elif system != "Windows" or system != "Linux":
+        possible_error = "不支持的操作系统"
+
+    if possible_error:
+        logger.error(possible_error)
+        sys.exit(1)
+
+    if system == "Windows":
+        bot.windows_start_wechat_and_inject()
+    elif system == "Linux":
+        bot.docker_inject_dll()
+
+    time.sleep(5)  # 等待注入完毕
+    logger.info("已注入微信Hook")
+
+    # 修复微信版本过低问题
+    bot.fix_wechat_version()
+    logger.info("已修复微信版本过低问题")
+
     # 检查是否登陆了微信
     logger.info("开始检测微信是否登陆")
-    logged_in = False
-    while not logged_in:
-        try:
-            if bot.get_personal_detail("filehelper"):
-                logged_in = True
-                logger.success("机器人微信账号已登录！")
-        except:
-            logger.warning(
-                f"机器人微信账号未登录！如果使用了Docker部署，请使用浏览器访问 http://{ip}:4000/vnc.html 扫码登陆微信"
-            )
-            time.sleep(3)
-    logger.info("已确认微信已登陆，开始启动XYBot")
+    while not bot.is_logged_in():
+        logger.warning("机器人微信账号未登录！请扫码登陆微信。")
+        time.sleep(3)
+
+    logger.success("已确认微信已登陆，开始启动XYBot")
 
     asyncio.create_task(start_api_server()).add_done_callback(callback)  # 开启web api服务
     web_api_data = WebApiData()
@@ -108,25 +130,31 @@ async def main():
     )  # 开启计划等待判定线程
     logger.info("已加载所有计划，并开始后台运行")
 
-    # ---- 进入获取聊天信息并处理循环 ---- #
-    async with websockets.connect(f"ws://{ip}:{port}") as websocket:
+    # ---- 启动tcp服务器并开始接受处理消息 ---- #
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind(('127.0.0.1', port))
+    server_socket.listen(max_worker)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_worker):
         logger.success("机器人启动成功！")
         logger.debug(f"线程池大小应为{max_worker}")
-        with concurrent.futures.ThreadPoolExecutor(max_workers=max_worker):
-            while True:
-                try:
-                    recv = json.loads(await websocket.recv())
-                    r_type = recv["type"]
-                    if r_type == 1 or r_type == 3 or r_type == 49:
-                        logger.info(f"[收到消息]:{recv}")
-                        web_api_data.update_data('received_message_count',
-                                                 web_api_data.get_data()['received_message_count'] + 1)
-                        if isinstance(recv["content"], str):  # 判断是否为txt消息
-                            asyncio.create_task(
-                                message_handler(recv, handlebot)
-                            ).add_done_callback(callback)
-                except Exception as error:
-                    logger.error(f"出现错误: {error}")
+        while True:
+            try:
+                client_socket, address = server_socket.accept()
+
+                message = b""
+                while True:
+                    message += client_socket.recv(1024).decode('utf-8')
+                    if len(message) == 0 or message[-1] == 0xA:
+                        break
+                client_socket.close()
+                message_json = json.loads(message)
+                logger.info(f"[收到消息]:{message_json}")
+                web_api_data.update_data('received_message_count',web_api_data.get_data()['received_message_count'] + 1)
+                asyncio.create_task(
+                    message_handler(message, handlebot)
+                ).add_done_callback(callback)
+            except Exception as error:
+                logger.error(f"出现错误: {error}")
 
 
 if __name__ == "__main__":
