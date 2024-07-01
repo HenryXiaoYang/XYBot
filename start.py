@@ -106,12 +106,14 @@ async def main():
         sys.exit(1)
 
     # 修复微信版本过低问题
-    if bot.fix_wechat_version():
-        logger.info("已修复微信版本过低问题")
+    if not bot.is_logged_in():
+        if bot.fix_wechat_version():
+            logger.info("已修复微信版本过低问题")
+        else:
+            logger.error("修复微信版本过低问题失败！")
+            sys.exit(1)
     else:
-        logger.error("修复微信版本过低问题失败！")
-        sys.exit(1)
-
+        logger.info("已登陆，不需要修复微信版本过低问题")
 
     # 检查是否登陆了微信
     logger.info("开始检测微信是否登陆")
