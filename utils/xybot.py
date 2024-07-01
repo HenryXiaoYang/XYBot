@@ -4,6 +4,7 @@
 
 import asyncio
 
+import xmltodict
 import yaml
 from loguru import logger
 
@@ -35,48 +36,80 @@ class XYBot:
         self.enable_private_chat_gpt = main_config['enable_private_chat_gpt']
 
     async def message_handler(self, recv) -> None:
+        if recv['type'] == 1:  # 是文本消息
+            await self.text_message_handler(recv)
+
+    async def text_message_handler(self, recv) -> None:
+        # 预处理消息
+        recv['signature'] = xmltodict.parse(recv['signature'].replace('\n', '').replace('\t', ''))
+
+        if recv['fromUser'].endswith('@chatroom'):
+            recv['fromType'] = 'chatroom'
+        else:
+            recv['fromType'] = 'friend'
+
+        if recv['fromType'] == 'chatroom':
+            split_result = recv['content'].split(":\n", 1)
+            recv['sender'] = split_result[0]
+            recv['content'] = split_result[1]
+            recv['from'] = recv['fromUser']
+            recv.pop('fromUser')
+
+            recv['atUserList'] = recv.get('signature', {}).get('msgsource', {}).get('atuserlist', '')
+            if recv['atUserList']:
+                recv['atUserList'] = list(recv['atUserList'].split(','))
+            else:
+                recv['atUserList'] = []
+
+        else:
+            recv['sender'], recv['from'] = recv['fromUser']
+            recv.pop('fromUser')
+
+            recv['atUserList'] = []
+
+        # 开始处理
         if not self.ignorance_check(recv):  # 判断是否不在屏蔽内
             return
 
-        # 如果不是命令且不是群聊，执行私聊gpt。这里特殊处理，如果设置中指令前缀为空，那么不会执行私聊gpt
-        if recv['content'][0] != self.command_prefix and recv['wxid'][-9:] != '@chatroom' and self.command_prefix != "":
-            if not isinstance(self.enable_private_chat_gpt, bool):
-                raise Exception('Unknown enable_private_chat_gpt 未知的私聊gpt设置！')
-            elif self.enable_private_chat_gpt is True:  # 设置中开启了私聊gpt，是私聊，所以调用私聊gpt函数
-                await asyncio.create_task(private_chat_gpt.run(recv))
-                return
-
-        if (recv["content"][0] == self.command_prefix or self.command_prefix == "") and len(
-                recv["content"]) != 1:  # 判断是否为命令
+        # 指令处理
+        if recv["content"][0] == self.command_prefix or self.command_prefix == "":
             if self.command_prefix != "":  # 特殊处理，万一用户想要使用空前缀
                 recv["content"] = recv["content"][1:]  # 去除命令前缀
             recv["content"] = recv["content"].split(" ")  # 分割命令参数
 
             keyword = recv["content"][0]
-            if keyword in plugin_manager.get_keywords().keys():
+            if keyword in plugin_manager.get_keywords().keys():  # 是指令
                 plugin_func = plugin_manager.keywords[keyword]
                 await asyncio.create_task(plugin_manager.plugins[plugin_func].run(recv))
-            else:
+                return
+            elif recv['fromType'] == 'chatroom' and self.command_prefix != "":  # 不是指令但在群里 且设置了指令前缀
                 out_message = "该指令不存在！⚠️"
-                logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-                self.bot.send_txt_msg(recv["wxid"], out_message)
+                logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+                self.bot.send_text_msg(recv["from"], out_message)
+                return
+
+        # 私聊GPT，指令优先级大于GPT
+        if (recv['content'][0] != self.command_prefix or self.command_prefix == "") and recv['fromType'] == "friend":
+            if not isinstance(self.enable_private_chat_gpt, bool):
+                raise Exception('Unknown enable_private_chat_gpt 未知的私聊gpt设置！')
+            elif self.enable_private_chat_gpt is True:
+                await asyncio.create_task(private_chat_gpt.run(recv))
+                return
 
     def ignorance_check(self, recv) -> bool:
         if self.ignorance_mode == 'none':  # 如果不设置屏蔽，则直接返回通过
             return True
         elif self.ignorance_mode == 'blacklist':  # 如果设置了黑名单
-            # 如果是群与发送人不在黑名单内，或者不是群与发送人不在黑名单内，则返回通过
-            if (recv['id1'] and (recv['wxid'] not in self.ignorance_blacklist)) or (
-                    (not recv['id1']) and (recv['wxid'] not in self.ignorance_blacklist)):
+            if recv['sender'] not in self.ignorance_blacklist:
                 return True
             else:
                 return False
-        elif self.ignorance_mode == 'whitelist':
-            # 如果是群与发送人在白名单内，或者不是群与发送人不在白名单内，则返回通过
-            if (recv['id1'] and (recv['wxid'] in self.ignorance_whitelist)) or (
-                    (not recv['id1']) and (recv['wxid'] in self.ignorance_whitelist)):
+
+        elif self.ignorance_mode == 'whitelist': # 白名单
+            if recv['sender'] in self.ignorance_whitelist:
                 return True
             else:
                 return False
+
         else:
-            raise Exception('Unknown ignorance mode 未知的屏蔽模式！')
+            logger.error("未知的屏蔽模式！请检查白名单/黑名单设置！")
