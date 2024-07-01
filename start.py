@@ -30,8 +30,18 @@ async def start_api_server():
     await server.serve()
 
 
-async def message_handler(recv, handlebot):  # 处理收到的消息
-    await asyncio.create_task(handlebot.message_handler(recv))
+async def message_handler(client_socket, handlebot, web_api_data):  # 处理收到的消息
+    message = b""
+    while True:
+        message += await asyncio.get_running_loop().sock_recv(client_socket, 1024)
+        if len(message) == 0 or message[-1] == 0xA:
+            break
+    client_socket.close()
+    message_json = json.loads(message.decode('utf-8'))
+    logger.info(f"[收到消息]:{message_json}")
+    web_api_data.update_data('received_message_count', web_api_data.get_data()['received_message_count'] + 1)
+
+    await asyncio.create_task(handlebot.message_handler(message_json))
 
 
 def callback(worker):  # 处理线程结束时，有无错误
@@ -98,7 +108,7 @@ async def main():
     elif system == "Linux":
         inject_result = bot.docker_inject_dll()
 
-    time.sleep(5)  # 等待注入完毕
+    time.sleep(1)  # 等待注入完毕
     if inject_result:
         logger.info("已注入微信Hook")
     else:
@@ -137,36 +147,27 @@ async def main():
     plans_dir = "plans"
     plan_manager.load_plans(plans_dir)  # 加载所有计划
 
-    asyncio.create_task(plan_run_pending()).add_done_callback(
-        callback
-    )  # 开启计划等待判定线程
+    asyncio.create_task(plan_run_pending()).add_done_callback(callback)  # 开启计划等待判定线程
     logger.info("已加载所有计划，并开始后台运行")
 
     # ---- 启动tcp服务器并开始接受处理消息 ---- #
     bot.start_hook_msg(tcp_server_port, '127.0.0.1')
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setblocking(False)
     server_socket.bind(('127.0.0.1', tcp_server_port))
     server_socket.listen(max_worker)
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_worker):
         logger.success("机器人启动成功！")
         logger.debug(f"线程池大小应为{max_worker}")
+
         while True:
             try:
-                client_socket, address = server_socket.accept()
+                client_socket, address = await asyncio.get_running_loop().sock_accept(server_socket)
+                client_socket.setblocking(False)
 
-                message = b""
-                while True:
-                    message += client_socket.recv(1024)
-                    if len(message) == 0 or message[-1] == 0xA:
-                        break
-                client_socket.close()
-                message_json = json.loads(message.decode('utf-8'))
-                logger.info(f"[收到消息]:{message_json}")
-                web_api_data.update_data('received_message_count',web_api_data.get_data()['received_message_count'] + 1)
-                asyncio.create_task(
-                    message_handler(message, handlebot)
-                ).add_done_callback(callback)
+                asyncio.create_task(message_handler(client_socket, handlebot, web_api_data)).add_done_callback(callback)
             except Exception as error:
                 logger.error(f"出现错误: {error}")
 
