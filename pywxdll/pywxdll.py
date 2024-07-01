@@ -18,11 +18,11 @@ class Pywxdll:
         self.port = port
         self.base_url = f"http://{ip}:{port}/api"
 
-        self.docker_injector_path = os.path.abspath("pywxdll/Injector_Docker.exe")
-        self.windows_wechat_start_path = os.path.abspath("pywxdll/StartWxAndInject_Windows.exe")
-        self.dll_path = os.path.abspath("pywxdll/wxhelper-3.9.5.81-v11.dll")
+        self.docker_injector_path = os.path.abspath("Injector_Docker.exe")
+        self.windows_wechat_start_path = os.path.abspath("StartWxAndInject_Windows.exe")
+        self.dll_path = os.path.abspath("wxhelper-3.9.5.81-v11.dll")
         self.injection_process_name = "WeChat.exe"
-        self.wechat_version_fix_path = os.path.abspath("pywxdll/fixWechatVersion.py")
+        self.wechat_version_fix_path = os.path.abspath("fixWechatVersion.py")
 
         self._web_api_data = WebApiData()
 
