@@ -85,8 +85,8 @@ async def main():
         possible_error = "不支持的操作系统，需要64位。"
     elif not (sys.maxsize > 2 ** 32):
         possible_error = "需要64位Python。"
-    elif system != "Windows" or system != "Linux":
-        possible_error = "不支持的操作系统"
+    elif system != "Windows" and system != "Linux":
+        possible_error = f"不支持的操作系统: {system}"
 
     if possible_error:
         logger.error(possible_error)
