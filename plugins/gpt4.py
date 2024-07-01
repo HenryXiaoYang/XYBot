@@ -7,7 +7,7 @@ from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
 
 
-class gpt(PluginInterface):
+class gpt4(PluginInterface):
     def __init__(self):
         config_path = "plugins/gpt4.yml"
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
