@@ -26,17 +26,17 @@ class menu(PluginInterface):
     async def run(self, recv):
         if len(recv["content"]) == 1:  # 如果命令列表长度为1，那就代表请求主菜单
             out_message = self.main_menu
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_txt_msg(recv["wxid"], out_message)
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+            self.bot.send_text_msg(recv["from"], out_message)
 
         elif (
                 recv["content"][1] in self.menus.keys()
         ):  # 长度不为1，发送以参数为键菜单内容为值的字典
             out_message = self.menus[recv["content"][1]]
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_txt_msg(recv["wxid"], self.menus[recv["content"][1]])
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+            self.bot.send_text_msg(recv["from"], self.menus[recv["content"][1]])
 
         else:
             out_message = "找不到此菜单!⚠️"  # 没找到对应菜单，发送未找到
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_txt_msg(recv["wxid"], out_message)
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+            self.bot.send_text_msg(recv["from"], out_message)

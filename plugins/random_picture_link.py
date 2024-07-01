@@ -35,11 +35,12 @@ class random_picture_link(PluginInterface):
                     out_message += f"❓: {req.url}\n"
             await conn_ssl.close()
 
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')  # 发送信息
-            self.bot.send_txt_msg(recv["wxid"], out_message)  # 发送
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')  # 发送信息
+            self.bot.send_text_msg(recv["from"], out_message)  # 发送
 
 
         except Exception as error:
             out_message = f"-----XYBot-----\n出现错误❌！{error}"
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_txt_msg(recv["wxid"], out_message)
+            logger.error(error)
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+            self.bot.send_text_msg(recv["from"], out_message)

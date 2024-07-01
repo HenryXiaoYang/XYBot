@@ -33,6 +33,7 @@ class gomoku(PluginInterface):
 
         self.ip = main_config["ip"]
         self.port = main_config["port"]
+        self.command_prefix = main_config["command_prefix"]
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
         self.db = BotDatabase()  # 实例化数据库类
@@ -55,19 +56,18 @@ class gomoku(PluginInterface):
 
     async def create_game(self, recv):
         error = ''
-        if not recv["id1"]:  # 判断是否为群聊
+        if recv["fromType"] == "friend":  # 判断是否为群聊
             error = '-----XYBot-----\n❌请在群聊中游玩五子棋'
         elif len(recv['content']) < 3:  # 判断指令格式是否正确
             error = '-----XYBot-----\n❌指令格式错误'
 
-        inviter_wxid = recv["id1"]
+        inviter_wxid = recv["sender"]
 
         if inviter_wxid in self.gomoku_players.keys():  # 判断是否已经在游戏中
             error = '-----XYBot-----\n❌您已经在一场游戏中了！'
 
         if not error:
-            invitee_nick = ' '.join(recv['content'][2:])[1:].replace('\u2005', '')
-            invitee_wxid = self.at_to_wxid_in_group(recv["wxid"], invitee_nick)
+            invitee_wxid = recv['atUserList'][0]
 
             if not invitee_wxid:
                 error = '-----XYBot-----\n❌未找到对方！'
@@ -83,9 +83,9 @@ class gomoku(PluginInterface):
             self.gomoku_players[inviter_wxid] = game_id
             self.gomoku_players[invitee_wxid] = game_id
 
-            inviter_nick = self.bot.get_chatroom_nickname(recv["wxid"], inviter_wxid)["nick"]
+            inviter_nick = self.bot.get_contact_profile(inviter_wxid)["nickname"]
 
-            inviting_command = f'/{self.keywords[0]} {self.accept_game_sub_keywords[0]} {game_id}'
+            inviting_command = f'{self.command_prefix}{self.keywords[0]} {self.accept_game_sub_keywords[0]} {game_id}'
             out_message = f'-----XYBot-----\n🎉您收到了一份来自 {inviter_nick} 的五子棋比赛邀请！\n\n⚙️请在{self.timeout}秒内发送下面的指令来接受邀请：\n{inviting_command}'
             self.send_friend_or_group(recv, out_message, at_to_wxid=invitee_wxid)
 
@@ -99,7 +99,7 @@ class gomoku(PluginInterface):
                 'board': None,
                 'turn': None,
                 'status': 'inviting',
-                'chatroom': recv['wxid'],
+                'chatroom': recv["from"],
                 'asyncio_task': task
             }
         else:
@@ -107,14 +107,14 @@ class gomoku(PluginInterface):
 
     async def accept_game(self, recv):
         error = ''
-        if not recv["id1"]:  # 判断是否为群聊
+        if recv["fromType"] == 'friend':  # 判断是否为群聊
             error = '-----XYBot-----\n❌请在群聊中游玩五子棋'
         elif len(recv['content']) < 3:  # 判断指令格式是否正确
             error = '-----XYBot-----\n❌指令格式错误'
 
         if not error:
             game_id = recv['content'][2]
-            invitee_wxid = recv['id1']
+            invitee_wxid = recv["sender"]
 
             if game_id not in self.gomoku_games.keys():  # 判断游戏是否存在
                 error = '-----XYBot-----\n❌该场五子棋游戏不存在！'
@@ -122,7 +122,7 @@ class gomoku(PluginInterface):
                 error = '-----XYBot-----\n❌您没被该场五子棋游戏邀请！'
             elif self.gomoku_games[game_id]['status'] != 'inviting':  # 判断游戏是否已经开始
                 error = '-----XYBot-----\n❌该场五子棋游戏已经开始！'
-            elif recv['wxid'] != self.gomoku_games[game_id]['chatroom']:  # 判断是否在同一个群聊
+            elif recv['from'] != self.gomoku_games[game_id]['chatroom']:  # 判断是否在同一个群聊
                 error = '-----XYBot-----\n❌请在被邀请的群聊中接受邀请！'
 
             if error:
@@ -138,8 +138,8 @@ class gomoku(PluginInterface):
             self.gomoku_games[game_id]['turn'] = self.gomoku_games[game_id]['black']
 
             # 发送游戏开始信息
-            inviter_nick = self.bot.get_chatroom_nickname(recv["wxid"], self.gomoku_games[game_id]['black'])["nick"]
-            invitee_nick = self.bot.get_chatroom_nickname(recv["wxid"], self.gomoku_games[game_id]['white'])["nick"]
+            inviter_nick = self.bot.get_contact_profile(self.gomoku_games[game_id]['black'])['nickname']
+            invitee_nick = self.bot.get_contact_profile(self.gomoku_games[game_id]['white'])['nickname']
             out_message = f'-----XYBot-----\n🎉五子棋游戏 {game_id} 开始！\n\n⚫️黑方：{inviter_nick}\n⚪️白方：{invitee_nick}\n\n⚫️黑方先手！\n\n⏰每回合限时：{self.timeout}秒\n\n⚙️请发送下面指令落子:\n/{self.keywords[0]} {self.play_game_sub_keywords[0]} 横坐标纵坐标\n\n⚙️例如: /{self.keywords[0]} {self.play_game_sub_keywords[0]} C5'
             self.send_friend_or_group(recv, out_message)
 
@@ -147,8 +147,9 @@ class gomoku(PluginInterface):
             board_image_path = self.draw_game_board(game_id)
             # 把路径转成绝对路径
             board_image_path = os.path.abspath(board_image_path)
-            self.bot.send_pic_msg(self.gomoku_games[game_id]['chatroom'], board_image_path)
-            logger.info(f'[发送信息](五子棋棋盘图片){board_image_path}| [发送到] {recv["wxid"]}')
+            self.bot.send_image_msg(self.gomoku_games[game_id]['chatroom'], board_image_path)
+            logger.info(
+                f"[发送信息](五子棋棋盘图片){board_image_path}| [发送到] {self.gomoku_games[game_id]['chatroom']}")
 
             # 创建超时任务
             task = asyncio.create_task(self.timeout_play_game(recv, self.gomoku_games[game_id]['black'], game_id))
@@ -160,13 +161,13 @@ class gomoku(PluginInterface):
 
     async def play_game(self, recv):
         error = ''
-        if not recv["id1"]:
+        if recv["fromType"] == 'friend':
             error = '-----XYBot-----\n❌请在群聊中游玩五子棋'
         elif len(recv['content']) != 3:
             error = '-----XYBot-----\n❌指令格式错误'
 
         if not error:
-            player_wxid = recv['id1']
+            player_wxid = recv["sender"]
             game_id = self.gomoku_players.get(player_wxid)
             # 这里都是与游戏场次相关的错误
             if player_wxid not in self.gomoku_players.keys() or not game_id:
@@ -219,8 +220,9 @@ class gomoku(PluginInterface):
             board_image_path = self.draw_game_board(game_id, highlight=(x, y))
             # 把路径转成绝对路径
             board_image_path = os.path.abspath(board_image_path)
-            self.bot.send_pic_msg(self.gomoku_games[game_id]['chatroom'], board_image_path)
-            logger.info(f'[发送信息](五子棋棋盘图片){board_image_path}| [发送到] {recv["wxid"]}')
+            self.bot.send_image_msg(self.gomoku_games[game_id]['chatroom'], board_image_path)
+            logger.info(
+                f"[发送信息](五子棋棋盘图片){board_image_path}| [发送到] {self.gomoku_games[game_id]['chatroom']}")
 
             # 判断是否有人胜利
             winning = self.is_winning(game_id)
@@ -228,12 +230,12 @@ class gomoku(PluginInterface):
                 out_message = ''
                 if winning[1] == 'black':
                     winner = self.gomoku_games[game_id]['black']
-                    winner_nick = self.bot.get_chatroom_nickname(recv["wxid"], winner)["nick"]
+                    winner_nick = self.bot.get_contact_profile(winner)["nickname"]
                     out_message = f'-----XYBot-----\n🎉五子棋游戏 {game_id} 结束！🥳\n\n⚫️黑方：{winner_nick} 获胜！🏆'
                     logger.info(f'[五子棋]游戏 {game_id} 结束 | 胜利者：黑方 {winner}')
                 elif winning[1] == 'white':
                     winner = self.gomoku_games[game_id]['white']
-                    winner_nick = self.bot.get_chatroom_nickname(recv["wxid"], winner)["nick"]
+                    winner_nick = self.bot.get_contact_profile(winner)["nickname"]
                     out_message = f'-----XYBot-----\n🎉五子棋游戏 {game_id} 结束！🥳\n\n⚪️白方：{winner_nick} 获胜！🏆'
                     logger.info(f'[五子棋]游戏 {game_id} 结束 | 胜利者：白方 {winner}')
                 elif winning[1] == 'draw':
@@ -247,14 +249,14 @@ class gomoku(PluginInterface):
 
             else:
                 # 发送落子信息
-                player_nick = self.bot.get_chatroom_nickname(recv["wxid"], player_wxid)["nick"]
+                player_nick = self.bot.get_contact_profile(player_wxid)["nickname"]
                 player_emoji = '⚫️' if player_wxid == self.gomoku_games[game_id]['black'] else '⚪️'
 
-                opponent_nick = self.bot.get_chatroom_nickname(recv["wxid"], self.gomoku_games[game_id]['turn'])["nick"]
+                opponent_nick = self.bot.get_contact_profile(self.gomoku_games[game_id]['turn'])["nickname"]
                 opponent_emoji = '⚫️' if self.gomoku_games[game_id]['turn'] == self.gomoku_games[game_id][
                     'black'] else '⚪️'
 
-                out_message = f'-----XYBot-----\n {player_emoji}{player_nick} 把棋子落在了 {cord}！\n轮到 {opponent_emoji}{opponent_nick} 下子了！\n⏰限时：{self.timeout}秒\n\n⚙️请发送下面指令落子:\n/{self.keywords[0]} {self.play_game_sub_keywords[0]} 横坐标纵坐标\n\n⚙️例如: /{self.keywords[0]} {self.play_game_sub_keywords[0]} C5'
+                out_message = f'-----XYBot-----\n {player_emoji}{player_nick} 把棋子落在了 {cord}！\n轮到 {opponent_emoji}{opponent_nick} 下子了！\n⏰限时：{self.timeout}秒\n\n⚙️请发送下面指令落子:\n/{self.keywords[0]} {self.play_game_sub_keywords[0]} 横坐标纵坐标\n\n⚙️例如: {self.command_prefix}{self.keywords[0]} {self.play_game_sub_keywords[0]} C5'
                 self.send_friend_or_group(recv, out_message)
 
                 # 创建超时任务
@@ -287,7 +289,7 @@ class gomoku(PluginInterface):
             board_draw.ellipse((24 + highlight[0] * 27 - 8, 24 + highlight[1] * 27 - 8, 24 + highlight[0] * 27 + 8,
                                 24 + highlight[1] * 27 + 8), outline='red', width=2)
 
-        saving_path = f'resources/pic_cache/gomoku_board_{game_id}.png'
+        saving_path = f'resources/cache/gomoku_board_{game_id}.png'
         board_image.save(saving_path)  # 保存图片
         return saving_path  # 返回图片路径
 
@@ -355,12 +357,12 @@ class gomoku(PluginInterface):
             self.gomoku_players.pop(white_wxid)
             self.gomoku_games.pop(game_id)
 
-            winner = white_wxid if player_wxid == black_wxid else black_wxid
-            player_nick = self.bot.get_chatroom_nickname(recv["wxid"], player_wxid)["nick"]
-            loser_nick = self.bot.get_chatroom_nickname(recv["wxid"], winner)["nick"]
+            loser = white_wxid if player_wxid == black_wxid else black_wxid
+            loser_nick = self.bot.get_contact_profile(loser)["nickname"]
+            winner_nick = self.bot.get_contact_profile(player_wxid)["nickname"]
 
-            out_message = f'-----XYBot-----\n{loser_nick} 落子超时！\n🏆 {player_nick} 获胜！'  # 发送超时信息
-            self.send_friend_or_group(recv, out_message, at_to_wxid=winner)
+            out_message = f'-----XYBot-----\n{loser_nick} 落子超时！\n🏆 {winner_nick} 获胜！'  # 发送超时信息
+            self.send_friend_or_group(recv, out_message)
 
     def random_6_char(self) -> str:
         while True:
@@ -371,26 +373,15 @@ class gomoku(PluginInterface):
                 return char
 
     def send_friend_or_group(self, recv, out_message="null", at_to_wxid=''):
-        if recv["id1"]:  # 判断是群还是私聊
+        if recv['fromType'] == 'chatroom':  # 判断是群还是私聊
+            out_message = '\n' + out_message
             if not at_to_wxid:
-                nickname = self.bot.get_chatroom_nickname(recv["wxid"], recv["id1"])["nick"]
+                logger.info(f'[发送@信息]{out_message}| [@]{recv["sender"]}| [发送到] {recv["from"]}')
+                self.bot.send_at_msg(recv["from"], out_message, [recv["sender"]])
             else:
-                nickname = self.bot.get_chatroom_nickname(recv["wxid"], at_to_wxid)["nick"]
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_at_msg(
-                recv["wxid"], recv["id1"], nickname, "\n" + out_message
-            )  # 发送
+                logger.info(f'[发送@信息]{out_message}| [@]{at_to_wxid}| [发送到] {recv["from"]}')
+                self.bot.send_at_msg(recv["from"], out_message, [at_to_wxid])
 
         else:
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_txt_msg(recv["wxid"], out_message)  # 发送
-
-    def at_to_wxid_in_group(self, roomid, at):  # 昵称转wxid
-        # 这里尽力优化了
-        member_wxid_list = self.bot.get_chatroom_memberlist(roomid)["member"]
-        member_nick_to_wxid_dict = {
-            self.bot.get_chatroom_nickname(roomid, wxid)["nick"]: wxid
-            for wxid in member_wxid_list
-        }
-
-        return member_nick_to_wxid_dict.get(at)
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+            self.bot.send_text_msg(recv["from"], out_message)  # 发送

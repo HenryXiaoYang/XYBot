@@ -95,5 +95,5 @@ class bot_status(PluginInterface):
         for i in b:
             a += chr(i)
         out_message = f"-----XYBot-----\n{self.status_message}\nBot version: {self.bot_version}\n{base64.b64decode(a).decode('utf-8')}"
-        logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-        self.bot.send_txt_msg(recv["wxid"], out_message)  # 发送
+        logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+        self.bot.send_text_msg(recv["from"], out_message)  # 发送

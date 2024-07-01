@@ -21,18 +21,15 @@ class admin_signin_reset(PluginInterface):
         self.db = BotDatabase()  # 实例化数据库类
 
     async def run(self, recv):
-        if recv["id1"]:  # 判断是群还是私聊
-            admin_wxid = recv["id1"]  # 是群
-        else:
-            admin_wxid = recv["wxid"]  # 是私聊
+        admin_wxid = recv["sender"]
 
         if admin_wxid in self.admin_list:  # 如果操作人在白名单内
             self.db.reset_stat()  # 重置数据库签到状态
             out_message = "-----XYBot-----\n😊成功重置签到状态！"
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_txt_msg(recv["wxid"], out_message)  # 发送信息
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+            self.bot.send_text_msg(recv["from"], out_message)  # 发送信息
 
         else:  # 操作人不在白名单内
             out_message = "-----XYBot-----\n❌你配用这个指令吗？"
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_txt_msg(recv["wxid"], out_message)  # 发送信息
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+            self.bot.send_text_msg(recv["from"], out_message)  # 发送信息

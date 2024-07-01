@@ -1,4 +1,4 @@
 keywords: [ "获取机器人通讯录",  "获取通讯录" , "机器人通讯录" ]
 plugin_name: "get_contact_list"
 
-information_post_url: "https://easychuan.cn"
+excel_save_path: "resources/cache"

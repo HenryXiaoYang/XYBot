@@ -33,11 +33,11 @@ class red_packet(PluginInterface):
 
         self.db = BotDatabase()  # 实例化机器人数据库类
 
-        pic_cache_path = "resources/pic_cache"  # 检测是否有pic_cache文件夹
-        if not os.path.exists(pic_cache_path):
-            logger.info("检测到未创建pic_cache图片缓存文件夹")
-            os.makedirs(pic_cache_path)
-            logger.info("已创建pic_cach文件夹")
+        cache_path = "resources/cache"  # 检测是否有cache文件夹
+        if not os.path.exists(cache_path):
+            logger.info("检测到未创建cache缓存文件夹")
+            os.makedirs(cache_path)
+            logger.info("已创建cache文件夹")
 
         self.red_packets = {}  # 红包列表
 
@@ -56,15 +56,11 @@ class red_packet(PluginInterface):
 
     def send_red_packet(self, recv):
         # /红包 100 10
-
-        if recv["id1"]:  # 判断是群还是私聊
-            red_packet_sender = recv["id1"]
-        else:
-            red_packet_sender = recv["wxid"]
+        red_packet_sender = recv["sender"]
 
         # 判断是否有错误
         error = ""
-        if not recv["id1"]:
+        if recv["fromType"] == 'friend':
             error = "-----XYBot-----\n❌红包只能在群里发！"
         elif not recv["content"][1].isdigit() or not recv["content"][2].isdigit():
             error = "-----XYBot-----\n❌指令格式错误！请查看菜单！"
@@ -84,13 +80,10 @@ class red_packet(PluginInterface):
         if not error:
             red_packet_points = int(recv["content"][1])  # 红包积分
             red_packet_amount = int(recv["content"][2])  # 红包数量
-            red_packet_chatroom = recv["wxid"]  # 红包所在群聊
+            red_packet_chatroom = recv["from"]  # 红包所在群聊
 
-            red_packet_sender_nick = self.bot.get_chatroom_nickname(
-                recv["wxid"], red_packet_sender
-            )[
-                "nick"
-            ]  # 获取昵称
+            red_packet_sender_nick = self.bot.get_contact_profile(red_packet_sender)["nickname"]  # 获取昵称
+
             red_packet_points_list = self.split_integer(
                 red_packet_points, red_packet_amount
             )  # 随机分红包积分
@@ -116,22 +109,19 @@ class red_packet(PluginInterface):
             out_message = f"-----XYBot-----\n{red_packet_sender_nick} 发送了一个红包！\n\n🧧红包金额：{red_packet_points}点积分\n🧧红包数量：{red_packet_amount}个\n\n🧧红包口令请见下图！\n\n快输入指令来抢红包！/抢红包 (口令)"
 
             # 发送信息
-            self.bot.send_txt_msg(recv["wxid"], out_message)
+            self.bot.send_text_msg(recv["from"], out_message)
             logger.info(
-                f'[发送信息] (红包口令图片) {captcha_path} | [发送到] {recv["wxid"]}'
+                f'[发送信息] (红包口令图片) {captcha_path} | [发送到] {recv["from"]}'
             )
 
-            self.bot.send_pic_msg(recv["wxid"], captcha_path)
+            self.bot.send_image_msg(recv["from"], captcha_path)
 
 
         else:
             self.send_friend_or_group(recv, error)  # 发送错误信息
 
     def grab_red_packet(self, recv):
-        if recv["id1"]:  # 判断是群还是私聊
-            red_packet_grabber = recv["id1"]
-        else:
-            red_packet_grabber = recv["wxid"]
+        red_packet_grabber = recv["sender"]
 
         req_captcha = recv["content"][1]
 
@@ -141,7 +131,7 @@ class red_packet(PluginInterface):
             error = "-----XYBot-----\n❌口令错误或无效！"
         elif not self.red_packets[req_captcha]["list"]:
             error = "-----XYBot-----\n⚠️红包已被抢完！"
-        elif not recv["id1"]:
+        elif recv['fromType'] == 'friend':
             error = "-----XYBot-----\n❌红包只能在群里抢！"
         elif red_packet_grabber in self.red_packets[req_captcha]["grabbed"]:
             error = "-----XYBot-----\n⚠️你已经抢过这个红包了！"
@@ -156,11 +146,7 @@ class red_packet(PluginInterface):
                 self.red_packets[req_captcha]["grabbed"].append(
                     red_packet_grabber
                 )  # 把抢红包的人加入已抢列表
-                red_packet_grabber_nick = self.bot.get_chatroom_nickname(
-                    recv["wxid"], red_packet_grabber
-                )[
-                    "nick"
-                ]  # 获取昵称
+                red_packet_grabber_nick = self.bot.get_contact_profile(red_packet_grabber)["nickname"]  # 获取昵称
 
                 self.db.add_points(red_packet_grabber, grabbed_points)  # 增加积分
 
@@ -213,7 +199,7 @@ class red_packet(PluginInterface):
         ]
         chr_5 = "".join(random.sample(chr_all, 5))
         captcha_image = ImageCaptcha().generate_image(chr_5)
-        path = f"resources/pic_cache/{chr_5}.jpg"
+        path = f"resources/cache/{chr_5}.jpg"
         captcha_image.save(path)
 
         return chr_5, path
@@ -261,17 +247,14 @@ class red_packet(PluginInterface):
 
                 # 组建信息并发送
                 out_message = f"-----XYBot-----\n🧧发现有红包 {key} 超时！已归还剩余 {red_packet_points_left_sum} 积分给 {red_packet_sender_nick}"
-                self.bot.send_txt_msg(red_packet_chatroom, out_message)
+                self.bot.send_text_msg(red_packet_chatroom, out_message)
                 logger.info(f"[发送信息]{out_message}| [发送到] {red_packet_chatroom}")
 
-    def send_friend_or_group(self, recv, out_message="null"):  # 发送信息
-        if recv["id1"]:  # 判断是群还是私聊
-            nickname = self.bot.get_chatroom_nickname(recv["wxid"], recv["id1"])["nick"]
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_at_msg(
-                recv["wxid"], recv["id1"], nickname, "\n" + out_message
-            )  # 发送
+    def send_friend_or_group(self, recv, out_message="null"):
+        if recv["fromType"] == "chatroom":  # 判断是群还是私聊
+            logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
+            self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
 
         else:
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_txt_msg(recv["wxid"], out_message)  # 发送
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+            self.bot.send_text_msg(recv["from"], out_message)  # 发送

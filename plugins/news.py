@@ -55,12 +55,12 @@ class news(PluginInterface):
             else:
                 out_message = '暂无更多新闻!⚠️'
 
-            self.bot.send_txt_msg(recv['wxid'], out_message)
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
+            self.bot.send_text_msg(recv["from"], out_message)
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
         except Exception as error:
             out_message = f'获取新闻失败!⚠️\n{error}'
-            self.bot.send_txt_msg(recv['wxid'], out_message)
-            logger.error(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
+            self.bot.send_text_msg(recv["from"], out_message)
+            logger.error(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
 
     @staticmethod
     async def get_news_brief_content(url, news_title) -> str:
