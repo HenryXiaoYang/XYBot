@@ -62,7 +62,8 @@ class XYBot:
                 recv['atUserList'] = []
 
         else:
-            recv['sender'], recv['from'] = recv['fromUser']
+            recv['sender'] = recv['fromUser']
+            recv['from'] = recv['fromUser']
             recv.pop('fromUser')
 
             recv['atUserList'] = []

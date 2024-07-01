@@ -20,5 +20,5 @@ try:
             pm.write_uint(addr, 0x63090A13)
 
     print('Fix Success')
-except:
-    print('Fix Failed')
+except Exception as error:
+    print(f'Fix Failed: {error}')
