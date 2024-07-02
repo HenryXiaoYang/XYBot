@@ -1,5 +1,8 @@
 FROM henryxiaoyang/wechat-box:3.9.5.81
 
+# clear /payloads
+RUN sudo rm -rf /payloads
+
 COPY root/ /
 
 # init with GUI
