@@ -18,4 +18,5 @@ function wechat() {
 /entrypoint.sh &
 sleep 5
 wechat &
+xybot-start &
 wait

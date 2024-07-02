@@ -1,3 +1,12 @@
 #!/usr/bin/env bash
 
-sudo -u app bash -c 'cd /home/app/XYBot && python3 start.py'
+function start_xybot() {
+    while :
+    do
+        python start.py
+    done
+}
+
+cd /home/app/XYBot || exit
+start_xybot &
+wait
