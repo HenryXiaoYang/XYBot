@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 
-cd /home/app/XYBot || exit
-python3 start.py
+sudo -u app bash -c 'cd /home/app/XYBot && python3 start.py'

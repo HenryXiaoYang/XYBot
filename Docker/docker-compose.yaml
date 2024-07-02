@@ -14,3 +14,7 @@ services:
               - "XYBot:/home/app/XYBot/"
               - "XYBot-wechatfiles:/home/app/WeChat Files/"
         tty: true
+
+volumes:
+    XYBot:
+    XYBot-wechatfiles:
