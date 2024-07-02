@@ -1,4 +1,4 @@
-FROM henryxiaoyang/wechat-box-wechat-box-3.9.5.81:latest
+FROM henryxiaoyang/wechat-box-3.9.5.81:latest
 
 # clear /payloads
 RUN sudo rm -rf /payloads
