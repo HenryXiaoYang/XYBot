@@ -14,6 +14,8 @@ try:
     for offset in ADDRS:
         addr = WeChatWindll_base + offset
         v = pm.read_uint(addr)
+        if v == 0x63090A13:
+            pass
         if v != 0x63090551:
             raise Exception("Wrong wechat version, need 3.9.5.81")
         else:
