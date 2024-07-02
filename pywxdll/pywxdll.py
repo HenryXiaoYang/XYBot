@@ -33,7 +33,7 @@ class Pywxdll:
         :return: True if success, False if failed.
         """
         result = subprocess.Popen(
-            f"sudo -u app bash -c 'cd ~ && wine {self.docker_injector_path} --process-name {self.injection_process_name} --inject {self.dll_path}'",
+            f"cd ~ && wine {self.docker_injector_path} --process-name {self.injection_process_name} --inject {self.dll_path}",
             shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
         # The injector has a bug that it returns Call to LoadLibraryW
         # in remote process failed even if the injection is successful.
@@ -66,7 +66,7 @@ class Pywxdll:
         if platform.system() == 'Windows':
             command = f"python {self.wechat_version_fix_path}"
         else:
-            command = f"sudo -u app bash -c 'cd ~ && wine python {self.wechat_version_fix_path}'"
+            command = f"cd ~ && wine python {self.wechat_version_fix_path}"
 
         result = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
 
