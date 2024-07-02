@@ -3,7 +3,7 @@
 function start_xybot() {
     while :
     do
-        python start.py
+        python3 start.py
     done
 }
 
