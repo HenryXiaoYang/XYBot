@@ -36,8 +36,23 @@ class XYBot:
         self.enable_private_chat_gpt = main_config['enable_private_chat_gpt']
 
     async def message_handler(self, recv) -> None:
-        if recv['type'] == 1:  # 是文本消息
+        message_type = recv.get('type', -1)
+        if message_type == 1:  # 是文本消息
             await self.text_message_handler(recv)
+        elif message_type == 3:  # 是图片消息
+            await self.image_message_handler(recv)
+        elif message_type == 34:  # 语音消息
+            await self.voice_message_handler(recv)
+        elif message_type == 10000:  # 系统消息
+            await self.system_message_handler(recv)
+        elif message_type == 10002:  # 撤回消息/拍一拍消息
+            await self.revoke_or_pat_message_handler(recv)
+        elif message_type == 47:  # 表情消息
+            await self.emoji_message_handler(recv)
+        elif message_type == 49:  # 很多消息都用了这个type，content里大量使用了xml，需要进一步判断
+            await self.xml_message_handler(recv)
+        else:  # 其他消息，type不存在或者还未知干啥用的
+            logger.info(f"[其他消息] {recv}")
 
     async def text_message_handler(self, recv) -> None:
         # 预处理消息
@@ -98,6 +113,24 @@ class XYBot:
             elif self.enable_private_chat_gpt is True:
                 await asyncio.create_task(private_chat_gpt.run(recv))
                 return
+
+    async def image_message_handler(self, recv) -> None:
+        logger.info(f"[收到图片消息]{recv}")
+
+    async def voice_message_handler(self, recv) -> None:
+        logger.info(f"[收到语音消息]{recv}")
+
+    async def system_message_handler(self, recv) -> None:
+        logger.info(f"[收到系统消息]{recv}")
+
+    async def revoke_or_pat_message_handler(self, recv) -> None:
+        logger.info(f"[收到撤回/拍一拍消息]{recv}")
+
+    async def emoji_message_handler(self, recv) -> None:
+        logger.info(f"[收到表情消息]{recv}")
+
+    async def xml_message_handler(self, recv) -> None:
+        logger.info(f"[收到其他消息]{recv}")
 
     def ignorance_check(self, recv) -> bool:
         if self.ignorance_mode == 'none':  # 如果不设置屏蔽，则直接返回通过
