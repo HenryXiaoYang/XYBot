@@ -1,6 +1,6 @@
 import random
 from datetime import datetime
-from zoneinfo import ZoneInfo
+import pytz
 
 import yaml
 from loguru import logger
@@ -40,7 +40,7 @@ class sign_in(PluginInterface):
 
         if self.signstat_check(signstat):  # 如果今天未签到
             self.db.add_points(sign_wxid, signin_points)  # 在数据库加积分
-            now_datetime = datetime.now(tz=ZoneInfo(self.timezone)).strftime(
+            now_datetime = datetime.now(tz=pytz.timezone(self.timezone)).strftime(
                 "%Y%m%d"
             )  # 获取现在格式化后时间
             self.db.set_stat(sign_wxid, now_datetime)  # 设置签到状态为现在格式化后时间
@@ -61,5 +61,5 @@ class sign_in(PluginInterface):
     def signstat_check(self, signstat):  # 检查签到状态
         signstat = "20000101" if signstat in ["0", "1"] else signstat
         last_sign_date = datetime.strptime(signstat, "%Y%m%d").date()
-        now_date = datetime.now(tz=ZoneInfo(self.timezone)).date()
+        now_date = datetime.now(tz=pytz.timezone(self.timezone)).date()
         return (now_date - last_sign_date).days >= 1
