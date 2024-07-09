@@ -65,15 +65,6 @@ def is_admin():
 
 
 async def main():
-    '''# ---- windows需要管理员权限以便注入Hook ---- #
-    if platform.system() == 'Windows':
-        if not is_admin():
-            logger.info("已检测到运行于Windows，将申请管理员权限并在另一个进程重新执行该脚本。")
-            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
-            sys.exit()
-        else:
-            logger.info("已检测到运行于Windows，已检测到管理员权限。")'''
-
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     # ---- log设置 读取设置 ---- #
