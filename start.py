@@ -1,5 +1,6 @@
 import asyncio
 import concurrent.futures
+import ctypes
 import json
 import os
 import platform
@@ -56,7 +57,23 @@ async def plan_run_pending():  # 计划等待判定线程
         await asyncio.sleep(1)
 
 
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
+
+
 async def main():
+    '''# ---- windows需要管理员权限以便注入Hook ---- #
+    if platform.system() == 'Windows':
+        if not is_admin():
+            logger.info("已检测到运行于Windows，将申请管理员权限并在另一个进程重新执行该脚本。")
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+            sys.exit()
+        else:
+            logger.info("已检测到运行于Windows，已检测到管理员权限。")'''
+
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     # ---- log设置 读取设置 ---- #
@@ -103,32 +120,39 @@ async def main():
 
     inject_result = False
     if system == "Windows":
-        inject_result = bot.windows_start_wechat_and_inject()
+        inject_result = bot.windows_start_wechat_inject_and_fix_ver()  # 注入Hook和修复版本这两个操作都需要管理员权限
+
+        if inject_result:
+            logger.info("已注入微信Hook")
+        else:
+            logger.error("注入微信Hook失败！")
+            sys.exit(1)
+
     elif system == "Linux":
         inject_result = bot.docker_inject_dll()
 
-    time.sleep(1)  # 等待注入完毕
-    if inject_result:
-        logger.info("已注入微信Hook")
-    else:
-        logger.error("注入微信Hook失败！")
-        sys.exit(1)
-
-    # 修复微信版本过低问题
-    if not bot.is_logged_in():
-        if bot.fix_wechat_version():
-            logger.info("已修复微信版本过低问题")
+        if inject_result:
+            logger.info("已注入微信Hook")
         else:
-            logger.error("修复微信版本过低问题失败！")
+            logger.error("注入微信Hook失败！")
             sys.exit(1)
-    else:
-        logger.info("已登陆，不需要修复微信版本过低问题")
+
+        # 修复微信版本过低问题
+        if not bot.is_logged_in():
+            if bot.fix_wechat_version():
+                logger.info("已修复微信版本过低问题")
+            else:
+                logger.error("修复微信版本过低问题失败！")
+                sys.exit(1)
+        else:
+            logger.info("已登陆，不需要修复微信版本过低问题")
 
     # 检查是否登陆了微信
     logger.info("开始检测微信是否登陆")
-    while not bot.is_logged_in():
+    if not bot.is_logged_in():
         logger.warning("机器人微信账号未登录！请扫码登陆微信。")
-        time.sleep(3)
+        while not bot.is_logged_in():
+            time.sleep(1)
 
     logger.success("已确认微信已登陆，开始启动XYBot")
 

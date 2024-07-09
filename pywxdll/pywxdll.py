@@ -1,6 +1,9 @@
+import ctypes
 import os
 import platform
 import subprocess
+import sys
+import time
 
 import requests
 from loguru import logger
@@ -20,8 +23,9 @@ class Pywxdll:
         self.base_url = f"http://{ip}:{port}/api"
 
         self.docker_injector_path = os.path.abspath("pywxdll/Injector_Docker.exe")
-        self.windows_wechat_start_path = "StartWxAndInject_Windows.exe"
-        self.dll_path = "wxhelper-3.9.5.81-v11.dll"
+        self.windows_wechat_start_path = os.path.abspath("pywxdll/StartWxAndInject_Windows.exe")
+        self.windows_wechat_start_admin_script_path = "pywxdll/windows_start_wechat_and_inject_admin.py"
+        self.dll_path = os.path.abspath("pywxdll/wxhelper-3.9.5.81-v11.dll")
         self.injection_process_name = "WeChat.exe"
         self.wechat_version_fix_path = os.path.abspath("pywxdll/fixWechatVersion.py")
 
@@ -37,6 +41,7 @@ class Pywxdll:
             shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
         # The injector has a bug that it returns Call to LoadLibraryW
         # in remote process failed even if the injection is successful.
+        time.sleep(3)
         result = ''.join(result.communicate())
         logger.debug(result)
         if "LoadLibraryW" in result or "Successfully" in result:
@@ -44,15 +49,34 @@ class Pywxdll:
         else:
             return False
 
-    def windows_start_wechat_and_inject(self):
+    @staticmethod
+    def _is_admin():
+        try:
+            return ctypes.windll.shell32.IsUserAnAdmin()
+        except:
+            return False
+
+    def windows_start_wechat_inject_and_fix_ver(self):
         """
         This function is to start WeChat and inject the wxhelper dll on Windows environment
         :return:
         """
-        result = subprocess.Popen(f"{self.windows_wechat_start_path} {self.dll_path} {self.port}", shell=True,
-                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
-        result = ''.join(result.communicate())
-        logger.debug(result)
+
+        if not self._is_admin():
+            # 需要管理员权限，这一行申请了管理员并执行了一个python脚本。python脚本注入了hook，修复了版本问题
+            result = ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable,
+                                                         f"{self.windows_wechat_start_admin_script_path} {self.windows_wechat_start_path} {self.dll_path} {self.port} {self.wechat_version_fix_path}",
+                                                         None, 1)
+            time.sleep(3)  # 等待注入
+            if int(result) > 32:  # 返回值大于32即成功 https://learn.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shellexecutew
+                result = True
+            else:
+                result = False
+        else:
+            result = subprocess.Popen(f"{self.windows_wechat_start_path} {self.dll_path} {self.port}", shell=True,
+                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
+            result = ''.join(result.communicate())
+            logger.debug(result)
         if result:
             return True
         else:
