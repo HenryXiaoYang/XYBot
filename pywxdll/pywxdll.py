@@ -25,8 +25,9 @@ class Pywxdll:
         self.docker_injector_path = os.path.abspath("pywxdll/Injector_Docker.exe")
         self.windows_wechat_start_path = os.path.abspath("pywxdll/StartWxAndInject_Windows.exe")
         self.windows_wechat_start_admin_script_path = "pywxdll/windows_start_wechat_and_inject_admin.py"
+        self.dll_filename = "wxhelper-3.9.5.81-v11.dll"
         self.dll_path_relative = "pywxdll/wxhelper-3.9.5.81-v11.dll"
-        self.dll_path_absolute = os.path.abspath(self.dll_path_relative)
+        self.dll_path_absolute = os.path.abspath("pywxdll/wxhelper-3.9.5.81-v11.dll")
         self.injection_process_name = "WeChat.exe"
         self.wechat_version_fix_path = os.path.abspath("pywxdll/fixWechatVersion.py")
 
@@ -38,7 +39,7 @@ class Pywxdll:
         :return: True if success, False if failed.
         """
         result = subprocess.Popen(
-            f"cd ~ && wine {self.docker_injector_path} --process-name {self.injection_process_name} --inject {self.dll_path_relative}",
+            f"cd ~ && wine {self.docker_injector_path} --process-name {self.injection_process_name} --inject {self.dll_filename}",
             shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
         # The injector has a bug that it returns Call to LoadLibraryW
         # in remote process failed even if the injection is successful.
