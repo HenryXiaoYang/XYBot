@@ -2,7 +2,7 @@
 
 这一页写了在Linux上部署XYBot的方法。
 
-本篇部署教程适用于`XYBot v0.0.6`。
+本篇部署教程适用于`XYBot v0.0.7`。
 
 ## 前言
 
@@ -51,44 +51,68 @@ https://docs.docker.com/compose/install/
 这一步以及后面遇到权限问题请在前面加个`sudo`。
 
 ```bash
-docker pull henryxiaoyang/wechat-service-xybot:latest
+docker pull henryxiaoyang/xybot:latest
 ```
 
 ### 4. 启动容器
 
+指令：
 ```bash
-docker run -it --name wechat-service-xybot  \
-    -e HOOK_PROC_NAME=WeChat \
-    -e HOOK_DLL=auto.dll \
-    -e TARGET_AUTO_RESTART="yes" \
-    -e INJ_CONDITION="[ \"\`sudo netstat -tunlp | grep 5555\`\" != '' ] && exit 0 ; sleep 5 ; curl 'http://127.0.0.1:8680/hi' 2>/dev/null | grep -P 'code.:0'" \
-    -e TARGET_CMD=wechat-start \
-    -p 4000:8080 -p 5555:5555 -p 5900:5900 \
-    --add-host=dldir1.qq.com:127.0.0.1 \
-    -v XYBot:/home/app/XYBot \
-    henryxiaoyang/wechat-service-xybot:latest
+docker run -d \
+  --name XYBot \
+  --restart unless-stopped \
+  -e WC_AUTO_RESTART=yes \
+  -p 4000:8080 \
+  --add-host dldir1.qq.com:127.0.0.1 \
+  -v XYBot:/home/app/XYBot/ \
+  -v XYBot-wechatfiles:/home/app/WeChat\ Files/ \
+  -t henryxiaoyang/xybot:latest
+```
+
+Docker-compose:
+
+`XYBot/Docker/docker-compose.yaml`
+
+```yaml
+version: "3.3"
+
+services:
+    xybot:
+        image: "henryxiaoyang/xybot:latest"
+        restart: unless-stopped
+        container_name: "XYBot"
+        environment:
+            WC_AUTO_RESTART: "yes"
+        ports:
+            - "4000:8080"
+        extra_hosts:
+            - "dldir1.qq.com:127.0.0.1"
+        volumes:
+              - "XYBot:/home/app/XYBot/"
+              - "XYBot-wechatfiles:/home/app/WeChat Files/"
+        tty: true
+
+volumes:
+    XYBot:
+    XYBot-wechatfiles:
 ```
 
 ### 5. 登陆微信
 
 在浏览器中打开`http://<你的ip地址>:4000/vnc.html`访问VNC。
 
-![VNC Bypass Version Check](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/wiki/xybot_linux_deployment/vnc_bypass_ver_check_1.jpg?raw=true)
+![VNC WeChat Login](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/wiki/vnc_wechat_login.png?raw=true)
 
-如图，把窗口中`原版本号`修改为`3.6.0.18`。
+扫描微信二维码并登录，登陆后XYBot将自动启动。
 
-点击右边`微信低版本通杀`启动微信。
-
-扫描微信二维码并登录。
-
-!>如果遇到微信崩溃，可以重启容器重新按步骤登陆。
+!>如果遇到微信崩溃，可尝试重启容器重新按步骤登陆。
 
 ### 6. 配置XYBot设置
 
-如果使用的步骤4的启动指令，XYBot的文件已被持久化到`/var/lib/docker/volumes/XYBot-vol`，也就是`XYBot-vol`卷。
+如果使用的步骤4的启动指令，XYBot的文件已被持久化到`/var/lib/docker/volumes/XYBot`，也就是`XYBot`卷。
 
 ```bash
-cd /var/lib/docker/volumes/XYBot-vol/_data
+cd /var/lib/docker/volumes/XYBot/_data
 ```
 
 在这个目录下可以看到`main_config.yml`，修改这个文件即可。
@@ -103,36 +127,85 @@ docker restart wechat-service-xybot
 
 ### 8. 测试是否部署成功
 
-登陆后等待大约1分钟后，微信hook的dll会自动注入。注入后XYBot开始运行。
+在微信中向XYBot私聊`菜单`，如果返回菜单则部署成功。
 
-?> 可查看docker容器日志确认是否成功注入。
+<!-- chat:start -->
 
-在微信中向XYBot私聊`/菜单`，如果返回菜单则部署成功。
+#### **HenryXiaoYang**
+
+菜单
+
+#### **XYBot**
+
+-----XYBot菜单------
+
+实用功能⚙️
+
+1.1 获取天气
+
+1.2 获取新闻
+
+1.3 ChatGPT
+
+1.4 Hypixel玩家查询
+
+
+
+娱乐功能🔥
+
+2.1 随机图图
+
+2.2 随机链接
+
+2.3 随机群成员
+
+2.4 五子棋
+
+
+
+积分功能💰
+
+3.1 签到
+
+3.2 查询积分
+
+3.3 积分榜
+
+3.4 积分转送
+
+3.5 积分抽奖
+
+3.6 积分红包
+
+
+
+🔧管理员功能
+
+4.1 管理员菜单
+
+
+
+获取菜单指令格式: 菜单 编号
+
+例如：菜单 1.1
+<!-- chat:end -->
 
 可以开始用XYBot了！
 
 如果失败，可以看看容器日志并发`issue`询问。
 
 ```bash
-docker logs wechat-service-xybot -f --tail 100
+docker logs xybot -f --tail 100
 ```
 
 ### 9. 设置VNC密码
 
-VNC默认是没有密码的，强烈推荐设置密码。万一被人连上了，那个人干了什么可就说不清咯。😭
-
-不信？懒？那我放一张图警告一下大家：
-
-![VNC Set Password Warning](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/wiki/xybot_linux_deployment/vnc_set_password_1.png?raw=true)
-
-~~你看！死亡回放！~~
-
-你设置不设置吧？
+VNC默认是没有密码的，强烈推荐设置密码。
 
 #### 1. 进入容器bash
 
 ```bash
-docker exec -it wechat-service-xybot /bin/bash
+docker exec -it xybot /bin/bash
 ```
 
 #### 2. 设置密码
@@ -168,10 +241,10 @@ exit
 #### 5. 重启容器
 
 ```bash
-docker restart wechat-service-xybot
+docker restart xybot
 ```
 
-现在用网页连接vnc应该要输入密码
+现在用网页连接vnc会请求密码
 
 #### 6. 登陆VNC后重新扫描二维码登陆微信
 

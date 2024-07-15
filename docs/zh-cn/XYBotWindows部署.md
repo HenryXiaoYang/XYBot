@@ -2,7 +2,7 @@
 
 这一页写了在Windows上部署XYBot的方法。
 
-本篇部署教程适用于`XYBot v0.0.6`。
+本篇部署教程适用于`XYBot v0.0.7`。
 
 ## 前言
 
@@ -10,15 +10,16 @@
 
 配置要求：
 
-能运行PC版微信就行。
+- 64位
+- 能运行PC版微信
 
 ## 部署
 
 ### 1. 安装Python环境
 
-装好了可跳过
+请安装Python3.8.10 **64位版本**：[🔗链接](https://www.python.org/downloads/release/python-3810/)
 
-请安装Python3.9：[🔗链接](https://www.python.org/downloads/release/python-3913/)
+装好了可跳过
 
 如果不知道如何安装请查阅：[Python官方文档](https://docs.python.org/3.9/using/windows.html)
 
@@ -34,23 +35,13 @@
 
 看不懂英文的话网上也有很多中文教程
 
-### 3. 下载并安装PC版微信v3.6.0.18
+### 3. 下载并安装PC版微信v3.9.5.81
 
-下载地址：[🔗链接](https://github.com/tom-snow/wechat-windows-versions/releases?q=3.6.0.18)
+下载地址：[🔗链接](https://github.com/tom-snow/wechat-windows-versions/releases?q=3.9.5.81)
 
 正常安装微信即可。
 
-### 4. 下载微信DLL注入器，DLL文件，微信低版本提示修复程序
-
-微信DLL注入器：[🔗链接](https://github.com/HenryXiaoYang/XYBot/releases/download/v0.0.6/Wechat-DLL-injector.V1.0.3.exe)
-
-DLL文件：[🔗链接](https://github.com/HenryXiaoYang/XYBot/releases/download/v0.0.6/wechat-bot-dll-for-XYBot.dll)
-
-微信低版本提示修复：[🔗链接](https://github.com/HenryXiaoYang/XYBot/releases/download/v0.0.6/wechat_launcher_bypass_ver_check.exe)
-
-!> 微信低版本提示修复是用易语言编写的，报毒很正常。请放心使用！
-
-### 5. 下载XYBot
+### 4. 从Github克隆XYBot项目
 
 按win + r，输入cmd，然后回车打开cmd。
 
@@ -66,7 +57,7 @@ cd Desktop
 git clone https://github.com/HenryXiaoYang/XYBot.git
 ```
 
-### 6. 下载XYBot所需要的依赖
+### 5. 下载XYBot所需要的依赖
 
 切换到`XYBot`的目录
 
@@ -80,13 +71,13 @@ cd XYBot
 pip install -r requirements.txt
 ```
 
-在内陆太慢的话看眼选择用镜像源。
+在国内太慢的话看眼选择用镜像源。
 
 ```commandline
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-### 7. 运行XYBot
+### 6. 运行XYBot
 
 在命令行运行`XYBot`。
 
@@ -94,27 +85,76 @@ pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 python start.py
 ```
 
-### 8. 登陆微信
+### 7. 登陆微信
 
-运行下载的微信低版本提示修复`wechat_launcher_bypass_ver_check.exe`，会弹出一个窗口。
+微信应自动启动，扫描二维码登陆账号。
 
-![Wechat Bypass Version Check](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/wiki/xybot_windows_deployment/bypass_ver_check_1.png?raw=true)
-
-如图，请将`原版本号`修改为`3.6.0.18`，然后点击右边的`微信低版本通杀`，即可运行微信。
-
-微信打开后，扫码登陆。
-
-### 9. 注入DLL
-
-微信登陆后，打开微信DLL注入器，选择`wechat-bot-dll-for-XYBot.dll`，然后点击`注入DLL`。
-
-![DLL Injector Screenshot](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/wiki/xybot_windows_deployment/dll_injector_1.png?raw=true)
-
-### 10. 测试XYBot
+### 8. 测试XYBot
 
 注入XYBot后，XYBot应该会自动启动。
 
-在微信中向XYBot私聊`/菜单`，如果返回菜单则部署成功。
+在微信中向XYBot私聊`菜单`，如果返回菜单则部署成功。
+
+<!-- chat:start -->
+
+#### **HenryXiaoYang**
+
+菜单
+
+#### **XYBot**
+
+-----XYBot菜单------
+
+实用功能⚙️
+
+1.1 获取天气
+
+1.2 获取新闻
+
+1.3 ChatGPT
+
+1.4 Hypixel玩家查询
+
+
+
+娱乐功能🔥
+
+2.1 随机图图
+
+2.2 随机链接
+
+2.3 随机群成员
+
+2.4 五子棋
+
+
+
+积分功能💰
+
+3.1 签到
+
+3.2 查询积分
+
+3.3 积分榜
+
+3.4 积分转送
+
+3.5 积分抽奖
+
+3.6 积分红包
+
+
+
+🔧管理员功能
+
+4.1 管理员菜单
+
+
+
+获取菜单指令格式: 菜单 编号
+
+例如：菜单 1.1
+<!-- chat:end -->
 
 可以开始用XYBot了！
 
