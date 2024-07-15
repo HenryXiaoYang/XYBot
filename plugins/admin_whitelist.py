@@ -23,7 +23,11 @@ class admin_whitelist(PluginInterface):
     async def run(self, recv):
         admin_wxid = recv["sender"]
 
-        wxid = recv["content"][1]  # 获取操作人
+        if recv['content'][1].startswith('@'):  # 判断是@还是wxid
+            wxid = recv['atUserList'][0]
+        else:
+            wxid = recv["content"][1]  # 获取要操作的wxid
+
         action = recv["content"][2]  # 获取操作
         if admin_wxid in self.admin_list:  # 如果操作人在管理员名单内
             if action == "加入":  # 操作为加入

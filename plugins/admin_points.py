@@ -31,7 +31,10 @@ class admin_points(PluginInterface):
             error = "-----XYBot-----\n⚠️未知的积分操作！"
 
         if not error:
-            change_wxid = recv["content"][1]  # 获取要变更积分的wxid
+            if recv['content'][1].startswith('@'): # 判断是@还是wxid
+                change_wxid = recv['atUserList'][0]
+            else:
+                change_wxid = recv["content"][1]  # 获取要变更积分的wxid
 
             if len(recv["content"]) == 3:  # 直接改变，不加/减
                 self.db.set_points(change_wxid, int(recv["content"][2]))
