@@ -9,7 +9,8 @@ services:
             WC_AUTO_RESTART: "yes"
         ports:
             - "4000:8080"
-            - "19088:19088"
+        extra_hosts:
+            - "dldir1.qq.com:127.0.0.1"
         volumes:
               - "XYBot:/home/app/XYBot/"
               - "XYBot-wechatfiles:/home/app/WeChat Files/"
