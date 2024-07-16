@@ -140,7 +140,7 @@ class gomoku(PluginInterface):
             # 发送游戏开始信息
             inviter_nick = self.bot.get_contact_profile(self.gomoku_games[game_id]['black'])['nickname']
             invitee_nick = self.bot.get_contact_profile(self.gomoku_games[game_id]['white'])['nickname']
-            out_message = f'-----XYBot-----\n🎉五子棋游戏 {game_id} 开始！\n\n⚫️黑方：{inviter_nick}\n⚪️白方：{invitee_nick}\n\n⚫️黑方先手！\n\n⏰每回合限时：{self.timeout}秒\n\n⚙️请发送下面指令落子:\n/{self.keywords[0]} {self.play_game_sub_keywords[0]} 横坐标纵坐标\n\n⚙️例如: /{self.keywords[0]} {self.play_game_sub_keywords[0]} C5'
+            out_message = f'-----XYBot-----\n🎉五子棋游戏 {game_id} 开始！\n\n⚫️黑方：{inviter_nick}\n⚪️白方：{invitee_nick}\n\n⚫️黑方先手！\n\n⏰每回合限时：{self.timeout}秒\n\n⚙️请发送下面指令落子:\n{self.command_prefix}{self.keywords[0]} {self.play_game_sub_keywords[0]} 横坐标纵坐标\n\n⚙️例如: {self.command_prefix}{self.keywords[0]} {self.play_game_sub_keywords[0]} C5'
             self.send_friend_or_group(recv, out_message)
 
             # 发送游戏棋盘图片
@@ -256,7 +256,7 @@ class gomoku(PluginInterface):
                 opponent_emoji = '⚫️' if self.gomoku_games[game_id]['turn'] == self.gomoku_games[game_id][
                     'black'] else '⚪️'
 
-                out_message = f'-----XYBot-----\n {player_emoji}{player_nick} 把棋子落在了 {cord}！\n轮到 {opponent_emoji}{opponent_nick} 下子了！\n⏰限时：{self.timeout}秒\n\n⚙️请发送下面指令落子:\n/{self.keywords[0]} {self.play_game_sub_keywords[0]} 横坐标纵坐标\n\n⚙️例如: {self.command_prefix}{self.keywords[0]} {self.play_game_sub_keywords[0]} C5'
+                out_message = f'-----XYBot-----\n {player_emoji}{player_nick} 把棋子落在了 {cord}！\n轮到 {opponent_emoji}{opponent_nick} 下子了！\n⏰限时：{self.timeout}秒\n\n⚙️请发送下面指令落子:\n{self.command_prefix}{self.keywords[0]} {self.play_game_sub_keywords[0]} 横坐标纵坐标\n\n⚙️例如: {self.command_prefix}{self.keywords[0]} {self.play_game_sub_keywords[0]} C5'
                 self.send_friend_or_group(recv, out_message)
 
                 # 创建超时任务
