@@ -8,7 +8,6 @@ import time
 import requests
 from loguru import logger
 
-from utils.web_api_data import WebApiData
 from .pywxdll_json import *
 
 
@@ -30,8 +29,6 @@ class Pywxdll:
         self.dll_path_absolute = os.path.abspath("pywxdll/wxhelper-3.9.5.81-v11.dll")
         self.injection_process_name = "WeChat.exe"
         self.wechat_version_fix_path = os.path.abspath("pywxdll/fixWechatVersion.py")
-
-        self._web_api_data = WebApiData()
 
     def docker_inject_dll(self):
         """

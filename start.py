@@ -11,27 +11,14 @@ import time
 import schedule
 import yaml
 from loguru import logger
-from uvicorn import Config, Server
 
 import pywxdll
 import utils.xybot as xybot
 from utils.plans_manager import plan_manager
 from utils.plugin_manager import plugin_manager
-from utils.web_api import app
-from utils.web_api_data import WebApiData
 
 
-async def start_api_server():
-    # 重置连续运行天数为0
-    web_api_data = WebApiData()
-    web_api_data.update_data('running_days', 0)
-
-    config = Config(app, loop='none')
-    server = Server(config)
-    await server.serve()
-
-
-async def message_handler(client_socket, handlebot, web_api_data):  # 处理收到的消息
+async def message_handler(client_socket, handlebot):  # 处理收到的消息
     message = b""
     while True:
         message += await asyncio.get_running_loop().sock_recv(client_socket, 1024)
@@ -39,7 +26,6 @@ async def message_handler(client_socket, handlebot, web_api_data):  # 处理收�
             break
     client_socket.close()
     message_json = json.loads(message.decode('utf-8'))
-    web_api_data.update_data('received_message_count', web_api_data.get_data()['received_message_count'] + 1)
 
     await asyncio.create_task(handlebot.message_handler(message_json))
 
@@ -109,7 +95,6 @@ async def main():
         logger.error(possible_error)
         sys.exit(1)
 
-    inject_result = False
     if system == "Windows":
         inject_result = bot.windows_start_wechat_inject_and_fix_ver()  # 注入Hook和修复版本这两个操作都需要管理员权限
 
@@ -147,9 +132,6 @@ async def main():
 
     logger.success("已确认微信已登陆，开始启动XYBot")
 
-    asyncio.create_task(start_api_server()).add_done_callback(callback)  # 开启web api服务
-    web_api_data = WebApiData()
-
     handlebot = xybot.XYBot()
 
     # ---- 加载插件 加载计划 ---- #
@@ -181,7 +163,7 @@ async def main():
                 client_socket, address = await asyncio.get_running_loop().sock_accept(server_socket)
                 client_socket.setblocking(False)
 
-                asyncio.create_task(message_handler(client_socket, handlebot, web_api_data)).add_done_callback(callback)
+                asyncio.create_task(message_handler(client_socket, handlebot)).add_done_callback(callback)
             except Exception as error:
                 logger.error(f"出现错误: {error}")
 

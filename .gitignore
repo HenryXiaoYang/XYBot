@@ -161,9 +161,10 @@ cython_debug/
 #.idea/
 
 # XYBot
-userpoints.db
-resources/web_api_data.json
+userdata.db
 gomoku_board.psd
 
 #Github
 
+debugger.py
+pywxdll_test.py
