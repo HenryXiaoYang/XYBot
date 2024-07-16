@@ -31,6 +31,8 @@ class red_packet(PluginInterface):
         self.port = main_config["port"]  # 机器人端口
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
+        self.command_prefix = main_config["command_prefix"]
+
         self.db = BotDatabase()  # 实例化机器人数据库类
 
         cache_path = "resources/cache"  # 检测是否有cache文件夹
@@ -55,7 +57,6 @@ class red_packet(PluginInterface):
             )
 
     def send_red_packet(self, recv):
-        # /红包 100 10
         red_packet_sender = recv["sender"]
 
         # 判断是否有错误
@@ -106,7 +107,7 @@ class red_packet(PluginInterface):
             self.db.add_points(red_packet_sender, red_packet_points * -1)  # 扣除积分
 
             # 组建信息
-            out_message = f"-----XYBot-----\n{red_packet_sender_nick} 发送了一个红包！\n\n🧧红包金额：{red_packet_points}点积分\n🧧红包数量：{red_packet_amount}个\n\n🧧红包口令请见下图！\n\n快输入指令来抢红包！/抢红包 (口令)"
+            out_message = f"-----XYBot-----\n{red_packet_sender_nick} 发送了一个红包！\n\n🧧红包金额：{red_packet_points}点积分\n🧧红包数量：{red_packet_amount}个\n\n🧧红包口令请见下图！\n\n快输入指令来抢红包！{self.command_prefix}抢红包 (口令)"
 
             # 发送信息
             self.bot.send_text_msg(recv["from"], out_message)
