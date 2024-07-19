@@ -101,7 +101,7 @@ volumes:
 
 在浏览器中打开`http://<你的ip地址>:4000/vnc.html`访问VNC。
 
-![VNC WeChat Login](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/wiki/vnc_wechat_login.png?raw=true)
+![VNC WeChat Login](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/wiki/windows_deployment/vnc_wechat_login.png?raw=true)
 
 扫描微信二维码并登录，登陆后XYBot将自动启动。
 

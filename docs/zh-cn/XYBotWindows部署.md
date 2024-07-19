@@ -85,6 +85,10 @@ pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 python start.py
 ```
 
+!> 如果遇到下图的错误，请检查`pywxdll/StartWxAndInject_Windows.exe`这个文件是否被安全软件误删（如Windows安全就会把这个文件误删）。
+
+![StartWxAndInject_Windows.exe Deleted By Safety Software](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/wiki/windows_deployment/Deleted_By_Safe_Soft_StartWxAndInject.png?raw=true)
+
 ### 7. 登陆微信
 
 微信应自动启动，扫描二维码登陆账号。
@@ -115,8 +119,6 @@ python start.py
 
 1.4 Hypixel玩家查询
 
-
-
 娱乐功能🔥
 
 2.1 随机图图
@@ -126,8 +128,6 @@ python start.py
 2.3 随机群成员
 
 2.4 五子棋
-
-
 
 积分功能💰
 
@@ -143,13 +143,9 @@ python start.py
 
 3.6 积分红包
 
-
-
 🔧管理员功能
 
 4.1 管理员菜单
-
-
 
 获取菜单指令格式: 菜单 编号
 
