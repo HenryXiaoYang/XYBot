@@ -49,6 +49,9 @@ class PrivateChatGpt:
         gpt_request_message = " ".join(recv["content"])
         wxid = recv["sender"]
 
+        if gpt_request_message.startswith("我是"):  # 微信打招呼消息，不需要处理
+            return
+
         error = ''
         if (self.db.get_points(wxid) < self.private_chat_gpt_price) and (wxid not in self.admins) and (
                 not self.db.get_whitelist(wxid)):
