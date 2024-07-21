@@ -4,7 +4,7 @@
     <img alt="XYBot微信机器人logo" width="240" src="https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/logo/xybot_logo.png?raw=true">
 </p>
 
-XYBot是一个基于docker和pywxdll hook注入的微信机器人。😊 具有高度可自定义性，支持自我编写插件。🚀
+XYBot是一个可运行于Linux和Windows的基于Hook的微信机器人。😊 具有高度可自定义性，支持自我编写插件。🚀
 
 XYBot提供了多种功能，包括获取天气🌤️、获取新闻📰、ChatGPT聊天🗣️、Hypixel玩家查询🎮、随机图片📷、随机链接🔗、随机群成员👥、五子棋♟️、签到✅、查询积分📊、积分榜🏆、积分转送💰、积分抽奖🎁、积分红包🧧等。🎉
 
@@ -33,7 +33,6 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 - Hypixel玩家查询🎮
 - 随机图图📷
 - 随机链接🔗
-- 随机群成员👥
 - 五子棋♟️
 - 签到✅
 - 查询积分📊
@@ -51,6 +50,14 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 - 热加载/卸载/重载插件🔄
 - 查看已加载插件ℹ️
 
+## XYBot交流群
+
+<p align="center">
+    <img alt="XYBot二维码" width="360" src="https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/README/XYBot_QRCode.jpeg?raw=true">
+</p>
+
+**加好友后回复`入群`即可加入交流群。**
+
 ## FAQ❓❓❓
 
 #### ARM架构能不能运行?🤔️
@@ -64,14 +71,6 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 #### 最长能运行多久？🤔️
 
 XYBot内置了防微信自动退出登录功能，可以保持长时间运行。
-
-## XYBot交流群
-
-<p align="center">
-    <img alt="XYBot交流群二维码" width="360" src="https://file.yangres.com/xybot-wechatgroup.jpeg">
-</p>
-
-[🔗群二维码链接，放图片会被缓存](https://file.yangres.com/xybot-wechatgroup.jpeg)
 
 ## 特别感谢
 

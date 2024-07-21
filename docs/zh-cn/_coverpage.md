@@ -2,7 +2,7 @@
 
 # XYBot <small>v0.0.7</small>
 
-> 基于docker和pywxdll hook注入的微信机器人🤖️！
+> 可运行于Linux和Windows的基于Hook的微信机器人🤖️！
 
 - ✅高度可自定义！ 
 - ✅支持自我编写插件！
