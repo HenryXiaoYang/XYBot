@@ -1,8 +1,8 @@
 keywords: [ "发红包", "抢红包" ]
 plugin_name: "red_packet"
 
-max_point: 500
+max_point: 5000
 min_point: 10
 
-max_packet: 25
+max_packet: 100
 max_time: 43200
