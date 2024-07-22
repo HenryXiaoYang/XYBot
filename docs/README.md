@@ -80,6 +80,8 @@ https://github.com/sayue2019/wechat-service-allin 感谢提供了Docker容器相
 
 https://github.com/cixingguangming55555/wechat-bot v0.0.7之前用的Hook，非常好用，感谢！
 
+https://github.com/ttttupup/wxhelper/ v0.0.7及之后用的Hook，功能很多，感谢！
+
 https://github.com/miloira/wxhook 感谢这个项目提供了Windows环境下微信的启动与注入Hook的工具！
 
 https://github.com/nefarius/Injector 感谢这个项目提供了Docker环境下微信的注入Hook的工具！
