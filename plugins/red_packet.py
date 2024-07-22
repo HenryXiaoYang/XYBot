@@ -72,6 +72,8 @@ class red_packet(PluginInterface):
             error = f"-----XYBot-----\n⚠️积分无效！最大{self.max_point}，最小{self.min_point}！"
         elif int(recv["content"][2]) >= self.max_packet:
             error = f"-----XYBot-----\n⚠️红包数量无效！最大{self.max_packet}！"
+        elif int(recv["content"][2]) > int(recv["content"][1]):
+            error = "-----XYBot-----\n❌红包数量不能大于红包积分！"
 
         # 判断是否有足够积分
         if not error:
@@ -206,22 +208,18 @@ class red_packet(PluginInterface):
         return chr_5, path
 
     @staticmethod
-    def split_integer(n, num_parts):
-        # 生成 num_parts-1 个随机数
-        random_numbers = []
-        for _ in range(num_parts - 1):
-            random_numbers.append(random.randint(1, n - num_parts + 1))
-        random_numbers.sort()
+    def split_integer(num, count):
+        # 初始化每个数为1
+        result = [1] * count
+        remaining = num - count
 
-        # 计算每份的数量
-        parts = []
-        prev = 0
-        for num in random_numbers:
-            parts.append(num - prev)
-            prev = num
-        parts.append(n - prev)
-        random.shuffle(parts)
-        return parts
+        # 随机分配剩余的部分
+        while remaining > 0:
+            index = random.randint(0, count - 1)
+            result[index] += 1
+            remaining -= 1
+
+        return result
 
     def check_left_red_packet(self):  # 检查是否有超时红包
         logger.info("[计划任务]检查是否有超时的红包")
