@@ -109,7 +109,7 @@ class red_packet(PluginInterface):
             self.db.add_points(red_packet_sender, red_packet_points * -1)  # 扣除积分
 
             # 组建信息
-            out_message = f"-----XYBot-----\n{red_packet_sender_nick} 发送了一个红包！\n\n🧧红包金额：{red_packet_points}点积分\n🧧红包数量：{red_packet_amount}个\n\n🧧红包口令请见下图！\n\n快输入指令来抢红包！{self.command_prefix}抢红包 (口令)"
+            out_message = f"-----XYBot-----\n{red_packet_sender_nick} 发送了一个红包！\n\n🧧红包金额：{red_packet_points}点积分\n🧧红包数量：{red_packet_amount}个\n\n🧧红包口令请见下图！\n\n快输入指令来抢红包！{self.command_prefix}抢红包 口令"
 
             # 发送信息
             self.bot.send_text_msg(recv["from"], out_message)
