@@ -1,168 +1,292 @@
 import json
-import time
-
-HEART_BEAT = 5005
-RECV_TXT_MSG = 1
-RECV_PIC_MSG = 3
-NEW_FRIEND_REQUEST = 37
-RECV_TXT_CITE_MSG = 49
-PIC_MSG = 500
-AT_MSG = 550
-TXT_MSG = 555
-USER_LIST = 5000
-GET_USER_LIST_SUCCSESS = 5001
-GET_USER_LIST_FAIL = 5002
-ATTATCH_FILE = 5003
-CHATROOM_MEMBER = 5010
-CHATROOM_MEMBER_NICK = 5020
-DEBUG_SWITCH = 6000
-PERSONAL_INFO = 6500
-PERSONAL_DETAIL = 6550
-DESTROY_ALL = 9999
-JOIN_ROOM = 10000
 
 
 # 发送txt消息到个人或群 wxid为用户id或群id content为发送内容  Send txt message to a wxid(perosnal or group)
-def json_send_txt_msg(wxid, content: str):
-    qs = {
-        'id': _getid(),
-        'type': TXT_MSG,
-        'roomid': 'null',
-        'wxid': wxid,
-        'content': content,
-        'nickname': 'null',
-        'ext': 'null'
+
+
+def json_is_logged_in():
+    para = {
     }
-    return json.dumps(qs)
+    return json.dumps(para)
 
 
-# 发送图片信息 wxid为用户id或群id path为发送图片的路径（建议用绝对路径） Send picture to wxid(perosnal or group)
-def json_send_pic_msg(wxid, path: str):
-    qs = {
-        'id': _getid(),
-        'type': PIC_MSG,
-        'wxid': wxid,
-        'roomid': 'null',
-        'content': path,
-        'nickname': "null",
-        'ext': 'null'
+def json_get_logged_in_account_info():
+    para = {
     }
-    s = json.dumps(qs)
-    return s
+    return json.dumps(para)
 
 
-# 发送@信息 roomid为群id wxid为用户id nickname为@的人昵称 content为发送内容 send @ message
-def json_send_at_msg(roomid, wxid, nickname: str, content: str):
-    qs = {
-        'id': _getid(),
-        'type': AT_MSG,
-        'roomid': roomid,
-        'wxid': wxid,
-        'content': content,
-        'nickname': nickname,
-        'ext': 'null'
+def json_send_text_msg(wxid: str, msg: str):
+    para = {
+        "wxid": wxid,
+        "msg": msg
     }
-    s = json.dumps(qs)
-    return s
+    return json.dumps(para)
 
 
-# 发送文件 wxid为用户id或者群id path为文件的路径 send attachment to chat or group
-def json_send_attach_msg(wxid, path):
-    qs = {
-        'id': _getid(),
-        'type': ATTATCH_FILE,
-        'wxid': wxid,
-        'roomid': 'null',
-        'content': path,
-        'nickname': "null",
-        'ext': 'null'
+def json_send_image_msg(wxid: str, image_path: str):
+    para = {
+        "wxid": wxid,
+        "imagePath": image_path
     }
-
-    s = json.dumps(qs)
-    return s
+    return json.dumps(para)
 
 
-######## 获取信息 ########
-
-# 获取唯一id
-def _getid():
-    return time.strftime("%Y%m%d%H%M%S", time.localtime())
-
-
-def json_heartbeat(h):
-    return h
-
-
-# 获取账号信息 wxid为用户id get other user's information
-def json_get_personal_detail(wxid):
-    qs = {
-        'id': _getid(),
-        'type': PERSONAL_DETAIL,
-        'content': 'op:personal detail',
-        'wxid': wxid,
+def json_send_file_msg(wxid: str, file_path: str):
+    para = {
+        "wxid": wxid,
+        "filePath": file_path
     }
-    return json.dumps(qs)
+    return json.dumps(para)
 
 
-# 获取登陆的账号信息 和get_personal_detail不同于get_personal_detail是获取其他用户的 get 's imformation
-def json_get_personal_info():
-    qs = {
-        'id': _getid(),
-        'type': PERSONAL_INFO,
-        'content': 'op:personal info',
-        'wxid': 'ROOT',
+def json_start_hook_msg(port: int, ip: str, url: str, timeout: int, enable_http: bool):
+    para = {
+        "port": str(port),
+        "ip": ip,
+        "url": url,
+        "timeout": str(timeout),
+        "enableHttp": str(int(enable_http))
     }
-    return json.dumps(qs)
+    return json.dumps(para)
 
 
-# 获取微信通讯录用户名字和wxid get wechat address list username and wxid
+def json_stop_hook_msg():
+    para = {}
+    return json.dumps(para)
+
+
 def json_get_contact_list():
-    qs = {
-        'id': _getid(),
-        'type': USER_LIST,
-        'content': 'user list',
-        'wxid': 'null',
+    para = {}
+    return json.dumps(para)
+
+
+def json_get_db_info():
+    para = {}
+    return json.dumps(para)
+
+
+def json_exec_sql(db_handle: int, sql: str):
+    para = {
+        "dbHandle": db_handle,
+        "sql": sql
     }
-    return json.dumps(qs)
+    return json.dumps(para)
 
 
-# 获取群聊中用户昵称 wxid为群中要获取的用户id roomid为群id  get group's user's nickname
-def json_get_chatroom_nick(roomid='null', wxid='ROOT'):
-    if not roomid:
-        roomid = 'null'
-    if wxid == 'null' and roomid == 'null':
-        raise ValueError("wxid和roomid不能同时为'null'")
-    qs = {
-        'id': _getid(),
-        'type': CHATROOM_MEMBER_NICK,
-        'roomid': roomid,
-        'wxid': wxid,
+def json_get_chatroom_detail_info(chatroom_id: str):
+    para = {
+        "chatRoomId": chatroom_id
     }
-    return json.dumps(qs)
+    return json.dumps(para)
 
 
-def json_get_user_nick(wxid):
-    return json_get_chatroom_nick(wxid=wxid)
-
-
-# 获取群聊中用户列表 wxid为群id
-def json_get_chatroom_memberlist(roomid='null'):
-    qs = {
-        'id': _getid(),
-        'type': CHATROOM_MEMBER,
-        'wxid': 'null',
-        'roomid': roomid,
-        'content': 'op:list member',
+def json_add_member_to_chatroom(chatroom_id: str, wxids: list):
+    para = {
+        "chatRoomId": chatroom_id,
+        "memberIds": ','.join(wxids)
     }
-    return json.dumps(qs)
+    return json.dumps(para)
 
 
-######## 其他 ########
-def json_destroy_all():
-    qs = {
-        'id': _getid(),
-        'type': DESTROY_ALL,
-        'content': 'none',
-        'wxid': 'node',
+def json_modify_nickname(chatroom_id: str, wxid: str, nickname: str):
+    para = {
+        "chatRoomId": chatroom_id,
+        "wxid": wxid,
+        "nickName": nickname
     }
-    return json.dumps(qs)
+    return json.dumps(para)
+
+
+def json_del_member_from_chatroom(chatroom_id: str, wxids: list):
+    para = {
+        "chatRoomId": chatroom_id,
+        "memberIds": ','.join(wxids)
+    }
+    return json.dumps(para)
+
+
+def json_get_member_from_chatroom(chatroom_id: str):
+    para = {
+        "chatRoomId": chatroom_id
+    }
+    return json.dumps(para)
+
+
+def json_top_msg(msg_id: str):
+    para = {
+        "msgId": msg_id
+    }
+    return json.dumps(para)
+
+
+def json_remove_top_msg(msg_id: str, chatroom_id: str):
+    para = {
+        "msgId": msg_id,
+        "chatRoomId": chatroom_id
+    }
+    return json.dumps(para)
+
+
+def json_invite_member_to_chatroom(chatroom_id: str, wxids: list):
+    para = {
+        "chatRoomId": chatroom_id,
+        "memberIds": ','.join(wxids)
+    }
+    return json.dumps(para)
+
+
+def json_hook_log():
+    para = {}
+    return json.dumps(para)
+
+
+def json_unhook_log():
+    para = {}
+    return json.dumps(para)
+
+
+def json_create_chatroom(wxids: list):
+    para = {
+        "memberIds": ','.join(wxids)
+    }
+    return json.dumps(para)
+
+
+def json_quit_chatroom(chatroom_id: str):
+    para = {
+        "chatRoomId": chatroom_id
+    }
+    return json.dumps(para)
+
+
+def json_forward_msg(wxid: str, msg_id: str):
+    para = {
+        "wxid": wxid,
+        "msgId": msg_id
+    }
+    return json.dumps(para)
+
+
+def json_get_sns_first_page():
+    para = {}
+    return json.dumps(para)
+
+
+def json_get_sns_next_page(sns_id: int):
+    para = {
+        "snsId": sns_id
+    }
+    return json.dumps(para)
+
+
+def json_add_fav_from_msg(msg_id: str):
+    para = {
+        "msgId": msg_id
+    }
+    return json.dumps(para)
+
+
+def json_add_fav_from_image(wxid: str, image_path: str):
+    para = {
+        "wxid": wxid,
+        "imagePath": image_path
+    }
+    return json.dumps(para)
+
+
+def json_send_at_msg(chatroom_id: str, msg: str, wxids: list):
+    para = {
+        "chatRoomId": chatroom_id,
+        "msg": msg,
+        "wxids": ','.join(wxids)
+    }
+    return json.dumps(para)
+
+
+def json_get_contact_profile(wxid: str):
+    para = {
+        "wxid": wxid
+    }
+    return json.dumps(para)
+
+
+def json_send_public_msg(wxid: str, app_name: str, username: str, title: str, url: str, thumb_url: str, digest: str):
+    para = {
+        "wxid": wxid,
+        "appName": app_name,
+        "userName": username,
+        "title": title,
+        "url": url,
+        "thumbUrl": thumb_url,
+        "digest": digest
+    }
+    return json.dumps(para)
+
+
+def json_forward_public_msg_by_msg_id(wxid: str, msg_id: str):
+    para = {
+        "wxid": wxid,
+        "msgId": msg_id
+    }
+    return json.dumps(para)
+
+
+def json_download_attach(msg_id: str):
+    para = {
+        "msgId": msg_id,
+    }
+    return json.dumps(para)
+
+
+def json_decode_image(file_path: str, store_dir: str):
+    para = {
+        "filePath": file_path,
+        "storeDir": store_dir
+    }
+    return json.dumps(para)
+
+
+def json_get_voice_by_msg_id(msg_id: str, store_dir: str):
+    para = {
+        "msgId": msg_id,
+        "storeDir": store_dir
+    }
+    return json.dumps(para)
+
+
+def json_send_custom_emotion(wxid: str, file_path: str):
+    para = {
+        "wxid": wxid,
+        "filePath": file_path
+    }
+    return json.dumps(para)
+
+
+def json_send_applet(wxid: str, waid_concat: str, applet_wxid: str, json_param: str, head_img_url: str, main_img: str,
+                     index_page: str):
+    para = {
+        "wxid": wxid,
+        "waidConcat": waid_concat,
+        "appletWxid": applet_wxid,
+        "jsonParam": json_param,
+        "headImgUrl": head_img_url,
+        "mainImg": main_img,
+        "indexPage": index_page
+    }
+    return json.dumps(para)
+
+
+def json_send_pat_msg(wxid: str, patter: str):
+    para = {
+        "wxid": wxid,
+        "receiver": patter
+    }
+    return json.dumps(para)
+
+
+def json_ocr(image_path: str):
+    para = {
+        "imagePath": image_path
+    }
+    return json.dumps(para)

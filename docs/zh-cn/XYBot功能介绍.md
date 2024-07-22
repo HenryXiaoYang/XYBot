@@ -2,7 +2,7 @@
 
 这一页介绍了所有官方XYBot微信机器人用户可使用的功能、命令。
 
-本介绍对应v0.0.6版本的XYBot。
+本介绍对应`v0.0.7`版本的XYBot。
 
 功能分为了4类：
 
@@ -25,7 +25,7 @@
 
 #### **HenryXiaoYang**
 
-/菜单
+菜单
 
 #### **XYBot**
 
@@ -39,8 +39,7 @@
 娱乐功能🔥
 2.1 随机图图
 2.2 随机链接
-2.3 随机群成员
-2.4 五子棋
+2.3 五子棋
 
 积分功能💰
 3.1 签到
@@ -53,19 +52,20 @@
 🔧管理员功能
 4.1 管理员菜单
 
-帮助指令格式/菜单 (编号)
-例如/菜单 1.1
-指令参数的()不用打
+帮助指令格式:
+菜单 编号
+例如:
+菜单 1.1
 
 #### **HenryXiaoYang**
 
-/菜单 1.2
+菜单 1.2
 
 #### **XYBot**
 
 -----XYBot菜单------
 1.2: 获取最新头条新闻📰
-指令: /新闻
+指令: 新闻
 
 <!-- chat:end -->
 
@@ -77,28 +77,28 @@ XYBot可以帮你查询全球任意城市的天气情况。
 
 #### **HenryXiaoYang**
 
-/天气 北京
+天气 北京
 
 #### **XYBot**
 
 -----XYBot-----
 北京 实时天气☁️
-更新时间：2024-04-26T22:43+08:00⏰
+更新时间：2024-07-16T20:42+08:00⏰
 
-🌡️当前温度：22℃
-🌡️体感温度：23℃
-☁️天气：阴
-☀️紫外线指数：3
-🌬️风向：东风
-🌬️风力：2级
-💦湿度：57%
+🌡️当前温度：27℃
+🌡️体感温度：30℃
+☁️天气：多云
+☀️紫外线指数：9
+🌬️风向：西风
+🌬️风力：1级
+💦湿度：80%
 🌧️降水量：0.0mm/h
-👀能见度：7km
+👀能见度：10km
 
 ☁️未来3天 北京 天气：
-4.27 小雨 最高🌡️23℃ 最低🌡️14℃ ☀️紫外线:8
-4.28 多云 最高🌡️24℃ 最低🌡️13℃ ☀️紫外线:4
-4.29 小雨 最高🌡️23℃ 最低🌡️13℃ ☀️紫外线:9
+7.17 晴 最高🌡️35℃ 最低🌡️22℃ ☀️紫外线:10
+7.18 晴 最高🌡️35℃ 最低🌡️24℃ ☀️紫外线:10
+7.19 多云 最高🌡️36℃ 最低🌡️24℃ ☀️紫外线:10
 
 <!-- chat:end -->
 
@@ -110,7 +110,7 @@ XYBot可以帮你获取最新的头条新闻。
 
 #### **HenryXiaoYang**
 
-/获取新闻
+获取新闻
 
 #### **XYBot**
 
@@ -142,7 +142,7 @@ XYBot可以调用ChatGPT，让你和机器人聊天。
 
 #### **HenryXiaoYang**
 
-/gpt3 用简短的语言介绍一下Github
+gpt3 用简短的语言介绍一下Github
 
 #### **XYBot**
 
@@ -196,7 +196,7 @@ XYBot可以帮你查询在我的世界服务器Hypixel中玩家的信息，数�
 
 #### **HenryXiaoYang**
 
-/hypixel Technoblade
+hypixel Technoblade
 
 #### **XYBot**
 
@@ -235,7 +235,7 @@ Status: Offline
 
 #### **HenryXiaoYang**
 
-/hypixel bw Technoblade
+hypixel bw Technoblade
 
 #### **XYBot**
 
@@ -289,7 +289,7 @@ XYBot可以帮你随机获取一张二次元图片。
 
 #### **HenryXiaoYang**
 
-/随机图图
+随机图图
 
 #### **XYBot**
 
@@ -304,7 +304,7 @@ XYBot可以帮你随机获取一个链接，可以说是更隐蔽的随机图图
 
 #### **HenryXiaoYang**
 
-/随机链接
+随机链接
 
 #### **XYBot**
 
@@ -315,27 +315,7 @@ XYBot可以帮你随机获取一个链接，可以说是更隐蔽的随机图图
 ❓: https://gitcode.net/qq_44112897/images/-/raw/master/comic/13.jpg
 <!-- chat:end -->
 
-### 2.3 随机群成员
-
-想要在群里随机抽个人？XYBot可以帮你随机获取一个群成员。
-
-!> 本功能仅可在群聊中使用
-
-<!-- chat:start -->
-
-#### **HenryXiaoYang**
-
-/随机成员
-
-#### **XYBot**
-
-@HenryXiaoYang
------XYBot-----
-随机群成员❓：
-APerson
-<!-- chat:end -->
-
-### 2.4 五子棋
+### 2.3 五子棋
 
 想要在群里和朋友玩五子棋？XYBot可以帮你创建并管理一场五子棋游戏。
 
@@ -345,7 +325,7 @@ APerson
 
 #### **HenryXiaoYang**
 
-/五子棋 邀请 @JoshuaZ
+五子棋 邀请 @JoshuaZ
 
 #### **XYBot**
 
@@ -354,11 +334,11 @@ APerson
 🎉您收到了一份来自 HenryXiaoYang 的五子棋比赛邀请！
 
 ⚙️请在60秒内发送下面的指令来接受邀请：
-/五子棋 接受 ABC123
+五子棋 接受 ABC123
 
 #### **JoshuaZ**
 
-/五子棋 接受 ABC123
+五子棋 接受 ABC123
 
 #### **XYBot**
 
@@ -374,17 +354,17 @@ APerson
 ⏰每回合限时：60秒
 
 ⚙️请发送下面指令落子:
-/五子棋 下棋 横坐标纵坐标
+五子棋 下棋 横坐标纵坐标
 
-⚙️例如: /五子棋 下棋 C5
+⚙️例如: 五子棋 下棋 C5
 
 #### **XYBot**
 
-![Gomoku Board 1](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/wiki/function_introduction/gomoku_board_1.png?raw=true)
+![Gomoku Board 1](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/wiki/function_introduction/gomoku_board_1.png?raw=true)
 
 #### **HenryXiaoYang**
 
-/五子棋 下棋 i8
+五子棋 下棋 i8
 
 #### **XYBot**
 
@@ -395,17 +375,17 @@ APerson
 ⏰限时：60秒
 
 ⚙️请发送下面指令落子:
-/五子棋 下棋 横坐标纵坐标
+五子棋 下棋 横坐标纵坐标
 
-⚙️例如: /五子棋 下棋 C5
+⚙️例如: 五子棋 下棋 C5
 
 #### **XYBot**
 
-![Gomoku Board 2](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/wiki/function_introduction/gomoku_board_2.png?raw=true)
+![Gomoku Board 2](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/wiki/function_introduction/gomoku_board_2.png?raw=true)
 
 #### **JoshuaZ**
 
-/五子棋 下棋 I7
+五子棋 下棋 I7
 
 #### **XYBot**
 
@@ -416,13 +396,13 @@ APerson
 ⏰限时：60秒
 
 ⚙️请发送下面指令落子:
-/五子棋 下棋 横坐标纵坐标
+五子棋 下棋 横坐标纵坐标
 
-⚙️例如: /五子棋 下棋 C5
+⚙️例如: 五子棋 下棋 C5
 
 #### **XYBot**
 
-![Gomoku Board 3](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/wiki/function_introduction/gomoku_board_3.png?raw=true)
+![Gomoku Board 3](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/wiki/function_introduction/gomoku_board_3.png?raw=true)
 
 #### **Omitted**
 
@@ -430,7 +410,7 @@ APerson
 
 #### **HenryXiaoYang**
 
-/五子棋 下棋 F9
+五子棋 下棋 F9
 
 #### **XYBot**
 
@@ -442,7 +422,7 @@ APerson
 
 #### **XYBot**
 
-![Gomoku Board 4](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/wiki/function_introduction/gomoku_board_4.png?raw=true)
+![Gomoku Board 4](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/wiki/function_introduction/gomoku_board_4.png?raw=true)
 <!-- chat:end -->
 
 ## 积分功能💰
@@ -457,7 +437,7 @@ APerson
 
 #### **HenryXiaoYang**
 
-/签到
+签到
 
 #### **XYBot**
 
@@ -467,7 +447,7 @@ APerson
 
 #### **JoshuaZ**
 
-/签到
+签到
 
 #### **XYBot**
 
@@ -484,7 +464,7 @@ APerson
 
 #### **HenryXiaoYang**
 
-/查询积分
+查询积分
 
 #### **XYBot**
 
@@ -501,7 +481,7 @@ APerson
 
 #### **HenryXiaoYang**
 
-/积分榜
+积分榜
 
 #### **XYBot**
 
@@ -548,7 +528,7 @@ APerson
 
 #### **HenryXiaoYang**
 
-/转送积分 20 @JoshuaZ
+转送积分 20 @JoshuaZ
 
 #### **XYBot**
 
@@ -558,7 +538,7 @@ APerson
 
 #### **JoshuaZ**
 
-/查询积分
+查询积分
 
 #### **XYBot**
 
@@ -577,7 +557,7 @@ XYBot的积分抽奖功能可以让你用积分参与抽奖，赢取更多积分
 
 #### **HenryXiaoYang**
 
-/抽奖 小
+抽奖 小
 
 #### **XYBot**
 
@@ -596,7 +576,7 @@ XYBot的积分抽奖功能可以让你用积分参与抽奖，赢取更多积分
 
 #### **HenryXiaoYang**
 
-/抽奖 中 5
+抽奖 中 5
 
 #### **XYBot**
 
@@ -624,7 +604,7 @@ XYBot的积分抽奖功能可以让你用积分参与抽奖，赢取更多积分
 
 #### **HenryXiaoYang**
 
-/发红包 15 2
+发红包 15 2
 
 #### **XYBot**
 
@@ -636,15 +616,15 @@ HenryXiaoYang 发送了一个红包！
 
 🧧红包口令请见下图！
 
-快输入指令来抢红包！/抢红包 (口令)
+快输入指令来抢红包！抢红包 口令
 
 #### **XYBot**
 
-![Red Packet Code](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/wiki/function_introduction/red_packet_1.jpg?raw=true)
+![Red Packet Code](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/wiki/function_introduction/red_packet_1.jpg?raw=true)
 
 #### **JoshuaZ**
 
-/抢红包 9bvx2
+抢红包 9bvx2
 
 #### **XYBot**
 
@@ -654,7 +634,7 @@ HenryXiaoYang 发送了一个红包！
 
 #### **JoshuaZ**
 
-/抢红包 qbvx2
+抢红包 qbvx2
 
 #### **XYBot**
 
@@ -678,7 +658,7 @@ HenryXiaoYang 发送了一个红包！
 
 #### **HenryXiaoYang**
 
-/机器人状态
+机器人状态
 
 #### **XYBot**
 
@@ -689,7 +669,7 @@ Github: https://github.com/HenryXiaoYang/XYBot
 
 #### **JoshuaZ**
 
-/机器人状态
+机器人状态
 
 #### **XYBot**
 
@@ -698,61 +678,35 @@ Bot version: v0.0.6
 Github: https://github.com/HenryXiaoYang/XYBot
 <!-- chat:end -->
 
-### 获取群成员列表
-
-!> 本功能仅管理员可用
-
-?> 管理员功能广泛使用`wxid`来识别用户，可以用这个功能查询到群成员的`wxid`。
-
-<!-- chat:start -->
-
-#### **HenryXiaoYang**
-
-/获取群成员列表
-
-#### **XYBot**
-
------XYBot-----
-🤖️本群聊的群员列表：
-https://easychuan.cn/r/xxxxx
-过期时间：xxxx-xx-xxTxx:xx:xx.xxxx
-<!-- chat:end -->
-
-由于`pywxdll`库的发送文件功能疑似被微信官方封禁，没法发Excel表格，所以机器人将表格上传至了一个在线文本传输网站，可以访问该网站获得到表格。
-
-![Get Chatroom Member Example](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/wiki/function_introduction/get_chatroom_member_1.png?raw=true)
-
 ### 获取机器人通讯录
 
 !> 本功能仅管理员可用
 
-与获取群成员列表一样，可以用这个功能查询到用户的`wxid`
+可以用这个功能查询到机器人的通讯录。
 
 <!-- chat:start -->
 
 #### **HenryXiaoYang**
 
-/获取机器人通讯录
+获取机器人通讯录
 
 #### **XYBot**
 
------XYBot-----
-🤖️机器人的通讯录：
-https://easychuan.cn/r/xxxxx
-过期时间：xxxx-xx-xxTxx:xx:xx.xxxx
+(一个Excel表格)
+
 <!-- chat:end -->
 
 ### 管理积分
 
 !> 本功能仅管理员可用
 
-管理员可以通过这个修改用户的积分。
+管理员可以通过这个修改用户的积分，可以用wxid也可以@。
 
 <!-- chat:start -->
 
 #### **HenryXiaoYang**
 
-/管理积分 wxid_0123456789abcde 加 10
+管理积分 wxid_0123456789abcde 加 10
 
 #### **XYBot**
 
@@ -761,7 +715,7 @@ https://easychuan.cn/r/xxxxx
 
 #### **HenryXiaoYang**
 
-/管理积分 wxid_0123456789abcde 减 10
+管理积分 @JoshuaZ 减 10
 
 #### **XYBot**
 
@@ -770,7 +724,7 @@ https://easychuan.cn/r/xxxxx
 
 #### **HenryXiaoYang**
 
-/管理积分 wxid_0123456789abcde 10
+管理积分 wxid_0123456789abcde 10
 
 #### **XYBot**
 
@@ -782,13 +736,13 @@ https://easychuan.cn/r/xxxxx
 
 !> 本功能仅管理员可用
 
-管理员可以通过这个功能管理白名单，有白名单者使用ChatGPT功能不扣积分。
+管理员可以通过这个功能管理白名单，有白名单者使用ChatGPT功能不扣积分。可以用`wxid`也可以用@。
 
 <!-- chat:start -->
 
 #### **HenryXiaoYang**
 
-/管理白名单 wxid_0123456789abcde 加入
+管理白名单 wxid_0123456789abcde 加入
 
 #### **XYBot**
 
@@ -797,7 +751,7 @@ https://easychuan.cn/r/xxxxx
 
 #### **HenryXiaoYang**
 
-/管理白名单 wxid_0123456789abcde 删除
+管理白名单 @JoshuaZ 删除
 
 #### **XYBot**
 
@@ -815,7 +769,7 @@ https://easychuan.cn/r/xxxxx
 
 #### **HenryXiaoYang**
 
-/管理插件 列表
+管理插件 列表
 
 #### **XYBot**
 
@@ -823,14 +777,12 @@ https://easychuan.cn/r/xxxxx
 已加载插件列表：
 admin_signin_reset
 points_trade
-random_group_member
 manage_plugins
 bot_status
 hypixel_info
 red_packet
 weather
 sign_in
-get_chatroom_memberlist
 query_points
 gpt4
 get_contact_list
@@ -856,7 +808,7 @@ gomoku
 
 #### **HenryXiaoYang**
 
-/管理插件 卸载 lucky_draw
+管理插件 卸载 lucky_draw
 
 #### **XYBot**
 
@@ -865,7 +817,7 @@ gomoku
 
 #### **HenryXiaoYang**
 
-/管理插件 加载 lucky_draw
+管理插件 加载 lucky_draw
 
 #### **XYBot**
 
@@ -874,7 +826,7 @@ gomoku
 
 #### **HenryXiaoYang**
 
-/管理插件 重载 lucky_draw
+管理插件 重载 lucky_draw
 
 #### **XYBot**
 
@@ -892,7 +844,7 @@ gomoku
 
 #### **HenryXiaoYang**
 
-/重置签到冷却
+重置签到冷却
 
 #### **XYBot**
 

@@ -3,4 +3,3 @@
 - [XYBot Linux部署](zh-cn/XYBotLinux部署.md "XYBot Linux部署")
 - [XYBot Windows部署](zh-cn/XYBotWindows部署.md "XYBot Windows部署")
 - [XYBot的设置](zh-cn/XYBot的设置.md "XYBot的设置")
-- [XYBot插件编写](zh-cn/XYBot插件编写.md "XYBot插件编写")

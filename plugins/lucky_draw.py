@@ -35,11 +35,7 @@ class lucky_draw(PluginInterface):
         global draw_count, draw_name  # 全局变量防止出错
 
         # -----初始化与消息格式监测-----
-
-        if recv["id1"]:  # 用于判断是否为管理员
-            target_wxid = recv["id1"]  # 是群
-        else:
-            target_wxid = recv["wxid"]  # 是私聊
+        target_wxid = recv["sender"]
 
         command = recv["content"]  # 指令
 
@@ -147,16 +143,13 @@ class lucky_draw(PluginInterface):
             self.send_friend_or_group(recv, error)  # 发送错误
 
     def send_friend_or_group(self, recv, out_message="null"):
-        if recv["id1"]:  # 判断是群还是私聊
-            nickname = self.bot.get_chatroom_nickname(recv["wxid"], recv["id1"])["nick"]
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_at_msg(
-                recv["wxid"], recv["id1"], nickname, "\n" + out_message
-            )  # 发送
+        if recv["fromType"] == "chatroom":  # 判断是群还是私聊
+            logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
+            self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
 
         else:
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_txt_msg(recv["wxid"], out_message)  # 发送
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+            self.bot.send_text_msg(recv["from"], out_message)  # 发送
 
     @staticmethod
     def make_message(

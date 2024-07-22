@@ -37,12 +37,10 @@ class hypixel_info(PluginInterface):
             self.send_friend_or_group(recv, out_message)
 
         elif len(recv["content"]) == 2:  # Basic info
-            # self.send_basic_info(recv, headers)
             await asyncio.create_task(self.send_basic_info(recv, headers))
 
         elif len(recv["content"]) == 3:
             if recv["content"][1] in self.bedwar_keywords:  # bedwar
-                # self.send_bedwar_info(recv, headers)
                 await asyncio.create_task(self.send_bedwar_info(recv, headers))
 
             else:
@@ -132,16 +130,13 @@ class hypixel_info(PluginInterface):
         return bw_stat
 
     def send_friend_or_group(self, recv, out_message="null"):
-        if recv["id1"]:  # 判断是群还是私聊
-            nickname = self.bot.get_chatroom_nickname(recv["wxid"], recv["id1"])["nick"]
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_at_msg(
-                recv["wxid"], recv["id1"], nickname, "\n" + out_message
-            )  # 发送
+        if recv["fromType"] == "chatroom":  # 判断是群还是私聊
+            logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
+            self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
 
         else:
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_txt_msg(recv["wxid"], out_message)  # 发送
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+            self.bot.send_text_msg(recv["from"], out_message)  # 发送
 
     async def send_basic_info(self, recv, headers):
         request_ign = recv["content"][1]  # 请求的玩家ign (游戏内名字 in game name)

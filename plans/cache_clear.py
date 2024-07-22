@@ -8,7 +8,7 @@ import pywxdll
 from utils.plans_interface import PlansInterface
 
 
-class pic_cache_clear(PlansInterface):
+class cache_clear(PlansInterface):
     def __init__(self):
         current_directory = os.path.dirname(os.path.abspath(__file__))
         main_config_path = os.path.join(current_directory, "../main_config.yml")
@@ -21,7 +21,7 @@ class pic_cache_clear(PlansInterface):
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
     def job(self):
-        path = "./resources/pic_cache/"  # 图片缓存路径
+        path = "./resources/cache/"  # 图片缓存路径
         for filename in os.listdir(path):  # 遍历文件夹
             file_path = os.path.join(path, filename)  # 获取文件路径
             # 判断路径是否为文件
@@ -29,7 +29,7 @@ class pic_cache_clear(PlansInterface):
                 # 删除文件
                 os.remove(file_path)
 
-        logger.info("[计划]清除随机图图缓存成功")  # 记录日志
+        logger.info("[计划]清除缓存成功")  # 记录日志
 
     def run(self):
         schedule.every(60).minutes.do(self.job)  # 每60分钟执行一次

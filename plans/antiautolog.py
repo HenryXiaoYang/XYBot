@@ -26,7 +26,7 @@ class antiautolog(PlansInterface):
         logger.info(
             f'[发送信息]{out_message}| [发送到] {"filehelper"}'
         )  # 直接发到文件传输助手，这样就不用单独键个群辣
-        self.bot.send_txt_msg("filehelper", out_message)  # 发送
+        self.bot.send_text_msg("filehelper", out_message)  # 发送
 
     def run(self):
         schedule.every(10).minutes.do(self.job)  # 每10分钟执行一次

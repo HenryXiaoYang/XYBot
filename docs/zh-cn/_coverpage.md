@@ -1,8 +1,8 @@
-![logo](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/logo/xybot_logo_small.png?raw=true)
+![logo](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/logo/xybot_logo_small.png?raw=true)
 
-# XYBot <small>v0.0.6</small>
+# XYBot <small>v0.0.7</small>
 
-> 基于docker和pywxdll hook注入的微信机器人🤖️！
+> 可运行于Linux和Windows的基于Hook的微信机器人🤖️！
 
 - ✅高度可自定义！ 
 - ✅支持自我编写插件！

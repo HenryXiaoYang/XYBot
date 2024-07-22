@@ -1,35 +1,33 @@
 import asyncio
 import concurrent.futures
+import ctypes
 import json
 import os
+import platform
+import socket
+import sys
 import time
 
 import schedule
-import websockets
 import yaml
 from loguru import logger
-from uvicorn import Config, Server
 
 import pywxdll
 import utils.xybot as xybot
 from utils.plans_manager import plan_manager
 from utils.plugin_manager import plugin_manager
-from utils.web_api import app
-from utils.web_api_data import WebApiData
 
 
-async def start_api_server():
-    # 重置连续运行天数为0
-    web_api_data = WebApiData()
-    web_api_data.update_data('running_days', 0)
+async def message_handler(client_socket, handlebot):  # 处理收到的消息
+    message = b""
+    while True:
+        message += await asyncio.get_running_loop().sock_recv(client_socket, 1024)
+        if len(message) == 0 or message[-1] == 0xA:
+            break
+    client_socket.close()
+    message_json = json.loads(message.decode('utf-8'))
 
-    config = Config(app, loop='none')
-    server = Server(config)
-    await server.serve()
-
-
-async def message_handler(recv, handlebot):  # 处理收到的消息
-    await asyncio.create_task(handlebot.message_handler(recv))
+    await asyncio.create_task(handlebot.message_handler(message_json))
 
 
 def callback(worker):  # 处理线程结束时，有无错误
@@ -43,6 +41,13 @@ async def plan_run_pending():  # 计划等待判定线程
     while True:
         schedule.run_pending()
         await asyncio.sleep(1)
+
+
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
 
 
 async def main():
@@ -64,35 +69,68 @@ async def main():
 
     ip = config["ip"]
     port = config["port"]
+    tcp_server_port = config["tcp_server_port"]
 
     max_worker = config["max_worker"]
 
     logger.info("读取设置成功")
 
-    # ---- 机器人实例化 登陆监测 机器人启动 ---- #
+    # ---- 微信Hook注入 修复微信版本过低问题 机器人实例化 登陆监测 机器人启动 ---- #
 
     bot = pywxdll.Pywxdll(ip, port)
     logger.info("机器人实例化成功")
 
+    # 微信Hook注入
+    logger.info("开始注入Hook")
+    possible_error = ''
+    system = platform.system()
+    if platform.architecture()[0] != "64bit":
+        possible_error = "不支持的操作系统，需要64位。"
+    elif not (sys.maxsize > 2 ** 32):
+        possible_error = "需要64位Python。"
+    elif system != "Windows" and system != "Linux":
+        possible_error = f"不支持的操作系统: {system}"
+
+    if possible_error:
+        logger.error(possible_error)
+        sys.exit(1)
+
+    if system == "Windows":
+        inject_result = bot.windows_start_wechat_inject_and_fix_ver()  # 注入Hook和修复版本这两个操作都需要管理员权限
+
+        if inject_result:
+            logger.info("已注入微信Hook")
+        else:
+            logger.error("注入微信Hook失败！")
+            sys.exit(1)
+
+    elif system == "Linux":
+        inject_result = bot.docker_inject_dll()
+
+        if inject_result:
+            logger.info("已注入微信Hook")
+        else:
+            logger.error("注入微信Hook失败！")
+            sys.exit(1)
+
+        # 修复微信版本过低问题
+        if not bot.is_logged_in():
+            if bot.fix_wechat_version():
+                logger.info("已修复微信版本过低问题")
+            else:
+                logger.error("修复微信版本过低问题失败！")
+                sys.exit(1)
+        else:
+            logger.info("已登陆，不需要修复微信版本过低问题")
+
     # 检查是否登陆了微信
     logger.info("开始检测微信是否登陆")
-    logged_in = False
-    while not logged_in:
-        try:
-            if bot.get_personal_detail("filehelper"):
-                logged_in = True
-                logger.success("机器人微信账号已登录！")
-        except:
-            logger.warning(
-                f"机器人微信账号未登录！请使用浏览器访问 http://{ip}:4000/vnc.html 扫码登陆微信"
-            )
-            time.sleep(3)
-    logger.info("已确认微信已登陆，开始启动XYBot")
+    if not bot.is_logged_in():
+        logger.warning("机器人微信账号未登录！请扫码登陆微信。")
+        while not bot.is_logged_in():
+            time.sleep(1)
 
-    bot.start()  # 开启机器人
-
-    asyncio.create_task(start_api_server()).add_done_callback(callback)  # 开启web api服务
-    web_api_data = WebApiData()
+    logger.success("已确认微信已登陆，开始启动XYBot")
 
     handlebot = xybot.XYBot()
 
@@ -105,30 +143,29 @@ async def main():
     plans_dir = "plans"
     plan_manager.load_plans(plans_dir)  # 加载所有计划
 
-    asyncio.create_task(plan_run_pending()).add_done_callback(
-        callback
-    )  # 开启计划等待判定线程
+    asyncio.create_task(plan_run_pending()).add_done_callback(callback)  # 开启计划等待判定线程
     logger.info("已加载所有计划，并开始后台运行")
 
-    # ---- 进入获取聊天信息并处理循环 ---- #
-    async with websockets.connect(f"ws://{ip}:{port}") as websocket:
+    # ---- 启动tcp服务器并开始接受处理消息 ---- #
+    bot.start_hook_msg(tcp_server_port, '127.0.0.1')
+
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setblocking(False)
+    server_socket.bind(('127.0.0.1', tcp_server_port))
+    server_socket.listen(max_worker)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_worker):
         logger.success("机器人启动成功！")
         logger.debug(f"线程池大小应为{max_worker}")
-        with concurrent.futures.ThreadPoolExecutor(max_workers=max_worker):
-            while True:
-                try:
-                    recv = json.loads(await websocket.recv())
-                    r_type = recv["type"]
-                    if r_type == 1 or r_type == 3 or r_type == 49:
-                        logger.info(f"[收到消息]:{recv}")
-                        web_api_data.update_data('received_message_count',
-                                                 web_api_data.get_data()['received_message_count'] + 1)
-                        if isinstance(recv["content"], str):  # 判断是否为txt消息
-                            asyncio.create_task(
-                                message_handler(recv, handlebot)
-                            ).add_done_callback(callback)
-                except Exception as error:
-                    logger.error(f"出现错误: {error}")
+
+        while True:
+            try:
+                client_socket, address = await asyncio.get_running_loop().sock_accept(server_socket)
+                client_socket.setblocking(False)
+
+                asyncio.create_task(message_handler(client_socket, handlebot)).add_done_callback(callback)
+            except Exception as error:
+                logger.error(f"出现错误: {error}")
 
 
 if __name__ == "__main__":

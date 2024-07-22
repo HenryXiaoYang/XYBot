@@ -19,15 +19,10 @@ class query_points(PluginInterface):
         self.db = BotDatabase()  # 实例化机器人数据库类
 
     async def run(self, recv):
-        if recv["id1"]:  # 判断是群还是私聊
-            query_wxid = recv["id1"]  # 是群
-        else:
-            query_wxid = recv["wxid"]  # 是私聊
+        query_wxid = recv["sender"]
 
-        nickname = self.bot.get_chatroom_nickname(recv["wxid"], recv["id1"])[
-            "nick"
-        ]  # 获取昵称
+        points_count = self.db.get_points(query_wxid)
 
-        out_message = f"-----XYBot-----\n你有{self.db.get_points(query_wxid)}点积分！👍"  # 从数据库获取积分数并创建信息
-        logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-        self.bot.send_at_msg(recv["wxid"], recv["id1"], nickname, out_message)  # 发送
+        out_message = f"-----XYBot-----\n你有{points_count}点积分！👍"  # 从数据库获取积分数并创建信息
+        logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
+        self.bot.send_at_msg(recv["from"], out_message, [query_wxid])

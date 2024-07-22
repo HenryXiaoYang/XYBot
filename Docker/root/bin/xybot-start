@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+function start_xybot() {
+    while :
+    do
+        python3 start.py
+        sleep 10
+    done
+}
+
+cd /home/app/XYBot || exit
+start_xybot &
+wait

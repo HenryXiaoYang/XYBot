@@ -45,9 +45,12 @@ class PrivateChatGpt:
         self.db = BotDatabase()
 
     async def run(self, recv) -> None:
-        # 这里recv["content"]中的内容是未分割的，是一个字符串而不是列表
-        gpt_request_message = recv["content"]
-        wxid = recv["wxid"]
+        # 这里recv["content"]中的内容是分割的
+        gpt_request_message = " ".join(recv["content"])
+        wxid = recv["sender"]
+
+        if gpt_request_message.startswith("我是"):  # 微信打招呼消息，不需要处理
+            return
 
         error = ''
         if (self.db.get_points(wxid) < self.private_chat_gpt_price) and (wxid not in self.admins) and (
@@ -60,21 +63,21 @@ class PrivateChatGpt:
             if gpt_request_message in self.clear_dialogue_keyword:  # 如果是清除对话记录的关键词，清除数据库对话记录
                 self.db.save_private_gpt_data(wxid, {"data": []})
                 out_message = "对话记录已清除！✅"
-                self.bot.send_txt_msg(wxid, out_message)
+                self.bot.send_text_msg(wxid, out_message)
                 logger.info(f'[发送信息]{out_message}| [发送到] {wxid}')
             else:
                 gpt_answer = await self.chatgpt(wxid, gpt_request_message)  # 调用chatgpt函数
                 if gpt_answer[0]:  # 如果没有错误
-                    self.bot.send_txt_msg(wxid, gpt_answer[1])  # 发送回答
+                    self.bot.send_text_msg(wxid, gpt_answer[1])  # 发送回答
                     logger.info(f'[发送信息]{gpt_answer[1]}| [发送到] {wxid}')
                     if wxid not in self.admins or not self.db.get_whitelist(wxid):
                         self.db.add_points(wxid, -self.private_chat_gpt_price)  # 扣除积分，管理员不扣
                 else:
                     out_message = f"出现错误⚠️！\n{gpt_answer[1]}"  # 如果有错误，发送错误信息
-                    self.bot.send_txt_msg(wxid, out_message)
+                    self.bot.send_text_msg(wxid, out_message)
                     logger.error(f'[发送信息]{out_message}| [发送到] {wxid}')
         else:
-            self.bot.send_txt_msg(wxid, error)
+            self.bot.send_text_msg(recv["from"], error)
             logger.info(f'[发送信息]{error}| [发送到] {wxid}')
 
     async def chatgpt(self, wxid: str, message: str):

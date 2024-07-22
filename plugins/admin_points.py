@@ -20,10 +20,7 @@ class admin_points(PluginInterface):
         self.db = BotDatabase()  # 实例化数据库类
 
     async def run(self, recv):
-        if recv["id1"]:  # 用于判断是否为管理员
-            admin_wxid = recv["id1"]  # 是群
-        else:
-            admin_wxid = recv["wxid"]  # 是私聊
+        admin_wxid = recv["sender"]
 
         error = ''
         if admin_wxid not in self.admin_list:
@@ -34,7 +31,10 @@ class admin_points(PluginInterface):
             error = "-----XYBot-----\n⚠️未知的积分操作！"
 
         if not error:
-            change_wxid = recv["content"][1]  # 获取要变更积分的wxid
+            if recv['content'][1].startswith('@'): # 判断是@还是wxid
+                change_wxid = recv['atUserList'][0]
+            else:
+                change_wxid = recv["content"][1]  # 获取要变更积分的wxid
 
             if len(recv["content"]) == 3:  # 直接改变，不加/减
                 self.db.set_points(change_wxid, int(recv["content"][2]))
@@ -50,14 +50,14 @@ class admin_points(PluginInterface):
                 self.send_result(recv, change_wxid)
             else:
                 out_message = "-----XYBot-----\n⚠️未知的操作！"
-                logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-                self.bot.send_txt_msg(recv["wxid"], out_message)
+                logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+                self.bot.send_text_msg(recv["from"], out_message)
 
 
         else:  # 操作人不在白名单内
             out_message = error
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-            self.bot.send_txt_msg(recv["wxid"], out_message)
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+            self.bot.send_text_msg(recv["from"], out_message)
 
     def send_result(self, recv, change_wxid):
         total_points = self.db.get_points(change_wxid)  # 获取修改后积分
@@ -65,5 +65,5 @@ class admin_points(PluginInterface):
             out_message = f'-----XYBot-----\n😊成功给{change_wxid}{recv["content"][2]}了{recv["content"][3]}点积分！他现在有{total_points}点积分！'
         else:
             out_message = f'-----XYBot-----\n😊成功将{change_wxid}的积分设置为{total_points}！'
-        logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
-        self.bot.send_txt_msg(recv["wxid"], out_message)  # 发送
+        logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+        self.bot.send_text_msg(recv["from"], out_message)  # 发送

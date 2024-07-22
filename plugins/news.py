@@ -1,9 +1,6 @@
-from re import finditer
-
 import aiohttp
 import yaml
 from bs4 import BeautifulSoup as bs
-from html2text import html2text
 from loguru import logger
 
 import pywxdll
@@ -16,7 +13,7 @@ class news(PluginInterface):
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
-        self.news_count = config["news_count"]  # 要获取的新闻数量
+        self.important_news_count = config["important_news_count"]  # 要获取的要闻数量
 
         main_config_path = "main_config.yml"
         with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
@@ -28,56 +25,50 @@ class news(PluginInterface):
 
     async def run(self, recv):
         try:
-            url = 'https://i.news.qq.com/trpc.qqnews_web.kv_srv.kv_srv_http_proxy/list?sub_srv_id=24hours&srv_id=pc&offset=0&limit=190&strategy=1&ext={"pool":["top","hot"],"is_filter":7,"check_type":true}'
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"}
-
-            # 异步请求新闻数据
-            conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
-            async with aiohttp.request('GET', url, headers=headers, connector=conn_ssl) as resp:
-                news_list = await resp.json()
+            url = "https://news.china.com/#"
+            conn_ssl = aiohttp.TCPConnector(ssl=False)
+            async with aiohttp.request('GET', url, connector=conn_ssl) as resp:
+                news_html = await resp.text()
                 await conn_ssl.close()
 
-            out_message = '-----XYBot新闻-----'
+            soup = bs(news_html, "html.parser")
 
-            news_list = news_list["data"]["list"]
+            focus_news = await self.get_focus_news(soup)
+            focus_news_string = ""
+            for title, link in focus_news:
+                focus_news_string += f"📢{title}\n🔗{link}\n\n"
 
-            if self.news_count <= len(news_list):
-                for i in range(self.news_count):
-                    news_title = news_list[i]["title"]
-                    news_url = news_list[i]["url"]
-                    media_name = news_list[i]["media_name"]
-                    publish_time = news_list[i]["publish_time"]
+            important_news = await self.get_important_news(soup, self.important_news_count)
+            important_news_string = ""
+            for title, link, time in important_news:
+                important_news_string += f"📰{title}\n🔗{link}\n🕒{time}\n\n"
 
-                    news_brief_content = await self.get_news_brief_content(news_url, news_title)
+            compose_message = f"----📰XYBot新闻📰----\n‼️‼️最新要闻‼️‼️\n{focus_news_string}\n⭐️⭐️要闻⭐️⭐️\n{important_news_string}"
 
-                    out_message += f'\n\n📰 {news_title}\nℹ️{news_brief_content}......\n📺{media_name} {publish_time}\n🔗{news_url}'
-            else:
-                out_message = '暂无更多新闻!⚠️'
+            self.bot.send_text_msg(recv["from"], compose_message)
+            logger.info(f'[发送信息]{compose_message}| [发送到] {recv["from"]}')
 
-            self.bot.send_txt_msg(recv['wxid'], out_message)
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
         except Exception as error:
             out_message = f'获取新闻失败!⚠️\n{error}'
-            self.bot.send_txt_msg(recv['wxid'], out_message)
-            logger.error(f'[发送信息]{out_message}| [发送到] {recv["wxid"]}')
+            self.bot.send_text_msg(recv["from"], out_message)
+            logger.error(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
 
     @staticmethod
-    async def get_news_brief_content(url, news_title) -> str:
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"}
-        conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
-        async with aiohttp.request('GET', url, headers=headers, connector=conn_ssl) as resp:
-            news_raw_text = await resp.text()
-            await conn_ssl.close()
+    async def get_focus_news(soup) -> list:  # 聚焦
+        focus_news = []
+        focus_soup = soup.html.body.select('.focus_side > h3 > a')
 
-        soup = bs(news_raw_text, "html.parser")
-        news_text = str(soup.select("div.LEFT div.content.clearfix")[0])
-        news_text = html2text(news_text).replace('\n', ' ').replace(news_title, '').strip()
+        for new in focus_soup:
+            focus_news.append([new.get_text(), new.get('href')])
 
-        pattern = r"!\[\]\((.*?)\)"
-        matches = finditer(pattern, news_text)
-        for match in matches:
-            news_text = news_text.replace(match.group(), '')
+        return focus_news
 
-        return news_text[4:200]
+    @staticmethod
+    async def get_important_news(soup, count) -> list:  # 要闻
+        important_news = []
+        important_news_soup = soup.html.body.select('ul.item_list > li', limit=count)
+
+        for new in important_news_soup:
+            important_news.append([new.h3.a.get_text(), new.h3.a.get('href'), new.span.get_text(separator=' ')])
+
+        return important_news
