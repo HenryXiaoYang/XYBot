@@ -23,7 +23,9 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         days-before-stale: 30
         days-before-close: 7
-        stale-issue-message: 'This is a stale issue.'
-        stale-pr-message: 'This is a stale pull request.'
+        stale-issue-message: 'This issue has been labeled `Stale` as it had remained inactive for a period of 30 days.'
+        stale-pr-message: 'This pull request has been labeled `Stale` as it had remained inactive for a period of 30 days.'
         stale-issue-label: 'Stale'
         stale-pr-label: 'Stale'
+        close-issue-message: 'This issue has been closed as it had remained inactive for a period of 7 days.'
+        close-pr-message: 'This pull request has been closed as it had remained inactive for a period of 7 days.'
