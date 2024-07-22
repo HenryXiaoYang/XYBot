@@ -65,12 +65,9 @@ class red_packet(PluginInterface):
             error = "-----XYBot-----\n❌红包只能在群里发！"
         elif not recv["content"][1].isdigit() or not recv["content"][2].isdigit():
             error = "-----XYBot-----\n❌指令格式错误！请查看菜单！"
-        elif (
-                int(recv["content"][1]) >= self.max_point
-                or int(recv["content"][1]) <= self.min_point
-        ):
+        elif int(recv["content"][1]) > self.max_point or int(recv["content"][1]) < self.min_point:
             error = f"-----XYBot-----\n⚠️积分无效！最大{self.max_point}，最小{self.min_point}！"
-        elif int(recv["content"][2]) >= self.max_packet:
+        elif int(recv["content"][2]) > self.max_packet:
             error = f"-----XYBot-----\n⚠️红包数量无效！最大{self.max_packet}！"
         elif int(recv["content"][2]) > int(recv["content"][1]):
             error = "-----XYBot-----\n❌红包数量不能大于红包积分！"
