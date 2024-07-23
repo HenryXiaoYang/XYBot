@@ -99,7 +99,7 @@ class XYBot:
 
             recv_keyword = recv["content"][0]
             for keyword, plugin_name in plugin_manager.get_keywords().keys():  # 遍历所有关键词
-                if re.fullmatch(keyword, recv_keyword):  # 如果正则匹配到了，执行插件run函数
+                if re.match(keyword, recv_keyword):  # 如果正则匹配到了，执行插件run函数
                     await asyncio.create_task(plugin_manager.plugins[plugin_name].run(recv))
                     return
 
