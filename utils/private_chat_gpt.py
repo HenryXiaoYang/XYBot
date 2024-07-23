@@ -106,7 +106,7 @@ class PrivateChatGpt:
             json_data = init_data
 
         previous_dialogue = json_data['data'][self.dialogue_count * -2:]  # 获取指定轮数的对话，乘-2是因为一轮对话包含了1个请求和1个答复
-        request_content = []
+        request_content = [{"role": "system", "content": "You are a helpful assistant that says things in plain text."}]
         request_content += previous_dialogue  # 将之前的对话加入到api请求内容中
 
         request_content.append({"role": "user", "content": new_message})  # 将用户新的问题加入api请求内容
