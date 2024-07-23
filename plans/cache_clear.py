@@ -10,8 +10,7 @@ from utils.plans_interface import PlansInterface
 
 class cache_clear(PlansInterface):
     def __init__(self):
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        main_config_path = os.path.join(current_directory, "../main_config.yml")
+        main_config_path = "main_config.yml"
         with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 
@@ -21,7 +20,7 @@ class cache_clear(PlansInterface):
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
     def job(self):
-        path = "./resources/cache/"  # 图片缓存路径
+        path = "resources/cache/"  # 图片缓存路径
         for filename in os.listdir(path):  # 遍历文件夹
             file_path = os.path.join(path, filename)  # 获取文件路径
             # 判断路径是否为文件
