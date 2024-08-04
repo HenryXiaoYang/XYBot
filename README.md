@@ -86,10 +86,10 @@ ChatGPT
 ## XYBot交流群
 
 <p align="center">
-    <img alt="XYBot二维码" width="360" src="https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/README/XYBot_QRCode.jpeg?raw=true">
+    <img alt="XYBot二维码" width="360" src="https://file.yangres.com/xybot-wechatgroup.jpeg">
 </p>
 
-**加好友后回复`入群`即可加入交流群。**
+[**🔗图片会被缓存，点我查看最新二维码**](https://file.yangres.com/xybot-wechatgroup.jpeg)
 
 ## FAQ❓❓❓
 
