@@ -98,9 +98,10 @@ class XYBot:
             recv["content"] = recv["content"].split(" ")  # 分割命令参数
 
             recv_keyword = recv["content"][0]
-            for keyword, plugin_name in plugin_manager.get_keywords().keys():  # 遍历所有关键词
+            for keyword in plugin_manager.get_keywords().keys():  # 遍历所有关键词
                 if re.match(keyword, recv_keyword):  # 如果正则匹配到了，执行插件run函数
-                    await asyncio.create_task(plugin_manager.plugins[plugin_name].run(recv))
+                    plugin_func = plugin_manager.keywords[keyword]
+                    await asyncio.create_task(plugin_manager.plugins[plugin_func].run(recv))
                     return
 
             if recv['fromType'] == 'chatroom' and self.command_prefix != "":  # 不是指令但在群里 且设置了指令前缀
