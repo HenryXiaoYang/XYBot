@@ -4,8 +4,8 @@
 
 from datetime import datetime
 
-import aiohttp
 import pytz
+import requests
 import schedule
 import yaml
 from loguru import logger
@@ -42,19 +42,16 @@ class daily_greeting(PlansInterface):
                 logger.info(f"[发送@信息]{message}| [发送到] {contact.get('wxid')}")
 
     @staticmethod
-    async def get_daily_sentence_formatted() -> str:
+    def get_daily_sentence_formatted() -> str:
         hitokoto_api_url = "https://v1.hitokoto.cn/?encode=json&charset=utf-8"
 
-        conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
-        async with aiohttp.request("GET", url=hitokoto_api_url, connector=conn_ssl) as response:
-            hitokoto_api_json = await response.json()
-            await conn_ssl.close()
+        hitokoto_api_json = requests.get(hitokoto_api_url).json()
 
         sentence = hitokoto_api_json.get("hitokoto")
         from_type = hitokoto_api_json.get("from")
         from_who = hitokoto_api_json.get("from_who")
 
-        formatted = f"「{sentence}」\n       ——{from_type}·{from_who}"
+        formatted = f"「{sentence}」\n——{from_type} {from_who}"
 
         return formatted
 
