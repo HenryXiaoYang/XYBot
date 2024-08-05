@@ -110,13 +110,13 @@ class XYBot:
                 self.bot.send_text_msg(recv["from"], out_message)
                 return
 
-        # 私聊GPT，指令优先级大于GPT
-        elif (recv['content'][0] != self.command_prefix or self.command_prefix == "") and recv['fromType'] == "friend":
-            if not isinstance(self.enable_private_chat_gpt, bool):
-                raise Exception('Unknown enable_private_chat_gpt 未知的私聊gpt设置！')
-            elif self.enable_private_chat_gpt is True:
-                await asyncio.create_task(private_chat_gpt.run(recv))
-                return
+            # 私聊GPT，指令优先级大于GPT所以这个if在后面
+            elif recv['fromType'] == "friend":
+                if not isinstance(self.enable_private_chat_gpt, bool):
+                    raise Exception('Unknown enable_private_chat_gpt 未知的私聊gpt设置！')
+                elif self.enable_private_chat_gpt is True:
+                    await asyncio.create_task(private_chat_gpt.run(recv))
+                    return
 
     async def image_message_handler(self, recv) -> None:
         logger.info(f"[收到图片消息]{recv}")
