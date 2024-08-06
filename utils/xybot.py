@@ -136,13 +136,13 @@ class XYBot:
         if self.ignorance_mode == 'none':  # 如果不设置屏蔽，则直接返回通过
             return True
         elif self.ignorance_mode == 'blacklist':  # 如果设置了黑名单
-            if recv['sender'] not in self.ignorance_blacklist:
+            if (recv["wxid"] not in self.ignorance_blacklist) and (recv["sender"] not in self.ignorance_blacklist):
                 return True
             else:
                 return False
 
         elif self.ignorance_mode == 'whitelist':  # 白名单
-            if recv['sender'] in self.ignorance_whitelist:
+            if (recv["wxid"] in self.ignorance_whitelist) or (recv["sender"] in self.ignorance_whitelist):
                 return True
             else:
                 return False
