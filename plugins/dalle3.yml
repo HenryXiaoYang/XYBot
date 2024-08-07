@@ -1,0 +1,11 @@
+keywords: [ "dalle","生成图片", "ai图片", "AI图片", "AI绘图", "aipicture", "AIpicture"]
+plugin_name: "dalle3"
+
+# 每次生成消耗的积分
+price: 5
+
+# https://platform.openai.com/docs/api-reference/images/create
+model_name: "dall-e-3" # 模型名
+image_quality: "standard" # 生成质量，更好的质量可设置为"hd"
+image_size: "1024x1024" # 图片大小
+image_style: "vivid" # 图片风格
