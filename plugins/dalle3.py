@@ -61,6 +61,8 @@ class dalle3(PluginInterface):
             error = f"-----XYBot-----\n积分不足！😭需要 {self.price} 点积分！"
         elif not self.senstitive_word_check(user_request_prompt):  # 敏感词检查
             error = "-----XYBot-----\n内容包含敏感词!⚠️"
+        elif not user_request_prompt:
+            error = "-----XYBot-----\n请输入描述！🤔"
 
         if error:  # 如果没满足生成图片的条件，向用户发送为什么
             self.send_friend_or_group(recv, error)
