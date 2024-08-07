@@ -54,7 +54,7 @@ class dalle3(PluginInterface):
 
         error = ""
         if len(recv["content"]) < 2:  # 指令格式正确
-            error = "-----XYBot-----\n参数错误！🙅正确格式为：ai图片 prompt"
+            error = "-----XYBot-----\n参数错误！🙅正确格式为：AI绘图 描述"
         # 检查积分是否足够，管理员与白名单不需要检查
         elif user_wxid not in self.admins and self.db.get_whitelist(user_wxid) == 0 and self.db.get_points(
                 user_wxid) < self.price:
