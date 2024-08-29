@@ -67,7 +67,7 @@ class gomoku(PluginInterface):
             error = '-----XYBot-----\n❌您已经在一场游戏中了！'
 
         if not error:
-            invitee_wxid = recv['atUserList'][0]
+            invitee_wxid = recv['atUserList'][-1]
 
             if not invitee_wxid:
                 error = '-----XYBot-----\n❌未找到对方！'

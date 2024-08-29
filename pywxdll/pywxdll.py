@@ -63,15 +63,19 @@ class Pywxdll:
 
         if not self._is_admin():
             # 需要管理员权限，这一行申请了管理员并执行了一个python脚本。python脚本注入了hook，修复了版本问题
+            logger.info("需要管理员权限，申请管理员权限")
+            logger.info("尝试注入与修复低版本问题中，等待20秒确保注入与修复完成")
             result = ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable,
                                                          f"{self.windows_wechat_start_admin_script_path} {self.windows_wechat_start_path} {self.dll_path_absolute} {self.port} {self.wechat_version_fix_path}",
                                                          None, 1)
-            time.sleep(3)  # 等待注入
+            time.sleep(20)  # 等待注入与修复完成
             if int(result) > 32:  # 返回值大于32即成功 https://learn.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shellexecutew
                 result = True
             else:
                 result = False
         else:
+            logger.info("已有管理员权限")
+            logger.info("尝试注入与修复低版本问题中")
             result = subprocess.Popen(f"{self.windows_wechat_start_path} {self.dll_path_absolute} {self.port}",
                                       shell=True,
                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')

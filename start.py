@@ -64,6 +64,8 @@ async def main():
     )  # 日志设置
     logger.info("已设置日志")
 
+    logger.warning("请确保运行前微信处于完全关闭的状态！")
+
     with open("main_config.yml", "r", encoding="utf-8") as f:  # 读取设置
         config = yaml.safe_load(f.read())
 
@@ -96,13 +98,9 @@ async def main():
         sys.exit(1)
 
     if system == "Windows":
-        inject_result = bot.windows_start_wechat_inject_and_fix_ver()  # 注入Hook和修复版本这两个操作都需要管理员权限
+        bot.windows_start_wechat_inject_and_fix_ver()  # 注入Hook和修复版本这两个操作都需要管理员权限
 
-        if inject_result:
-            logger.info("已注入微信Hook")
-        else:
-            logger.error("注入微信Hook失败！")
-            sys.exit(1)
+        logger.info("已尝试注入Hook并修复微信低版本问题。")
 
     elif system == "Linux":
         inject_result = bot.docker_inject_dll()

@@ -3,6 +3,7 @@
 #  This program is licensed under the GNU General Public License v3.0.
 
 import asyncio
+import re
 
 import xmltodict
 import yaml
@@ -93,26 +94,29 @@ class XYBot:
         if recv["content"][0] == self.command_prefix or self.command_prefix == "":
             if self.command_prefix != "":  # 特殊处理，万一用户想要使用空前缀
                 recv["content"] = recv["content"][1:]  # 去除命令前缀
+
             recv["content"] = recv["content"].split(" ")  # 分割命令参数
 
-            keyword = recv["content"][0]
-            if keyword in plugin_manager.get_keywords().keys():  # 是指令
-                plugin_func = plugin_manager.keywords[keyword]
-                await asyncio.create_task(plugin_manager.plugins[plugin_func].run(recv))
-                return
-            elif recv['fromType'] == 'chatroom' and self.command_prefix != "":  # 不是指令但在群里 且设置了指令前缀
+            recv_keyword = recv["content"][0]
+            for keyword in plugin_manager.get_keywords().keys():  # 遍历所有关键词
+                if re.match(keyword, recv_keyword):  # 如果正则匹配到了，执行插件run函数
+                    plugin_func = plugin_manager.keywords[keyword]
+                    await asyncio.create_task(plugin_manager.plugins[plugin_func].run(recv))
+                    return
+
+            if recv['fromType'] == 'chatroom' and self.command_prefix != "":  # 不是指令但在群里 且设置了指令前缀
                 out_message = "该指令不存在！⚠️"
                 logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
                 self.bot.send_text_msg(recv["from"], out_message)
                 return
 
-        # 私聊GPT，指令优先级大于GPT
-        if (recv['content'][0] != self.command_prefix or self.command_prefix == "") and recv['fromType'] == "friend":
-            if not isinstance(self.enable_private_chat_gpt, bool):
-                raise Exception('Unknown enable_private_chat_gpt 未知的私聊gpt设置！')
-            elif self.enable_private_chat_gpt is True:
-                await asyncio.create_task(private_chat_gpt.run(recv))
-                return
+            # 私聊GPT，指令优先级大于GPT所以这个if在后面
+            elif recv['fromType'] == "friend":
+                if not isinstance(self.enable_private_chat_gpt, bool):
+                    raise Exception('Unknown enable_private_chat_gpt 未知的私聊gpt设置！')
+                elif self.enable_private_chat_gpt is True:
+                    await asyncio.create_task(private_chat_gpt.run(recv))
+                    return
 
     async def image_message_handler(self, recv) -> None:
         logger.info(f"[收到图片消息]{recv}")

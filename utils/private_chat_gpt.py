@@ -54,14 +54,14 @@ class PrivateChatGpt:
 
         error = ''
         if (self.db.get_points(wxid) < self.private_chat_gpt_price) and (wxid not in self.admins) and (
-                not self.db.get_whitelist(wxid)):
-            error = f"您的积分不足{self.private_chat_gpt_price}点，无法使用私聊GPT功能！⚠️"
-        elif not self.senstitive_word_check(gpt_request_message):
+                not self.db.get_whitelist(wxid)):  # 积分不够
+            error = f"您的积分不足 {self.private_chat_gpt_price} 点，无法使用私聊GPT功能！⚠️"
+        elif not self.senstitive_word_check(gpt_request_message):  # 有敏感词
             error = "您的问题中包含敏感词，请重新输入！⚠️"
 
         if not error:  # 如果没有错误
             if gpt_request_message in self.clear_dialogue_keyword:  # 如果是清除对话记录的关键词，清除数据库对话记录
-                self.db.save_private_gpt_data(wxid, {"data": []})
+                self.clear_dialogue_keyword(wxid)  # 保存清除了的数据到数据库
                 out_message = "对话记录已清除！✅"
                 self.bot.send_text_msg(wxid, out_message)
                 logger.info(f'[发送信息]{out_message}| [发送到] {wxid}')
@@ -80,7 +80,7 @@ class PrivateChatGpt:
             self.bot.send_text_msg(recv["from"], error)
             logger.info(f'[发送信息]{error}| [发送到] {wxid}')
 
-    async def chatgpt(self, wxid: str, message: str):
+    async def chatgpt(self, wxid: str, message: str):  # 这个函数请求了openai的api
         request_content = self.compose_gpt_dialogue_request_content(wxid, message)  # 构成对话请求内容，返回一个包含之前对话的列表
 
         client = AsyncOpenAI(api_key=self.openai_api_key, base_url=self.openai_api_base)
@@ -106,7 +106,7 @@ class PrivateChatGpt:
             json_data = init_data
 
         previous_dialogue = json_data['data'][self.dialogue_count * -2:]  # 获取指定轮数的对话，乘-2是因为一轮对话包含了1个请求和1个答复
-        request_content = []
+        request_content = [{"role": "system", "content": "You are a helpful assistant that says things in plain text."}]
         request_content += previous_dialogue  # 将之前的对话加入到api请求内容中
 
         request_content.append({"role": "user", "content": new_message})  # 将用户新的问题加入api请求内容
@@ -126,7 +126,7 @@ class PrivateChatGpt:
                 return False
         return True
 
-    def clear_dialogue(self, wxid):
+    def clear_dialogue(self, wxid):  # 清除对话记录
         self.db.save_private_gpt_data(wxid, {"data": []})
 
 

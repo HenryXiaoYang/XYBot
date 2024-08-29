@@ -2,7 +2,6 @@ import os
 import random
 import time
 
-import schedule
 import yaml
 from captcha.image import ImageCaptcha
 from loguru import logger
@@ -42,9 +41,6 @@ class red_packet(PluginInterface):
             logger.info("已创建cache文件夹")
 
         self.red_packets = {}  # 红包列表
-
-        # 定时任务 检查是否有超时红包
-        schedule.every(self.max_time).seconds.do(self.check_left_red_packet)
 
     async def run(self, recv):
         if len(recv["content"]) == 3:  # 判断是否为红包指令
@@ -217,26 +213,17 @@ class red_packet(PluginInterface):
 
         return result
 
-    def check_left_red_packet(self):  # 检查是否有超时红包
+    def expired_red_packets_check(self):  # 检查是否有超时红包
         logger.info("[计划任务]检查是否有超时的红包")
         for key in list(self.red_packets.keys()):
-            if (
-                    time.time() - self.red_packets[key]["time"] > self.max_time
-            ):  # 判断是否超时
-                red_packet_sender = self.red_packets[key]["sender"]  # 获取红包发送人
-                red_packet_points_left_sum = sum(
-                    self.red_packets[key]["list"]
-                )  # 获取剩余积分
-                red_packet_chatroom = self.red_packets[key][
-                    "chatroom"
-                ]  # 获取红包所在群聊
-                red_packet_sender_nick = self.red_packets[key][
-                    "sender_nick"
-                ]  # 获取红包发送人昵称
+            if (time.time() - self.red_packets[key]["time"] > self.max_time):  # 判断是否超时
 
-                self.db.add_points(
-                    red_packet_sender, red_packet_points_left_sum
-                )  # 归还积分
+                red_packet_sender = self.red_packets[key]["sender"]  # 获取红包发送人
+                red_packet_points_left_sum = sum(self.red_packets[key]["list"])  # 获取剩余积分
+                red_packet_chatroom = self.red_packets[key]["chatroom"]  # 获取红包所在群聊
+                red_packet_sender_nick = self.red_packets[key]["sender_nick"]  # 获取红包发送人昵称
+
+                self.db.add_points(red_packet_sender, red_packet_points_left_sum)  # 归还积分
                 self.red_packets.pop(key)  # 删除红包
                 logger.info("[红包]有红包超时，已归还积分！")  # 记录日志
 
