@@ -19,7 +19,7 @@ try:
         elif v != 0x63090551:
             raise Exception("Wrong wechat version, need 3.9.5.81")
         else:
-            pm.write_uint(addr, 0x63090B19)
+            pm.write_uint(addr, 0x63090b19)
 
     print('Fix Success')
 except Exception as error:
