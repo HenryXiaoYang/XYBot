@@ -23,6 +23,18 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
     <a href="https://yangres.com"><img src="https://img.shields.io/badge/Blog-@HenryXiaoYang-yellow.svg" alt="Blog"></a>
 </p>
 
+## 公告
+
+由于需要频繁的更新维护，XYBot版本号格式将会发生变化，v0.0.7后面的版本号将会按照以下格式进行更新：
+
+v大版本.功能版本.Bug修复版本
+
+例如：
+
+- v1.0.1是v1.0.0的Bug修复版本
+- v1.1.0是v1.0.0的功能版本
+- v1.1.1是v1.1.0的Bug修复版本
+
 ## 功能列表
 
 用户功能:
