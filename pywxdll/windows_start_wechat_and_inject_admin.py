@@ -1,6 +1,6 @@
-import sys
-import subprocess
 import os
+import subprocess
+import sys
 import time
 
 
@@ -22,6 +22,6 @@ if __name__ == "__main__":
     arguments = sys.argv
 
     subprocess.Popen(f"{arguments[1]} {arguments[2]} {arguments[3]}", shell=True, encoding='utf-8')
-    time.sleep(3)
+    time.sleep(10)
 
     fix_wechat_version(arguments[4])
