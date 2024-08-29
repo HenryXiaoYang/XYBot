@@ -105,10 +105,8 @@ ChatGPT
 
 ## 捐赠
 
-<p align="center">
-    <img alt="爱发电二维码" width="360" src="https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/README/aifadian.jpg?raw=true">
-    <p align="center">你的赞助是我创作的动力！🙏</p>
-</p>
+<p align="center"><img alt="爱发电二维码" width="360" src="https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/README/aifadian.jpg?raw=true"></p>
+<p align="center">你的赞助是我创作的动力！🙏</p>
 
 ## FAQ❓❓❓
 
