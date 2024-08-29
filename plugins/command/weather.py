@@ -1,3 +1,7 @@
+#  Copyright (c) 2024. Henry Yang
+#
+#  This program is licensed under the GNU General Public License v3.0.
+
 import aiohttp
 import yaml
 from loguru import logger

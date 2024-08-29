@@ -11,7 +11,6 @@ from loguru import logger
 
 import pywxdll
 from utils.plugin_manager import plugin_manager
-from utils.private_chat_gpt import private_chat_gpt
 from utils.singleton import singleton
 
 
@@ -101,7 +100,7 @@ class XYBot:
             for keyword in plugin_manager.get_keywords().keys():  # 遍历所有关键词
                 if re.match(keyword, recv_keyword):  # 如果正则匹配到了，执行插件run函数
                     plugin_func = plugin_manager.keywords[keyword]
-                    await asyncio.create_task(plugin_manager.plugins[plugin_func].run(recv))
+                    await asyncio.create_task(plugin_manager.plugins["command"][plugin_func].run(recv))
                     return
 
             if recv['fromType'] == 'chatroom' and self.command_prefix != "":  # 不是指令但在群里 且设置了指令前缀
@@ -110,19 +109,19 @@ class XYBot:
                 self.bot.send_text_msg(recv["from"], out_message)
                 return
 
-            # 私聊GPT，指令优先级大于GPT所以这个if在后面
-            elif recv['fromType'] == "friend":
-                if not isinstance(self.enable_private_chat_gpt, bool):
-                    raise Exception('Unknown enable_private_chat_gpt 未知的私聊gpt设置！')
-                elif self.enable_private_chat_gpt is True:
-                    await asyncio.create_task(private_chat_gpt.run(recv))
-                    return
+        # text插件
+        else:
+            for plugin in plugin_manager.plugins["text"]:
+                await asyncio.create_task(plugin.run(recv))
 
     async def image_message_handler(self, recv) -> None:
-        logger.info(f"[收到图片消息]{recv}")
+        # image插件调用
+        for plugin in plugin_manager.plugins["image"]:
+            await asyncio.create_task(plugin.run(recv))
 
     async def voice_message_handler(self, recv) -> None:
-        logger.info(f"[收到语音消息]{recv}")
+        for plugin in plugin_manager.plugins["voice"]:
+            await asyncio.create_task(plugin.run(recv))
 
     async def system_message_handler(self, recv) -> None:
         logger.info(f"[收到系统消息]{recv}")

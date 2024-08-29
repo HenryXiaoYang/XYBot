@@ -1,6 +1,8 @@
 #  Copyright (c) 2024. Henry Yang
 #
 #  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
 
 import yaml
 from loguru import logger
@@ -8,11 +10,12 @@ from openai import AsyncOpenAI
 
 import pywxdll
 from utils.database import BotDatabase
+from utils.plugin_interface import PluginInterface
 from utils.singleton import singleton
 
 
 @singleton
-class PrivateChatGpt:
+class PrivateChatGpt(PluginInterface):
     def __init__(self):
         main_config_path = "main_config.yml"
         with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
@@ -45,6 +48,9 @@ class PrivateChatGpt:
         self.db = BotDatabase()
 
     async def run(self, recv) -> None:
+        if recv.get("fromType") == "chatroom":
+            return  # 如果是群聊消息，不处理
+
         # 这里recv["content"]中的内容是分割的
         gpt_request_message = " ".join(recv["content"])
         wxid = recv["sender"]
@@ -128,6 +134,3 @@ class PrivateChatGpt:
 
     def clear_dialogue(self, wxid):  # 清除对话记录
         self.db.save_private_gpt_data(wxid, {"data": []})
-
-
-private_chat_gpt = PrivateChatGpt()  # 实例化

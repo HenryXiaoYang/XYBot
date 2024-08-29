@@ -1,3 +1,7 @@
+#  Copyright (c) 2024. Henry Yang
+#
+#  This program is licensed under the GNU General Public License v3.0.
+
 import yaml
 from loguru import logger
 from openai import AsyncOpenAI
@@ -7,9 +11,9 @@ from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
 
 
-class gpt(PluginInterface):
+class gpt4(PluginInterface):
     def __init__(self):
-        config_path = "plugins/gpt.yml"
+        config_path = "plugins/gpt4.yml"
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
