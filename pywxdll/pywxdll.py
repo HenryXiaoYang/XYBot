@@ -64,7 +64,7 @@ class Pywxdll:
         if not self._is_admin():
             # 需要管理员权限，这一行申请了管理员并执行了一个python脚本。python脚本注入了hook，修复了版本问题
             logger.info("需要管理员权限，申请管理员权限")
-            logger.info("尝试注入与修复低版本问题中，等待20秒确保注入与修复完成")
+            logger.info("尝试注入与修复低版本问题中，请等待20秒后再扫码登陆以确保注入与修复完成")
             result = ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable,
                                                          f"{self.windows_wechat_start_admin_script_path} {self.windows_wechat_start_path} {self.dll_path_absolute} {self.port} {self.wechat_version_fix_path}",
                                                          None, 1)
@@ -75,12 +75,13 @@ class Pywxdll:
                 result = False
         else:
             logger.info("已有管理员权限")
-            logger.info("尝试注入与修复低版本问题中")
+            logger.info("尝试注入与修复低版本问题中，请等待20秒后再扫码登陆以确保注入与修复完成")
             result = subprocess.Popen(f"{self.windows_wechat_start_path} {self.dll_path_absolute} {self.port}",
                                       shell=True,
                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
             result = ''.join(result.communicate())
             logger.debug(result)
+            time.sleep(20)  # 等待注入与修复完成
         if result:
             return True
         else:
