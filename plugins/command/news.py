@@ -13,7 +13,7 @@ from utils.plugin_interface import PluginInterface
 
 class news(PluginInterface):
     def __init__(self):
-        config_path = "plugins/news.yml"
+        config_path = "plugins/command/news.yml"
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -49,12 +49,12 @@ class news(PluginInterface):
 
             compose_message = f"----📰XYBot新闻📰----\n‼️‼️最新要闻‼️‼️\n{focus_news_string}\n⭐️⭐️要闻⭐️⭐️\n{important_news_string}"
 
-            self.bot.send_text_msg(recv["from"], compose_message)
+            await self.bot.send_text_msg(recv["from"], compose_message)
             logger.info(f'[发送信息]{compose_message}| [发送到] {recv["from"]}')
 
         except Exception as error:
             out_message = f'获取新闻失败!⚠️\n{error}'
-            self.bot.send_text_msg(recv["from"], out_message)
+            await self.bot.send_text_msg(recv["from"], out_message)
             logger.error(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
 
     @staticmethod

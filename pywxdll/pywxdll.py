@@ -5,7 +5,7 @@ import subprocess
 import sys
 import time
 
-import requests
+import aiohttp
 from loguru import logger
 
 from .pywxdll_json import *
@@ -106,105 +106,117 @@ class Pywxdll:
         else:
             return False
 
-    def raw_is_logged_in(self) -> dict:
+    async def raw_is_logged_in(self) -> dict:
         url = f"{self.base_url}/checkLogin"
         json_para = json_is_logged_in()
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def is_logged_in(self) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def is_logged_in(self) -> bool:
         """
         Check if the WeChat is logged in or not.
         :return: A boolean, True if logged in, False if not logged in.
         """
-        json_response = self.raw_is_logged_in()
+        json_response = await self.raw_is_logged_in()
         if json_response.get('code') == 1:
             return True
         else:
             return False
 
-    def raw_get_logged_in_account_info(self):
+    async def raw_get_logged_in_account_info(self) -> dict:
         url = f"{self.base_url}/userInfo"
         json_para = json_get_logged_in_account_info()
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def get_logged_in_account_info(self) -> dict:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def get_logged_in_account_info(self) -> dict:
         """
         Get information of the account logged into.
         :return: A dictionary, including: wxid(string) account(string) headImage(string) city(string) country(string) \
         currentDataPath(string) dataSavePath(string) mobile(string) name(string) province(string) signature(string)
         """
-        json_response = self.raw_get_logged_in_account_info()
+        json_response = await self.raw_get_logged_in_account_info()
         data = json_response.get('data')
         return data
 
-    def raw_send_text_msg(self, wxid: str, msg: str):
+    async def raw_send_text_msg(self, wxid: str, msg: str) -> dict:
         url = f"{self.base_url}/sendTextMsg"
         json_para = json_send_text_msg(wxid, msg)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def send_text_msg(self, wxid: str, msg: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def send_text_msg(self, wxid: str, msg: str) -> bool:
         """
         Send a text message to the wxid.
         :param wxid: WeChat account identifier
         :param msg: The message needed to send
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_send_text_msg(wxid, msg)
+        json_response = await self.raw_send_text_msg(wxid, msg)
         if json_response.get('code') == 0 or json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_send_image_msg(self, wxid: str, image_path: str):
+    async def raw_send_image_msg(self, wxid: str, image_path: str):
         url = f"{self.base_url}/sendImagesMsg"
         json_para = json_send_image_msg(wxid, image_path)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def send_image_msg(self, wxid: str, image_path: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def send_image_msg(self, wxid: str, image_path: str) -> bool:
         """
         Send a picture message to the wxid.
         :param wxid: WeChat account identifier
         :param image_path: The path of the image
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_send_image_msg(wxid, image_path)
+        json_response = await self.raw_send_image_msg(wxid, image_path)
         if json_response.get('code') == 0 or json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_send_file_msg(self, wxid: str, file_path: str):
+    async def raw_send_file_msg(self, wxid: str, file_path: str):
         url = f"{self.base_url}/sendFileMsg"
         json_para = json_send_file_msg(wxid, file_path)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def send_file_msg(self, wxid: str, file_path: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def send_file_msg(self, wxid: str, file_path: str) -> bool:
         """
         Send a file message to the wxid.
         :param wxid: WeChat account identifier
         :param file_path: The path of the file
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_send_file_msg(wxid, file_path)
+        json_response = await self.raw_send_file_msg(wxid, file_path)
         if json_response.get('code') == 0 or json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_start_hook_msg(self, port: int, ip: str, hook_url: str = '', timeout: int = 3000,
-                           enable_http: bool = False):
+    async def raw_start_hook_msg(self, port: int, ip: str, hook_url: str = '', timeout: int = 3000,
+                                 enable_http: bool = False):
         url = f"{self.base_url}/hookSyncMsg"
         json_para = json_start_hook_msg(port, ip, hook_url, timeout, enable_http)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def start_hook_msg(self, port: int, ip: str = '127.0.0.1', hook_url: str = '', timeout: int = 3000,
-                       enable_http: bool = False) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def start_hook_msg(self, port: int, ip: str = '127.0.0.1', hook_url: str = '', timeout: int = 3000,
+                             enable_http: bool = False) -> bool:
         """
         Start hooking the message and send to the tcp server
         :param port: The port of tcp server
@@ -214,120 +226,134 @@ class Pywxdll:
         :param enable_http: Optional, enable http or not, default is False
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_start_hook_msg(port, ip, hook_url, timeout, enable_http)
+        json_response = await self.raw_start_hook_msg(port, ip, hook_url, timeout, enable_http)
         if json_response.get('code') == 0 or json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_stop_hook_msg(self):
+    async def raw_stop_hook_msg(self):
         url = f"{self.base_url}/unhookSyncMsg"
         json_para = json_stop_hook_msg()
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def stop_hook_msg(self) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def stop_hook_msg(self) -> bool:
         """
         Stop the hook server
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_stop_hook_msg()
+        json_response = await self.raw_stop_hook_msg()
         if json_response.get('code') == 0:
             return True
         else:
             return False
 
-    def raw_get_contect_list(self):
+    async def raw_get_contect_list(self):
         url = f"{self.base_url}/getContactList"
         json_para = json_get_contact_list()
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def get_contact_list(self) -> list:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def get_contact_list(self) -> list:
         """
         Get the contact list
         :return: A list of contact information
         """
-        json_response = self.raw_get_contect_list()
+        json_response = await self.raw_get_contect_list()
         data = json_response.get('data')
         return data
 
-    def raw_get_db_info(self):
+    async def raw_get_db_info(self):
         url = f"{self.base_url}/getDBInfo"
         json_para = json_get_db_info()
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def get_db_info(self) -> dict:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def get_db_info(self) -> dict:
         """
         Gets database information and handles
         :return: Information of database. Including database name(string), handle(int), tables(list), name(string), \
         rootpage(string), sql(string), table name(string).
         """
-        json_response = self.raw_get_db_info()
+        json_response = await self.raw_get_db_info()
         data = json_response.get('data')
         return data
 
-    def raw_exec_sql(self, db_handle: int, sql: str):
+    async def raw_exec_sql(self, db_handle: int, sql: str):
         url = f"{self.base_url}/execSql"
         json_para = json_exec_sql(db_handle, sql)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def exec_sql(self, db_handle: int, sql: str) -> list:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def exec_sql(self, db_handle: int, sql: str) -> list:
         """
         Execute the sql command in WeChat database
         :param db_handle: The handle of the database
         :param sql: The sql command
         :return: The result of the sql command
         """
-        json_response = self.raw_exec_sql(db_handle, sql)
+        json_response = await self.raw_exec_sql(db_handle, sql)
         data = json_response.get('data')
         return data
 
-    def raw_get_chatroom_detail_info(self, chatroom_id: str):
+    async def raw_get_chatroom_detail_info(self, chatroom_id: str):
         url = f"{self.base_url}/getChatRoomDetailInfo"
         json_para = json_get_chatroom_detail_info(chatroom_id)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def get_chatroom_detail_info(self, chatroom_id: str) -> dict:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def get_chatroom_detail_info(self, chatroom_id: str) -> dict:
         """
         Get chatroom details
         :param chatroom_id: Chatroom identifier.
         :return: A dictionary, including: chatRoomId(string) chatRoomName(string) notice(string) admin(int) \
         xml information(list).
         """
-        json_response = self.raw_get_chatroom_detail_info(chatroom_id)
+        json_response = await self.raw_get_chatroom_detail_info(chatroom_id)
         data = json_response.get('data')
         return data
 
-    def raw_add_member_to_chatroom(self, chatroom_id: str, wxids: list):
+    async def raw_add_member_to_chatroom(self, chatroom_id: str, wxids: list):
         url = f"{self.base_url}/addMemberToChatRoom"
         json_para = json_add_member_to_chatroom(chatroom_id, wxids)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def add_member_to_chatroom(self, chatroom_id: str, wxids: list) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def add_member_to_chatroom(self, chatroom_id: str, wxids: list) -> bool:
         """
         Add members to chatroom
         :param chatroom_id: Chatroom identifier
         :param wxids: The list of wxid you want to add
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_add_member_to_chatroom(chatroom_id, wxids)
+        json_response = await self.raw_add_member_to_chatroom(chatroom_id, wxids)
         if json_response.get('code') == 1:
             return True
         else:
             return False
 
-    def raw_modify_nickname(self, chatroom_id: str, wxid: str, nickname: str):
+    async def raw_modify_nickname(self, chatroom_id: str, wxid: str, nickname: str):
         url = f"{self.base_url}/modifyNickname"
         json_para = json_modify_nickname(chatroom_id, wxid, nickname)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def modify_nickname(self, chatroom_id: str, wxid: str, nickname: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def modify_nickname(self, chatroom_id: str, wxid: str, nickname: str) -> bool:
         """
         Modify the nickname in chatroom
         :param chatroom_id: Chatroom identifier
@@ -335,264 +361,293 @@ class Pywxdll:
         :param nickname: The nickname you want to modify
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_modify_nickname(chatroom_id, wxid, nickname)
+        json_response = await self.raw_modify_nickname(chatroom_id, wxid, nickname)
         if json_response.get('code') == 1:
             return True
         else:
             return False
 
-    def raw_del_member_from_chatroom(self, chatroom_id: str, wxids: list):
+    async def raw_del_member_from_chatroom(self, chatroom_id: str, wxids: list):
         url = f"{self.base_url}/delMemberFromChatRoom"
         json_para = json_del_member_from_chatroom(chatroom_id, wxids)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def del_member_from_chatroom(self, chatroom_id: str, wxids: list) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def del_member_from_chatroom(self, chatroom_id: str, wxids: list) -> bool:
         """
         Delete members from chatroom
         :param chatroom_id: Chatroom identifier
         :param wxids: The list of wxid you want to delete
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_del_member_from_chatroom(chatroom_id, wxids)
+        json_response = await self.raw_del_member_from_chatroom(chatroom_id, wxids)
         if json_response.get('code') == 1:
             return True
         else:
             return False
 
-    def raw_get_member_from_chatroom(self, chatroom_id: str):
+    async def raw_get_member_from_chatroom(self, chatroom_id: str):
         url = f"{self.base_url}/getMemberFromChatRoom"
         json_para = json_get_member_from_chatroom(chatroom_id)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def get_member_from_chatroom(self, chatroom_id: str) -> dict:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def get_member_from_chatroom(self, chatroom_id: str) -> dict:
         """
         Get members from chatroom
         :param chatroom_id: Chatroom identifier
         :return: A dictionary, including: admin(string) adminNickname(string) chatRoomId(string) \
         memberNickname(string) members(string).
         """
-        json_response = self.raw_get_member_from_chatroom(chatroom_id)
+        json_response = await self.raw_get_member_from_chatroom(chatroom_id)
         data = json_response.get('data')
         data['memberNickname'] = data.get('memberNickname').split('^G')
         data['members'] = data.get('members').split('^G')
         return data
 
-    def raw_top_msg(self, msg_id: str):
+    async def raw_top_msg(self, msg_id: str):
         url = f"{self.base_url}/topMsg"
         json_para = json_top_msg(msg_id)
-        response = requests.post(url, data=json_para)
-        return response.json()
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
 
-    def top_msg(self, msg_id: str):
+    async def top_msg(self, msg_id: str):
         """
         Top a message in chatroom. Chatroom admin is needed
         :param msg_id: The message identifier
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_top_msg(msg_id)
+        json_response = await self.raw_top_msg(msg_id)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_remove_top_msg(self, msg_id: str, chatroom_id: str):
+    async def raw_remove_top_msg(self, msg_id: str, chatroom_id: str):
         url = f"{self.base_url}/removeTopMsg"
         json_para = json_remove_top_msg(msg_id, chatroom_id)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def remove_top_msg(self, msg_id: str, chatroom_id: str):
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def remove_top_msg(self, msg_id: str, chatroom_id: str):
         """
         Remove a top message in chatroom. Chatroom admin is needed
         :param msg_id: The message identifier
         :param chatroom_id: Chatroom identifier
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_remove_top_msg(msg_id, chatroom_id)
+        json_response = await self.raw_remove_top_msg(msg_id, chatroom_id)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_invite_member_to_chatroom(self, chatroom_id: str, wxids: list):
+    async def raw_invite_member_to_chatroom(self, chatroom_id: str, wxids: list):
         url = f"{self.base_url}/InviteMemberToChatRoom"
         json_para = json_invite_member_to_chatroom(chatroom_id, wxids)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def invite_member_to_chatroom(self, chatroom_id: str, wxids: list):
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def invite_member_to_chatroom(self, chatroom_id: str, wxids: list):
         """
         Invite to join the chatroom, (Chatrooms of more than 40 people need to use this invitation to join the group)
         :param chatroom_id: Chatroom identifier
         :param wxids: The list of wxid you want to invite
         :return:
         """
-        json_response = self.raw_invite_member_to_chatroom(chatroom_id, wxids)
+        json_response = await self.raw_invite_member_to_chatroom(chatroom_id, wxids)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_hook_log(self):
+    async def raw_hook_log(self):
         url = f"{self.base_url}/hookLog"
         json_para = json_hook_log()
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def hook_log(self) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def hook_log(self) -> bool:
         """
         hook WeChat logs. The output is in the logs directory of the WeChat installation directory
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_hook_log()
+        json_response = await self.raw_hook_log()
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_unhook_log(self):
+    async def raw_unhook_log(self):
         url = f"{self.base_url}/unhookLog"
         json_para = json_unhook_log()
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def unhook_log(self) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def unhook_log(self) -> bool:
         """
         unhook WeChat logs
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_unhook_log()
+        json_response = await self.raw_unhook_log()
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_create_chatroom(self, wxids: list):
+    async def raw_create_chatroom(self, wxids: list):
         url = f"{self.base_url}/createChatRoom"
         json_para = json_create_chatroom(wxids)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def create_chatroom(self, wxids: list) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def create_chatroom(self, wxids: list) -> bool:
         """
         Create a chatroom. USE WITH CAUTIOUS, HIGH CHANCE OF GETTING BANNED.
         :param wxids: The list of wxid you want to create chatroom
         :return: A dictionary, including: chatRoomId(string) chatRoomName(string) notice(string) admin(int) \
         xml information(list).
         """
-        json_response = self.raw_create_chatroom(wxids)
+        json_response = await self.raw_create_chatroom(wxids)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_quit_chatroom(self, chatroom_id: str):
+    async def raw_quit_chatroom(self, chatroom_id: str):
         url = f"{self.base_url}/quitChatRoom"
         json_para = json_quit_chatroom(chatroom_id)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def quit_chatroom(self, chatroom_id: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def quit_chatroom(self, chatroom_id: str) -> bool:
         """
         Quit the chatroom
         :param chatroom_id: Chatroom identifier
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_quit_chatroom(chatroom_id)
+        json_response = await self.raw_quit_chatroom(chatroom_id)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_forward_msg(self, wxid: str, msg_id: str):
+    async def raw_forward_msg(self, wxid: str, msg_id: str):
         url = f"{self.base_url}/forwardMsg"
         json_para = json_forward_msg(wxid, msg_id)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def forward_msg(self, wxid: str, msg_id: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def forward_msg(self, wxid: str, msg_id: str) -> bool:
         """
         Forward the message to the wxid
         :param wxid: WeChat account identifier
         :param msg_id: The message identifier
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_forward_msg(wxid, msg_id)
+        json_response = await self.raw_forward_msg(wxid, msg_id)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_get_sns_first_page(self):
+    async def raw_get_sns_first_page(self):
         url = f"{self.base_url}/getSNSFirstPage"
         json_para = json_get_sns_first_page()
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def get_sns_first_page(self):
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def get_sns_first_page(self):
         """
         Get the first page of SNS. The SNS information will be sent to the message tcp server. The format is:
         {"data":[{"content": "","createTime': 1691125287,"senderId': "", "snsId': 123,"xml':""}]}
         :return: A dictionary, including: SNS information(list)
         """
-        json_response = self.raw_get_sns_first_page()
+        json_response = await self.raw_get_sns_first_page()
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_get_sns_next_page(self, sns_id: int):
+    async def raw_get_sns_next_page(self, sns_id: int):
         url = f"{self.base_url}/getSNSNextPage"
         json_para = json_get_sns_next_page(sns_id)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def get_sns_next_page(self, sns_id: int):
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def get_sns_next_page(self, sns_id: int):
         """
         Get the next page of SNS. The SNS information will be sent to the message tcp server. The format is:
         {"data":[{"content": "","createTime': 1691125287,"senderId': "", "snsId': 123,"xml':""}]}
         :param sns_id: The sns identifier
         :return: A dictionary, including: SNS information(list)
         """
-        json_response = self.raw_get_sns_next_page(sns_id)
+        json_response = await self.raw_get_sns_next_page(sns_id)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_add_fav_from_msg(self, msg_id: str):
+    async def raw_add_fav_from_msg(self, msg_id: str):
         url = f"{self.base_url}/addFavFromMsg"
         json_para = json_add_fav_from_msg(msg_id)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def add_fav_from_msg(self, msg_id: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def add_fav_from_msg(self, msg_id: str) -> bool:
         """
         Add the message to favorite
         :param msg_id: The message identifier
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_add_fav_from_msg(msg_id)
+        json_response = await self.raw_add_fav_from_msg(msg_id)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_add_fav_from_image(self, wxid: str, image_path: str):
+    async def raw_add_fav_from_image(self, wxid: str, image_path: str):
         url = f"{self.base_url}/addFavFromImage"
         json_para = json_add_fav_from_image(wxid, image_path)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def raw_send_at_msg(self, chatroom_id: str, msg: str, wxids: list):
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def raw_send_at_msg(self, chatroom_id: str, msg: str, wxids: list):
         url = f"{self.base_url}/sendAtText"
         json_para = json_send_at_msg(chatroom_id, msg, wxids)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def send_at_msg(self, chatroom_id: str, msg: str, wxids: list) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def send_at_msg(self, chatroom_id: str, msg: str, wxids: list) -> bool:
         """
         Send an @ message to the chatroom. To @all, add "notify@all" in the wxids list.
         :param chatroom_id: Chatroom identifier
@@ -600,37 +655,42 @@ class Pywxdll:
         :param wxids: The list of wxid you want to at
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_send_at_msg(chatroom_id, msg, wxids)
+        json_response = await self.raw_send_at_msg(chatroom_id, msg, wxids)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_get_contact_profile(self, wxid: str):
+    async def raw_get_contact_profile(self, wxid: str):
         url = f"{self.base_url}/getContactProfile"
         json_para = json_get_contact_profile(wxid)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def get_contact_profile(self, wxid: str) -> dict:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def get_contact_profile(self, wxid: str) -> dict:
         """
         Get the contact profile
         :param wxid: WeChat account identifier
         :return: A dictionary, including: wxid(string) account(string) headImage(string) nickname(string) v3(string)
         """
-        json_response = self.raw_get_contact_profile(wxid)
+        json_response = await self.raw_get_contact_profile(wxid)
         data = json_response.get('data')
         return data
 
-    def raw_send_public_msg(self, wxid: str, app_name: str, user_name: str, title: str, msg_url: str, thumb_url: str,
-                            digest: str):
+    async def raw_send_public_msg(self, wxid: str, app_name: str, user_name: str, title: str, msg_url: str,
+                                  thumb_url: str,
+                                  digest: str):
         url = f"{self.base_url}/forwardPublicMsg"
         json_para = json_send_public_msg(wxid, app_name, user_name, title, msg_url, thumb_url, digest)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def send_public_msg(self, wxid: str, app_name: str, user_name: str, title: str, url: str, thumb_url: str,
-                        digest: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def send_public_msg(self, wxid: str, app_name: str, user_name: str, title: str, url: str, thumb_url: str,
+                              digest: str) -> bool:
         """
         Send a public message
         :param wxid: WeChat account identifier
@@ -642,95 +702,105 @@ class Pywxdll:
         :param digest: The digest of the message
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_send_public_msg(wxid, app_name, user_name, title, url, thumb_url, digest)
+        json_response = await self.raw_send_public_msg(wxid, app_name, user_name, title, url, thumb_url, digest)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_forward_public_msg_by_msg_id(self, wxid: str, msg_id: str):
+    async def raw_forward_public_msg_by_msg_id(self, wxid: str, msg_id: str):
         url = f"{self.base_url}/forwardPublicMsgByMsgId"
         json_para = json_forward_public_msg_by_msg_id(wxid, msg_id)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def forward_public_msg_by_msg_id(self, wxid: str, msg_id: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def forward_public_msg_by_msg_id(self, wxid: str, msg_id: str) -> bool:
         """
         Forward a public message by message id to a wxid
         :param wxid: WeChat account identifier
         :param msg_id: The message identifier of public message
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_forward_public_msg_by_msg_id(wxid, msg_id)
+        json_response = await self.raw_forward_public_msg_by_msg_id(wxid, msg_id)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_download_attach(self, msg_id: str):
+    async def raw_download_attach(self, msg_id: str):
         url = f"{self.base_url}/downloadAttach"
         json_para = json_download_attach(msg_id)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def download_attach(self, msg_id: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def download_attach(self, msg_id: str) -> bool:
         """
         Download the attachment of the message. Saved in the wxid_xxx/wxhelper directory in the WeChat file directory.
 
         :param msg_id: The message identifier
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_download_attach(msg_id)
+        json_response = await self.raw_download_attach(msg_id)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_decode_image(self, file_path: str, store_dir: str):
+    async def raw_decode_image(self, file_path: str, store_dir: str):
         url = f"{self.base_url}/decodeImage"
         json_para = json_decode_image(file_path, store_dir)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def decode_image(self, file_path: str, store_dir: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def decode_image(self, file_path: str, store_dir: str) -> bool:
         """
         Decode the image
         :param file_path: The input path of the image
         :param store_dir: The output store directory
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_decode_image(file_path, store_dir)
+        json_response = await self.raw_decode_image(file_path, store_dir)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_get_voice_by_msg_id(self, msg_id: str, store_dir: str):
+    async def raw_get_voice_by_msg_id(self, msg_id: str, store_dir: str):
         url = f"{self.base_url}/getVoiceByMsgId"
         json_para = json_get_voice_by_msg_id(msg_id, store_dir)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def get_voice_by_msg_id(self, msg_id: str, store_dir: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def get_voice_by_msg_id(self, msg_id: str, store_dir: str) -> bool:
         """
         Get the voice by message id
         :param msg_id: The message identifier
         :param store_dir: The store directory
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_get_voice_by_msg_id(msg_id, store_dir)
+        json_response = await self.raw_get_voice_by_msg_id(msg_id, store_dir)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_send_custom_emotion(self, wxid: str, file_path: str):
+    async def raw_send_custom_emotion(self, wxid: str, file_path: str):
         url = f"{self.base_url}/sendCustomEmotion"
         json_para = json_send_custom_emotion(wxid, file_path)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def send_custom_emotion(self, wxid: str, file_path: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def send_custom_emotion(self, wxid: str, file_path: str) -> bool:
         """
         Send a custom emotion
         :param wxid: WeChat account identifier
@@ -740,22 +810,25 @@ class Pywxdll:
 
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_send_custom_emotion(wxid, file_path)
+        json_response = await self.raw_send_custom_emotion(wxid, file_path)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_send_applet_msg(self, wxid: str, waid_concat: str, applet_wxid: str, json_param: str, head_img_url: str,
-                            main_img: str, index_page: str):
+    async def raw_send_applet_msg(self, wxid: str, waid_concat: str, applet_wxid: str, json_param: str,
+                                  head_img_url: str,
+                                  main_img: str, index_page: str):
         url = f"{self.base_url}/sendApplet"
         json_para = json_send_applet(wxid, waid_concat, applet_wxid, json_param, head_img_url, main_img, index_page)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def send_applet_msg(self, wxid: str, waid_concat: str, applet_wxid: str, json_param: str, head_img_url: str,
-                        main_img: str,
-                        index_page: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def send_applet_msg(self, wxid: str, waid_concat: str, applet_wxid: str, json_param: str, head_img_url: str,
+                              main_img: str,
+                              index_page: str) -> bool:
         """
         Send an applet message. THIS FUNCTION IS NOT STABLE.
         :param wxid: WeChat account identifier
@@ -769,46 +842,50 @@ class Pywxdll:
         :param index_page: The jump page of applet.
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_send_applet_msg(wxid, waid_concat, applet_wxid, json_param, head_img_url, main_img,
-                                                 index_page)
+        json_response = await self.raw_send_applet_msg(wxid, waid_concat, applet_wxid, json_param, head_img_url,
+                                                       main_img, index_page)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_send_pat_msg(self, wxid: str, receiver: str):
+    async def raw_send_pat_msg(self, wxid: str, receiver: str):
         url = f"{self.base_url}/sendPatMsg"
         json_para = json_send_pat_msg(wxid, receiver)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def send_pat_msg(self, wxid: str, patter: str) -> bool:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def send_pat_msg(self, wxid: str, patter: str) -> bool:
         """
         Send a pat message
         :param wxid: WeChat account identifier
         :param patter: The receiver wxid. Can be their own wxid, private chat friends wxid, chatroom id
         :return: Boolean. True if success, False if failed.
         """
-        json_response = self.raw_send_pat_msg(wxid, patter)
+        json_response = await self.raw_send_pat_msg(wxid, patter)
         if json_response.get('code') == -1:
             return False
         else:
             return True
 
-    def raw_ocr(self, image_path: str):
+    async def raw_ocr(self, image_path: str):
         url = f"{self.base_url}/ocr"
         json_para = json_ocr(image_path)
-        response = requests.post(url, data=json_para)
-        return response.json()
 
-    def ocr(self, image_path: str) -> dict:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=json_para) as response:
+                return await response.json()
+
+    async def ocr(self, image_path: str) -> dict:
         """
         ocr the image
         :param image_path: The path of the image
         :return: A dictionary, including: code(int) data(string). The data is the result of the ocr.
         """
-        json_response = self.raw_ocr(image_path)
+        json_response = await self.raw_ocr(image_path)
         if json_response.get('code') != 0:
-            json_response = self.raw_ocr(image_path)
+            json_response = await self.raw_ocr(image_path)
             return json_response
         return json_response

@@ -1,3 +1,4 @@
+import asyncio
 import random
 
 import schedule
@@ -19,12 +20,14 @@ class antiautolog(PlansInterface):
         self.timezone = main_config["timezone"]
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-    def job(self):
+    async def job(self):
         out_message = f"防微信自动退出登录[{random.randint(1, 9999)}]"  # 组建信息
-        logger.info(
-            f'[发送信息]{out_message}| [发送到] {"filehelper"}'
-        )  # 直接发到文件传输助手，这样就不用单独键个群辣
-        self.bot.send_text_msg("filehelper", out_message)  # 发送
+        logger.info(f'[发送信息]{out_message}| [发送到] {"filehelper"}')  # 直接发到文件传输助手，这样就不用单独键个群辣
+        await self.bot.send_text_msg("filehelper", out_message)  # 发送
+
+    def job_async(self):
+        loop = asyncio.get_running_loop()
+        loop.create_task(self.job())
 
     def run(self):
-        schedule.every(10).minutes.do(self.job)  # 每10分钟执行一次
+        schedule.every(10).minutes.do(self.job_async)  # 每10分钟执行一次

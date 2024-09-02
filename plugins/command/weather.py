@@ -12,7 +12,7 @@ from utils.plugin_interface import PluginInterface
 
 class weather(PluginInterface):
     def __init__(self):
-        config_path = "plugins/weather.yml"
+        config_path = "plugins/command/weather.yml"
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -61,29 +61,30 @@ class weather(PluginInterface):
 
                 out_message = self.compose_weather_message(request_city_name, now_weather_api_json,
                                                            weather_forecast_api_json)
-                self.send_friend_or_group(recv, out_message)
+                await self.send_friend_or_group(recv, out_message)
 
             elif geoapi_json['code'] == '404':
                 error = '-----XYBot-----\n⚠️城市不存在！'
-                self.send_friend_or_group(recv, error)
+                await self.send_friend_or_group(recv, error)
             else:
                 error = f'-----XYBot-----\n⚠️请求失败！\n{geoapi_json}'
-                self.send_friend_or_group(recv, error)
+                await self.send_friend_or_group(recv, error)
 
 
         else:
-            self.send_friend_or_group(recv, error)
+            await self.send_friend_or_group(recv, error)
 
-    def send_friend_or_group(self, recv, out_message="null"):
+    async def send_friend_or_group(self, recv, out_message="null"):
         if recv["fromType"] == "chatroom":  # 判断是群还是私聊
             logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
+            await self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
 
         else:
             logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_text_msg(recv["from"], out_message)  # 发送
+            await self.bot.send_text_msg(recv["from"], out_message)  # 发送
 
-    def compose_weather_message(self, city_name, now_weather_api_json, weather_forecast_api_json):
+    @staticmethod
+    def compose_weather_message(city_name, now_weather_api_json, weather_forecast_api_json):
         update_time = now_weather_api_json['updateTime']
         now_temperature = now_weather_api_json['now']['temp']
         now_feelslike = now_weather_api_json['now']['feelsLike']

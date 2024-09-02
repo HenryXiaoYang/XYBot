@@ -12,7 +12,7 @@ from utils.plugin_interface import PluginInterface
 
 class random_picture_link(PluginInterface):
     def __init__(self):
-        config_path = "plugins/random_picture_link.yml"
+        config_path = "plugins/command/random_picture_link.yml"
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -40,11 +40,10 @@ class random_picture_link(PluginInterface):
             await conn_ssl.close()
 
             logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')  # 发送信息
-            self.bot.send_text_msg(recv["from"], out_message)  # 发送
-
+            await self.bot.send_text_msg(recv["from"], out_message)  # 发送
 
         except Exception as error:
             out_message = f"-----XYBot-----\n出现错误❌！{error}"
             logger.error(error)
             logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_text_msg(recv["from"], out_message)
+            await self.bot.send_text_msg(recv["from"], out_message)

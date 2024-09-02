@@ -42,32 +42,32 @@ class admin_points(PluginInterface):
 
             if len(recv["content"]) == 3:  # 直接改变，不加/减
                 self.db.set_points(change_wxid, int(recv["content"][2]))
-                self.send_result(recv, change_wxid)
+                await self.send_result(recv, change_wxid)
             elif recv["content"][2] == "加" and len(recv["content"]) == 4:  # 操作是加分
                 self.db.add_points(change_wxid, int(recv["content"][3]))  # 修改积分
-                self.send_result(recv, change_wxid)
+                await self.send_result(recv, change_wxid)
 
             elif recv["content"][2] == "减" and len(recv["content"]) == 4:  # 操作是减分
                 self.db.add_points(
                     change_wxid, int(recv["content"][3]) * -1
                 )  # 修改积分
-                self.send_result(recv, change_wxid)
+                await self.send_result(recv, change_wxid)
             else:
                 out_message = "-----XYBot-----\n⚠️未知的操作！"
                 logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-                self.bot.send_text_msg(recv["from"], out_message)
+                await self.bot.send_text_msg(recv["from"], out_message)
 
 
         else:  # 操作人不在白名单内
             out_message = error
             logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_text_msg(recv["from"], out_message)
+            await self.bot.send_text_msg(recv["from"], out_message)
 
-    def send_result(self, recv, change_wxid):
+    async def send_result(self, recv, change_wxid):
         total_points = self.db.get_points(change_wxid)  # 获取修改后积分
         if len(recv['content']) == 4:
             out_message = f'-----XYBot-----\n😊成功给{change_wxid}{recv["content"][2]}了{recv["content"][3]}点积分！他现在有{total_points}点积分！'
         else:
             out_message = f'-----XYBot-----\n😊成功将{change_wxid}的积分设置为{total_points}！'
         logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-        self.bot.send_text_msg(recv["from"], out_message)  # 发送
+        await self.bot.send_text_msg(recv["from"], out_message)  # 发送信息

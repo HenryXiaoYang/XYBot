@@ -41,15 +41,15 @@ class admin_whitelist(PluginInterface):
             else:  # 命令格式错误
                 out_message = "-----XYBot-----\n未知的操作❌"
                 logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-                self.bot.send_text_msg(recv["from"], out_message)  # 发送信息
+                await self.bot.send_text_msg(recv["from"], out_message)  # 发送信息
 
                 return
 
             out_message = f"-----XYBot-----\n成功修改{wxid}的白名单！😊"
             logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_text_msg(recv["from"], out_message)  # 发送信息
+            await self.bot.send_text_msg(recv["from"], out_message)  # 发送信息
 
         else:  # 操作人不在白名单内
             out_message = "-----XYBot-----\n❌你配用这个指令吗？"
             logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_text_msg(recv["from"], out_message)  # 发送信息
+            await self.bot.send_text_msg(recv["from"], out_message)  # 发送信息

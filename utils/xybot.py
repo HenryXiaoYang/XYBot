@@ -106,7 +106,7 @@ class XYBot:
             if recv['fromType'] == 'chatroom' and self.command_prefix != "":  # 不是指令但在群里 且设置了指令前缀
                 out_message = "该指令不存在！⚠️"
                 logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-                self.bot.send_text_msg(recv["from"], out_message)
+                await self.bot.send_text_msg(recv["from"], out_message)
                 return
 
         # text插件

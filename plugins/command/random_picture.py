@@ -15,7 +15,7 @@ from utils.plugin_interface import PluginInterface
 
 class random_picture(PluginInterface):
     def __init__(self):
-        config_path = "plugins/random_picture.yml"
+        config_path = "plugins/command/random_picture.yml"
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -58,12 +58,10 @@ class random_picture(PluginInterface):
             logger.info(
                 f'[发送信息](随机图图图片) {cache_path}| [发送到] {recv["from"]}'
             )
-            self.bot.send_image_msg(
-                recv["from"], os.path.abspath(cache_path)
-            )  # 发送图片
+            await self.bot.send_image_msg(recv["from"], os.path.abspath(cache_path))  # 发送图片
 
         except Exception as error:
             out_message = f"-----XYBot-----\n出现错误❌！{error}"
             logger.error(error)
             logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_text_msg(recv["from"], out_message)  # 发送
+            await self.bot.send_text_msg(recv["from"], out_message)  # 发送

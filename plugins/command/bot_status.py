@@ -13,7 +13,7 @@ from utils.plugin_interface import PluginInterface
 
 class bot_status(PluginInterface):
     def __init__(self):
-        config_path = "plugins/bot_status.yml"
+        config_path = "plugins/command/bot_status.yml"
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -100,4 +100,4 @@ class bot_status(PluginInterface):
             a += chr(i)
         out_message = f"-----XYBot-----\n{self.status_message}\nBot version: {self.bot_version}\n{base64.b64decode(a).decode('utf-8')}"
         logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-        self.bot.send_text_msg(recv["from"], out_message)  # 发送
+        await self.bot.send_text_msg(recv["from"], out_message)  # 发送

@@ -11,11 +11,9 @@ from openai import AsyncOpenAI
 import pywxdll
 from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
-from utils.singleton import singleton
 
 
-@singleton
-class PrivateChatGpt(PluginInterface):
+class private_chatgpt(PluginInterface):
     def __init__(self):
         main_config_path = "main_config.yml"
         with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
@@ -69,21 +67,21 @@ class PrivateChatGpt(PluginInterface):
             if gpt_request_message in self.clear_dialogue_keyword:  # 如果是清除对话记录的关键词，清除数据库对话记录
                 self.clear_dialogue_keyword(wxid)  # 保存清除了的数据到数据库
                 out_message = "对话记录已清除！✅"
-                self.bot.send_text_msg(wxid, out_message)
+                await self.bot.send_text_msg(wxid, out_message)
                 logger.info(f'[发送信息]{out_message}| [发送到] {wxid}')
             else:
                 gpt_answer = await self.chatgpt(wxid, gpt_request_message)  # 调用chatgpt函数
                 if gpt_answer[0]:  # 如果没有错误
-                    self.bot.send_text_msg(wxid, gpt_answer[1])  # 发送回答
+                    await self.bot.send_text_msg(wxid, gpt_answer[1])  # 发送回答
                     logger.info(f'[发送信息]{gpt_answer[1]}| [发送到] {wxid}')
                     if wxid not in self.admins or not self.db.get_whitelist(wxid):
                         self.db.add_points(wxid, -self.private_chat_gpt_price)  # 扣除积分，管理员不扣
                 else:
                     out_message = f"出现错误⚠️！\n{gpt_answer[1]}"  # 如果有错误，发送错误信息
-                    self.bot.send_text_msg(wxid, out_message)
+                    await self.bot.send_text_msg(wxid, out_message)
                     logger.error(f'[发送信息]{out_message}| [发送到] {wxid}')
         else:
-            self.bot.send_text_msg(recv["from"], error)
+            await self.bot.send_text_msg(recv["from"], error)
             logger.info(f'[发送信息]{error}| [发送到] {wxid}')
 
     async def chatgpt(self, wxid: str, message: str):  # 这个函数请求了openai的api

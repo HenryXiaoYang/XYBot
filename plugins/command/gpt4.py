@@ -13,7 +13,7 @@ from utils.plugin_interface import PluginInterface
 
 class gpt4(PluginInterface):
     def __init__(self):
-        config_path = "plugins/gpt4.yml"
+        config_path = "plugins/command/gpt4.yml"
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -61,7 +61,7 @@ class gpt4(PluginInterface):
 
         if not error_message:
             out_message = "-----XYBot-----\n已收到指令，处理中，请勿重复发送指令！👍"  # 发送已收到信息，防止用户反复发送命令
-            self.send_friend_or_group(recv, out_message)
+            await self.send_friend_or_group(recv, out_message)
 
             if self.db.get_whitelist(user_wxid) == 1 or user_wxid in self.admins:  # 如果用户在白名单内/是管理员
                 chatgpt_answer = await self.chatgpt(gpt_request_message)
@@ -69,7 +69,7 @@ class gpt4(PluginInterface):
                     out_message = f"-----XYBot-----\n因为你在白名单内，所以没扣除积分！👍\nChatGPT回答：\n{chatgpt_answer[1]}\n\n⚙️ChatGPT版本：{self.gpt_version}"
                 else:
                     out_message = f"-----XYBot-----\n出现错误！⚠️{chatgpt_answer}"
-                self.send_friend_or_group(recv, out_message)
+                await self.send_friend_or_group(recv, out_message)
 
             elif self.db.get_points(user_wxid) >= self.gpt_point_price:
                 self.db.add_points(user_wxid, self.gpt_point_price * -1)  # 减掉积分
@@ -79,9 +79,9 @@ class gpt4(PluginInterface):
                 else:
                     self.db.add_points(user_wxid, self.gpt_point_price)  # 补回积分
                     out_message = f"-----XYBot-----\n出现错误，已补回积分！⚠️{chatgpt_answer}"
-                self.send_friend_or_group(recv, out_message)
+                await self.send_friend_or_group(recv, out_message)
         else:
-            self.send_friend_or_group(recv, error_message)
+            await self.send_friend_or_group(recv, error_message)
 
     async def chatgpt(self, gpt_request_message):
         client = AsyncOpenAI(api_key=self.openai_api_key, base_url=self.openai_api_base)
@@ -107,11 +107,11 @@ class gpt4(PluginInterface):
                 return False
         return True
 
-    def send_friend_or_group(self, recv, out_message="null"):
+    async def send_friend_or_group(self, recv, out_message="null"):
         if recv["fromType"] == "chatroom":  # 判断是群还是私聊
             logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
+            await self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
 
         else:
             logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_text_msg(recv["from"], out_message)  # 发送
+            await self.bot.send_text_msg(recv["from"], out_message)  # 发送

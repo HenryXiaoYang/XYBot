@@ -17,7 +17,7 @@ from utils.plugin_interface import PluginInterface
 
 class sign_in(PluginInterface):
     def __init__(self):
-        config_path = "plugins/sign_in.yml"
+        config_path = "plugins/command/sign_in.yml"
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -59,14 +59,14 @@ class sign_in(PluginInterface):
 
             out_message = f"\n-----XYBot-----\n签到成功！你领到了{signin_points}个积分！✅\n\n{lucky_star_message}"  # 创建发送信息
             logger.info(f"[发送@信息]{out_message}| [发送到] {recv['from']}")
-            self.bot.send_at_msg(recv["from"], out_message, [sign_wxid])
+            await self.bot.send_at_msg(recv["from"], out_message, [sign_wxid])
 
         else:  # 今天已签到，不加积分
             next_sign_in_date = datetime.strptime(signstat, "%Y%m%d") + timedelta(days=1)
             next_sign_in_date_formatted = next_sign_in_date.strftime("%Y年%m月%d日")
             out_message = f"\n-----XYBot-----\n❌你今天已经签到过了，每日凌晨刷新签到哦！下一次签到日期：{next_sign_in_date_formatted}"  # 创建信息
             logger.info(f"[发送@信息]{out_message}| [发送到] {recv['from']}")
-            self.bot.send_at_msg(recv["from"], out_message, [sign_wxid])
+            await self.bot.send_at_msg(recv["from"], out_message, [sign_wxid])
 
     def signstat_check(self, signstat):  # 检查签到状态
         signstat = "20000101" if signstat in ["0", "1"] else signstat

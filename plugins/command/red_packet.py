@@ -17,7 +17,7 @@ from utils.plugin_interface import PluginInterface
 
 class red_packet(PluginInterface):
     def __init__(self):
-        config_path = "plugins/red_packet.yml"
+        config_path = "plugins/command/red_packet.yml"
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -48,15 +48,13 @@ class red_packet(PluginInterface):
 
     async def run(self, recv):
         if len(recv["content"]) == 3:  # 判断是否为红包指令
-            self.send_red_packet(recv)
+            await self.send_red_packet(recv)
         elif len(recv["content"]) == 2:  # 判断是否为抢红包指令
-            self.grab_red_packet(recv)
+            await self.grab_red_packet(recv)
         else:  # 指令格式错误
-            self.send_friend_or_group(
-                recv, "-----XYBot-----\n❌命令格式错误！请查看菜单获取正确命令格式"
-            )
+            await self.send_friend_or_group(recv, "-----XYBot-----\n❌命令格式错误！请查看菜单获取正确命令格式")
 
-    def send_red_packet(self, recv):
+    async def send_red_packet(self, recv):
         red_packet_sender = recv["sender"]
 
         # 判断是否有错误
@@ -82,7 +80,8 @@ class red_packet(PluginInterface):
             red_packet_amount = int(recv["content"][2])  # 红包数量
             red_packet_chatroom = recv["from"]  # 红包所在群聊
 
-            red_packet_sender_nick = self.bot.get_contact_profile(red_packet_sender)["nickname"]  # 获取昵称
+            red_packet_sender_nick = await self.bot.get_contact_profile(red_packet_sender)  # 获取昵称
+            red_packet_sender_nick = red_packet_sender_nick["nickname"]
 
             red_packet_points_list = self.split_integer(
                 red_packet_points, red_packet_amount
@@ -109,18 +108,16 @@ class red_packet(PluginInterface):
             out_message = f"-----XYBot-----\n{red_packet_sender_nick} 发送了一个红包！\n\n🧧红包金额：{red_packet_points}点积分\n🧧红包数量：{red_packet_amount}个\n\n🧧红包口令请见下图！\n\n快输入指令来抢红包！\n指令：{self.command_prefix}抢红包 口令"
 
             # 发送信息
-            self.bot.send_text_msg(recv["from"], out_message)
-            logger.info(
-                f'[发送信息] (红包口令图片) {captcha_path} | [发送到] {recv["from"]}'
-            )
+            await self.bot.send_text_msg(recv["from"], out_message)
+            logger.info(f'[发送信息] (红包口令图片) {captcha_path} | [发送到] {recv["from"]}')
 
-            self.bot.send_image_msg(recv["from"], captcha_path)
+            await self.bot.send_image_msg(recv["from"], captcha_path)
 
 
         else:
-            self.send_friend_or_group(recv, error)  # 发送错误信息
+            await self.send_friend_or_group(recv, error)  # 发送错误信息
 
-    def grab_red_packet(self, recv):
+    async def grab_red_packet(self, recv):
         red_packet_grabber = recv["sender"]
 
         req_captcha = recv["content"][1]
@@ -146,13 +143,14 @@ class red_packet(PluginInterface):
                 self.red_packets[req_captcha]["grabbed"].append(
                     red_packet_grabber
                 )  # 把抢红包的人加入已抢列表
-                red_packet_grabber_nick = self.bot.get_contact_profile(red_packet_grabber)["nickname"]  # 获取昵称
+                red_packet_grabber_nick = await self.bot.get_contact_profile(red_packet_grabber)
+                red_packet_grabber_nick=red_packet_grabber_nick["nickname"]# 获取昵称
 
                 self.db.add_points(red_packet_grabber, grabbed_points)  # 增加积分
 
                 # 组建信息
                 out_message = f"-----XYBot-----\n🧧恭喜 {red_packet_grabber_nick} 抢到了 {grabbed_points} 点积分！"
-                self.send_friend_or_group(recv, out_message)
+                await self.send_friend_or_group(recv, out_message)
 
                 # 判断是否抢完
                 if not self.red_packets[req_captcha]["list"]:
@@ -160,13 +158,13 @@ class red_packet(PluginInterface):
 
             except IndexError:
                 error = "-----XYBot-----\n❌红包已被抢完！"
-                self.send_friend_or_group(recv, error)
+                await self.send_friend_or_group(recv, error)
 
                 return
 
         else:
             # 发送错误信息
-            self.send_friend_or_group(recv, error)
+            await self.send_friend_or_group(recv, error)
 
             return
 
@@ -217,10 +215,10 @@ class red_packet(PluginInterface):
 
         return result
 
-    def expired_red_packets_check(self):  # 检查是否有超时红包
+    async def expired_red_packets_check(self):  # 检查是否有超时红包
         logger.info("[计划任务]检查是否有超时的红包")
         for key in list(self.red_packets.keys()):
-            if (time.time() - self.red_packets[key]["time"] > self.max_time):  # 判断是否超时
+            if time.time() - self.red_packets[key]["time"] > self.max_time:  # 判断是否超时
 
                 red_packet_sender = self.red_packets[key]["sender"]  # 获取红包发送人
                 red_packet_points_left_sum = sum(self.red_packets[key]["list"])  # 获取剩余积分
@@ -233,14 +231,14 @@ class red_packet(PluginInterface):
 
                 # 组建信息并发送
                 out_message = f"-----XYBot-----\n🧧发现有红包 {key} 超时！已归还剩余 {red_packet_points_left_sum} 积分给 {red_packet_sender_nick}"
-                self.bot.send_text_msg(red_packet_chatroom, out_message)
+                await self.bot.send_text_msg(red_packet_chatroom, out_message)
                 logger.info(f"[发送信息]{out_message}| [发送到] {red_packet_chatroom}")
 
-    def send_friend_or_group(self, recv, out_message="null"):
+    async def send_friend_or_group(self, recv, out_message="null"):
         if recv["fromType"] == "chatroom":  # 判断是群还是私聊
             logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
+            await self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
 
         else:
             logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_text_msg(recv["from"], out_message)  # 发送
+            await self.bot.send_text_msg(recv["from"], out_message)  # 发送

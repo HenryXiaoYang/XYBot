@@ -15,7 +15,7 @@ from utils.plugin_interface import PluginInterface
 
 class get_contact_list(PluginInterface):
     def __init__(self):
-        config_path = "plugins/get_contact_list.yml"
+        config_path = "plugins/command/get_contact_list.yml"
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -41,7 +41,7 @@ class get_contact_list(PluginInterface):
             heading = ["wxid", "nickname昵称", "type微信定义的类型", "类型", "customAccount自定义微信号"]
             xybot_contact_sheet.append(heading)
 
-            contact_list = self.bot.get_contact_list()
+            contact_list = await self.bot.get_contact_list()
 
             for record in contact_list:  # 在通讯录数据中for
                 wxid = record["wxid"]  # 获取wxid
@@ -72,9 +72,9 @@ class get_contact_list(PluginInterface):
             wb.save(excel_path)  # 保存表格
 
             logger.info(f'[发送文件]{excel_path}| [发送到] {recv["from"]}')  # 发送
-            self.bot.send_file_msg(recv["from"], os.path.abspath(excel_path))  # 发送文件
+            await self.bot.send_file_msg(recv["from"], os.path.abspath(excel_path))  # 发送文件
 
         else:  # 用户不是管理员
             out_message = "-----XYBot-----\n❌你配用这个指令吗？"
             logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_text_msg(recv["from"], out_message)
+            await self.bot.send_text_msg(recv["from"], out_message)

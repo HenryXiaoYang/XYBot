@@ -29,4 +29,4 @@ class query_points(PluginInterface):
 
         out_message = f"-----XYBot-----\n你有{points_count}点积分！👍"  # 从数据库获取积分数并创建信息
         logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
-        self.bot.send_at_msg(recv["from"], out_message, [query_wxid])
+        await self.bot.send_at_msg(recv["from"], out_message, [query_wxid])

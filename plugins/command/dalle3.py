@@ -19,7 +19,7 @@ from utils.plugin_interface import PluginInterface
 
 class dalle3(PluginInterface):
     def __init__(self):
-        config_path = "plugins/dalle3.yml"
+        config_path = "plugins/command/dalle3.yml"
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -67,22 +67,22 @@ class dalle3(PluginInterface):
             error = "-----XYBot-----\n请输入描述！🤔"
 
         if error:  # 如果没满足生成图片的条件，向用户发送为什么
-            self.send_friend_or_group(recv, error)
+            await self.send_friend_or_group(recv, error)
             return
 
-        self.send_friend_or_group(recv, "-----XYBot-----\n正在生成图片，请稍等...🤔")
+        await self.send_friend_or_group(recv, "-----XYBot-----\n正在生成图片，请稍等...🤔")
 
         image_path = await self.dalle3(user_request_prompt)
 
         if isinstance(image_path, Exception):  # 如果出现错误，向用户发送错误信息
-            self.send_friend_or_group(recv, f"-----XYBot-----\n出现错误，未扣除积分！⚠️\n{image_path}")
+            await self.send_friend_or_group(recv, f"-----XYBot-----\n出现错误，未扣除积分！⚠️\n{image_path}")
             return
 
         if user_wxid not in self.admins and self.db.get_whitelist(user_wxid) == 0:  # 如果用户不是管理员或者白名单，扣积分
             self.db.add_points(user_wxid, -self.price)
-            self.send_friend_or_group(recv, f"-----XYBot-----\n🎉图片生成完毕，已扣除 {self.price} 点积分！🙏")
+            await self.send_friend_or_group(recv, f"-----XYBot-----\n🎉图片生成完毕，已扣除 {self.price} 点积分！🙏")
 
-        self.bot.send_image_msg(recv["from"], image_path)
+        await self.bot.send_image_msg(recv["from"], image_path)
         logger.info(f'[发送图片]{image_path}| [发送到] {recv["from"]}')
 
     async def dalle3(self, prompt):  # 返回生成的图片的绝对路径，报错的话返回错误
@@ -105,14 +105,14 @@ class dalle3(PluginInterface):
 
         return save_path
 
-    def send_friend_or_group(self, recv, out_message="null"):
+    async def send_friend_or_group(self, recv, out_message="null"):
         if recv["fromType"] == "chatroom":  # 判断是群还是私聊
             logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
+            await self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
 
         else:
             logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_text_msg(recv["from"], out_message)  # 发送
+            await self.bot.send_text_msg(recv["from"], out_message)  # 发送
 
     def senstitive_word_check(self, message):  # 检查敏感词
         for word in self.sensitive_words:

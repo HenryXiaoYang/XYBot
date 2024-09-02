@@ -2,6 +2,7 @@
 #
 #  This program is licensed under the GNU General Public License v3.0.
 
+import asyncio
 from datetime import datetime
 
 import pytz
@@ -25,7 +26,7 @@ class daily_greeting(PlansInterface):
         self.timezone = main_config["timezone"]  # 时区
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-    def job(self):
+    async def job(self):
         week_names = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
 
         now = datetime.now(tz=pytz.timezone(self.timezone))
@@ -36,9 +37,10 @@ class daily_greeting(PlansInterface):
 
         message = f"早上好！☀️今天是{date_str} {week_name}。😆\n\n{daily_sentence}"
 
-        for contact in self.bot.get_contact_list():
+        contact_list = await self.bot.get_contact_list()
+        for contact in contact_list:
             if str(contact.get("wxid")).endswith("@chatroom"):  # 是一个群聊
-                self.bot.send_text_msg(contact.get("wxid"), message)
+                await self.bot.send_text_msg(contact.get("wxid"), message)
                 logger.info(f"[发送@信息]{message}| [发送到] {contact.get('wxid')}")
 
     @staticmethod
@@ -55,5 +57,9 @@ class daily_greeting(PlansInterface):
 
         return formatted
 
+    def job_async(self):
+        loop = asyncio.get_running_loop()
+        loop.create_task(self.job())
+
     def run(self):
-        schedule.every().day.at("07:00", tz=self.timezone).do(self.job)
+        schedule.every().day.at("07:00", tz=self.timezone).do(self.job_async)

@@ -15,7 +15,7 @@ from utils.plugin_interface import PluginInterface
 
 class hypixel_info(PluginInterface):
     def __init__(self):
-        config_path = "plugins/hypixel_info.yml"
+        config_path = "plugins/command/hypixel_info.yml"
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -38,7 +38,7 @@ class hypixel_info(PluginInterface):
         if len(recv["content"]) == 1 or len(recv["content"]) > 3:
             out_message = "-----XYBot-----\n格式错误❌"
 
-            self.send_friend_or_group(recv, out_message)
+            await self.send_friend_or_group(recv, out_message)
 
         elif len(recv["content"]) == 2:  # Basic info
             await asyncio.create_task(self.send_basic_info(recv, headers))
@@ -49,7 +49,7 @@ class hypixel_info(PluginInterface):
 
             else:
                 out_message = "-----XYBot-----\n不存在的游戏！❌"
-                self.send_friend_or_group(recv, out_message)
+                await self.send_friend_or_group(recv, out_message)
 
     @staticmethod
     def check_valid(soup):
@@ -133,21 +133,19 @@ class hypixel_info(PluginInterface):
                 bw_stat.append(row_info_list)
         return bw_stat
 
-    def send_friend_or_group(self, recv, out_message="null"):
+    async def send_friend_or_group(self, recv, out_message="null"):
         if recv["fromType"] == "chatroom":  # 判断是群还是私聊
             logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
+            await self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
 
         else:
             logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_text_msg(recv["from"], out_message)  # 发送
+            await self.bot.send_text_msg(recv["from"], out_message)  # 发送
 
     async def send_basic_info(self, recv, headers):
         request_ign = recv["content"][1]  # 请求的玩家ign (游戏内名字 in game name)
 
-        self.send_friend_or_group(
-            recv, f"-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂"
-        )
+        await self.send_friend_or_group(recv, f"-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂")
 
         conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
         async with aiohttp.request(
@@ -179,18 +177,16 @@ class hypixel_info(PluginInterface):
                 out_message = out_message + key + value + "\n"
 
             # 发送消息
-            self.send_friend_or_group(recv, out_message)
+            await self.send_friend_or_group(recv, out_message)
 
         else:  # 玩家不存在
             out_message = f"-----XYBot-----\n玩家 {request_ign} 不存在！❌"
-            self.send_friend_or_group(recv, out_message)
+            await self.send_friend_or_group(recv, out_message)
 
     async def send_bedwar_info(self, recv, headers):  # 获取玩家bedwar信息
         request_ign = recv["content"][2]  # 请求的玩家ign (游戏内名字 in game name)
 
-        self.send_friend_or_group(
-            recv, f"-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂"
-        )  # 发送查询确认，让用户等待
+        await self.send_friend_or_group(recv, f"-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂")  # 发送查询确认，让用户等待
 
         conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
         async with aiohttp.request(
@@ -228,7 +224,7 @@ class hypixel_info(PluginInterface):
                 out_message += "\n"
 
             # 发送
-            self.send_friend_or_group(recv, out_message)
+            await self.send_friend_or_group(recv, out_message)
         else:  # 玩家不存在
             out_message = f"-----XYBot-----\n玩家 {request_ign} 不存在！❌"
-            self.send_friend_or_group(recv, out_message)
+            await self.send_friend_or_group(recv, out_message)

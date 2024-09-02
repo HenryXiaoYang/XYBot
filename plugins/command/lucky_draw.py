@@ -14,7 +14,7 @@ from utils.plugin_interface import PluginInterface
 
 class lucky_draw(PluginInterface):
     def __init__(self):
-        config_path = "plugins/lucky_draw.yml"
+        config_path = "plugins/command/lucky_draw.yml"
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
@@ -141,19 +141,19 @@ class lucky_draw(PluginInterface):
                 wins, draw_name, draw_count, total_win_points, draw_cost
             )  # 组建信息
 
-            self.send_friend_or_group(recv, message)  # 发送
+            await self.send_friend_or_group(recv, message)  # 发送
 
         else:
-            self.send_friend_or_group(recv, error)  # 发送错误
+            await self.send_friend_or_group(recv, error)  # 发送错误
 
-    def send_friend_or_group(self, recv, out_message="null"):
+    async def send_friend_or_group(self, recv, out_message="null"):
         if recv["fromType"] == "chatroom":  # 判断是群还是私聊
             logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
+            await self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
 
         else:
             logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            self.bot.send_text_msg(recv["from"], out_message)  # 发送
+            await self.bot.send_text_msg(recv["from"], out_message)  # 发送
 
     @staticmethod
     def make_message(

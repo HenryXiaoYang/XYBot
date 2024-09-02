@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 import schedule
@@ -19,7 +20,7 @@ class cache_clear(PlansInterface):
         self.timezone = main_config["timezone"]  # 时区
         self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-    def job(self):
+    async def job(self):
         path = "resources/cache/"  # 图片缓存路径
         for filename in os.listdir(path):  # 遍历文件夹
             file_path = os.path.join(path, filename)  # 获取文件路径
@@ -27,8 +28,11 @@ class cache_clear(PlansInterface):
             if os.path.isfile(file_path):  # 如果是文件
                 # 删除文件
                 os.remove(file_path)
-
         logger.info("[计划]清除缓存成功")  # 记录日志
 
+    def job_async(self):
+        loop = asyncio.get_running_loop()
+        loop.create_task(self.job())
+
     def run(self):
-        schedule.every(60).minutes.do(self.job)  # 每60分钟执行一次
+        schedule.every(6).hours.do(self.job_async)  # 每六小时执行一次

@@ -145,7 +145,7 @@ async def main():
     logger.info("已加载所有计划，并开始后台运行")
 
     # ---- 启动tcp服务器并开始接受处理消息 ---- #
-    bot.start_hook_msg(tcp_server_port, '127.0.0.1')
+    await bot.start_hook_msg(tcp_server_port, '127.0.0.1')
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setblocking(False)
