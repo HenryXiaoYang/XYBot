@@ -30,14 +30,14 @@ class warthunder(PluginInterface):
 
     async def run(self, recv):
         error = ""
-        if len(recv["content"]) != 2:
+        if len(recv["content"]) < 2:
             error = "-----XYBot-----\n参数错误!❌\n请发送正确的指令格式：\n战雷数据 玩家昵称"
 
         if error:
             await self.send_friend_or_group(recv, error)
             return
 
-        player_name = recv["content"][1]
+        player_name = ' '.join(["content"][1:])
         await self.send_friend_or_group(recv, f"-----XYBot-----\n正在查询玩家{player_name}的数据，请稍等...😄")
 
         data = await self.get_player_data(player_name)
