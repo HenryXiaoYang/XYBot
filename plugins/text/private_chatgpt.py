@@ -15,6 +15,21 @@ from utils.plugin_interface import PluginInterface
 
 class private_chatgpt(PluginInterface):
     def __init__(self):
+        config_path = "plugins/text/private_chatgpt.yml"
+
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = yaml.safe_load(f.read())
+
+        self.enable_private_chat_gpt = config["enable_private_chat_gpt"]  # 是否开启私聊chatgpt
+
+        self.gpt_version = config["gpt_version"]  # gpt版本
+        self.gpt_max_token = config["gpt_max_token"]  # gpt 最大token
+        self.gpt_temperature = config["gpt_temperature"]  # gpt 温度
+
+        self.private_chat_gpt_price = config["private_chat_gpt_price"]  # 私聊gpt使用价格（单次）
+        self.dialogue_count = config["dialogue_count"]  # 保存的对话轮数
+        self.clear_dialogue_keyword = config["clear_dialogue_keyword"]
+
         main_config_path = "main_config.yml"
         with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
@@ -28,14 +43,6 @@ class private_chatgpt(PluginInterface):
         self.openai_api_base = main_config["openai_api_base"]  # openai api 链接
         self.openai_api_key = main_config["openai_api_key"]  # openai api 密钥
 
-        self.gpt_version = main_config["gpt_version"]  # gpt版本
-        self.gpt_max_token = main_config["gpt_max_token"]  # gpt 最大token
-        self.gpt_temperature = main_config["gpt_temperature"]  # gpt 温度
-
-        self.private_chat_gpt_price = main_config["private_chat_gpt_price"]  # 私聊gpt使用价格（单次）
-        self.dialogue_count = main_config["dialogue_count"]  # 保存的对话轮数
-        self.clear_dialogue_keyword = main_config["clear_dialogue_keyword"]
-
         sensitive_words_path = "sensitive_words.yml"  # 加载敏感词yml
         with open(sensitive_words_path, "r", encoding="utf-8") as f:  # 读取设置
             sensitive_words_config = yaml.safe_load(f.read())
@@ -46,7 +53,9 @@ class private_chatgpt(PluginInterface):
         self.db = BotDatabase()
 
     async def run(self, recv) -> None:
-        if recv.get("fromType") == "chatroom":
+        if not self.enable_private_chat_gpt:
+            return  # 如果不开启私聊chatgpt，不处理
+        elif recv.get("fromType") == "chatroom":
             return  # 如果是群聊消息，不处理
 
         # 这里recv["content"]中的内容是分割的
