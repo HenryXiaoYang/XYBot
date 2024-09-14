@@ -17,7 +17,7 @@ from utils.singleton import singleton
 @singleton
 class XYBot:
     def __init__(self):
-        with open("./main_config.yml", "r", encoding="utf-8") as f:  # 读取设置
+        with open("main_config.yml", "r", encoding="utf-8") as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
         self.command_prefix = main_config["command_prefix"]  # 命令前缀
         logger.debug(f"指令前缀为(如果是空则不会显示): {self.command_prefix}")
@@ -137,13 +137,13 @@ class XYBot:
         if self.ignorance_mode == 'none':  # 如果不设置屏蔽，则直接返回通过
             return True
         elif self.ignorance_mode == 'blacklist':  # 如果设置了黑名单
-            if (recv["wxid"] not in self.ignorance_blacklist) and (recv["sender"] not in self.ignorance_blacklist):
+            if (recv["from"] not in self.ignorance_blacklist) and (recv["sender"] not in self.ignorance_blacklist):
                 return True
             else:
                 return False
 
         elif self.ignorance_mode == 'whitelist':  # 白名单
-            if (recv["wxid"] in self.ignorance_whitelist) or (recv["sender"] in self.ignorance_whitelist):
+            if (recv["from"] in self.ignorance_whitelist) or (recv["sender"] in self.ignorance_whitelist):
                 return True
             else:
                 return False
