@@ -73,7 +73,7 @@ class private_chatgpt(PluginInterface):
             error = "您的问题中包含敏感词，请重新输入！⚠️"
 
         if not error:  # 如果没有错误
-            if gpt_request_message in self.clear_dialogue_keyword:  # 如果是清除对话记录的关键词，清除数据库对话记录
+            if recv["content"][0] in self.clear_dialogue_keyword:  # 如果是清除对话记录的关键词，清除数据库对话记录
                 self.clear_dialogue_keyword(wxid)  # 保存清除了的数据到数据库
                 out_message = "对话记录已清除！✅"
                 await self.bot.send_text_msg(wxid, out_message)
