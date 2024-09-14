@@ -112,7 +112,7 @@ async def main():
             sys.exit(1)
 
         # 修复微信版本过低问题
-        if not bot.is_logged_in():
+        if not await bot.is_logged_in():
             if bot.fix_wechat_version():
                 logger.info("已修复微信版本过低问题")
             else:
@@ -123,9 +123,9 @@ async def main():
 
     # 检查是否登陆了微信
     logger.info("开始检测微信是否登陆")
-    if not bot.is_logged_in():
+    if not await bot.is_logged_in():
         logger.warning("机器人微信账号未登录！请扫码登陆微信。")
-        while not bot.is_logged_in():
+        while not await bot.is_logged_in():
             time.sleep(1)
 
     logger.success("已确认微信已登陆，开始启动XYBot")
@@ -164,6 +164,9 @@ async def main():
                 asyncio.create_task(message_handler(client_socket, handlebot)).add_done_callback(callback)
             except Exception as error:
                 logger.error(f"出现错误: {error}")
+
+    # debug 用的socket server
+
 
 
 if __name__ == "__main__":

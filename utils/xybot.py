@@ -33,8 +33,6 @@ class XYBot:
         self.ignorance_blacklist = main_config['blacklist']
         self.ignorance_whitelist = main_config['whitelist']
 
-        self.enable_private_chat_gpt = main_config['enable_private_chat_gpt']
-
     async def message_handler(self, recv) -> None:
         message_type = recv.get('type', -1)
         if message_type == 1:  # 是文本消息
