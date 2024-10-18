@@ -11,10 +11,11 @@ import time
 import yaml
 from loguru import logger
 from openai import AsyncOpenAI
+from wcferry import client
 
-import pywxdll
 from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
+from wcferry_helper import XYBotWxMsg
 
 
 class dalle3(PluginInterface):
@@ -34,10 +35,6 @@ class dalle3(PluginInterface):
         with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 
-        self.ip = main_config["ip"]  # 机器人ip
-        self.port = main_config["port"]  # 机器人端口
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-
         self.admins = main_config["admins"]  # 管理员列表
 
         self.openai_api_base = main_config["openai_api_base"]  # openai api 链接
@@ -50,12 +47,14 @@ class dalle3(PluginInterface):
 
         self.db = BotDatabase()
 
-    async def run(self, recv):
-        user_wxid = recv["sender"]
-        user_request_prompt = " ".join(recv["content"])
+    async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
+        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+
+        user_wxid = recv.sender  # 获取发送者wxid
+        user_request_prompt = " ".join(recv.content)
 
         error = ""
-        if len(recv["content"]) < 2:  # 指令格式正确
+        if len(recv.content) < 2:  # 指令格式正确
             error = "-----XYBot-----\n参数错误！🙅正确格式为：AI绘图 描述"
         # 检查积分是否足够，管理员与白名单不需要检查
         elif user_wxid not in self.admins and self.db.get_whitelist(user_wxid) == 0 and self.db.get_points(
@@ -67,23 +66,23 @@ class dalle3(PluginInterface):
             error = "-----XYBot-----\n请输入描述！🤔"
 
         if error:  # 如果没满足生成图片的条件，向用户发送为什么
-            await self.send_friend_or_group(recv, error)
+            await self.send_friend_or_group(bot, recv, error)
             return
 
-        await self.send_friend_or_group(recv, "-----XYBot-----\n正在生成图片，请稍等...🤔")
+        await self.send_friend_or_group(bot, recv, "-----XYBot-----\n正在生成图片，请稍等...🤔")
 
         image_path = await self.dalle3(user_request_prompt)
 
         if isinstance(image_path, Exception):  # 如果出现错误，向用户发送错误信息
-            await self.send_friend_or_group(recv, f"-----XYBot-----\n出现错误，未扣除积分！⚠️\n{image_path}")
+            await self.send_friend_or_group(bot, recv, f"-----XYBot-----\n出现错误，未扣除积分！⚠️\n{image_path}")
             return
 
         if user_wxid not in self.admins and self.db.get_whitelist(user_wxid) == 0:  # 如果用户不是管理员或者白名单，扣积分
             self.db.add_points(user_wxid, -self.price)
-            await self.send_friend_or_group(recv, f"-----XYBot-----\n🎉图片生成完毕，已扣除 {self.price} 点积分！🙏")
+            await self.send_friend_or_group(bot, recv, f"-----XYBot-----\n🎉图片生成完毕，已扣除 {self.price} 点积分！🙏")
 
-        await self.bot.send_image_msg(recv["from"], image_path)
-        logger.info(f'[发送图片]{image_path}| [发送到] {recv["from"]}')
+        bot.send_image(image_path, recv.roomid)
+        logger.info(f'[发送图片]{image_path}| [发送到] {recv.roomid}')
 
     async def dalle3(self, prompt):  # 返回生成的图片的绝对路径，报错的话返回错误
         client = AsyncOpenAI(api_key=self.openai_api_key, base_url=self.openai_api_base)
@@ -105,14 +104,14 @@ class dalle3(PluginInterface):
 
         return save_path
 
-    async def send_friend_or_group(self, recv, out_message="null"):
-        if recv["fromType"] == "chatroom":  # 判断是群还是私聊
-            logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
-            await self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
-
+    async def send_friend_or_group(self, bot: client.Wcf, recv: XYBotWxMsg, out_message: str):
+        if recv.from_group():  # 判断是群还是私聊
+            out_message = f"@{self.db.get_nickname(recv.sender)}\n{out_message}"
+            logger.info(f'[发送@信息]{out_message}| [发送到] {recv.roomid}')
+            bot.send_text(out_message, recv.roomid, recv.sender)  # 发送@信息
         else:
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            await self.bot.send_text_msg(recv["from"], out_message)  # 发送
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
+            bot.send_text(out_message, recv.roomid)  # 发送信息
 
     def senstitive_word_check(self, message):  # 检查敏感词
         for word in self.sensitive_words:

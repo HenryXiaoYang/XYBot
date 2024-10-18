@@ -5,9 +5,11 @@
 import aiohttp
 import yaml
 from loguru import logger
+from wcferry import client
 
-import pywxdll
+from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
+from wcferry_helper import XYBotWxMsg
 
 
 class weather(PluginInterface):
@@ -18,22 +20,18 @@ class weather(PluginInterface):
 
         self.weather_api_key = config["weather_api_key"]
 
-        main_config_path = "main_config.yml"
-        with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
-            main_config = yaml.safe_load(f.read())
+        self.db = BotDatabase()
 
-        self.ip = main_config["ip"]  # 机器人ip
-        self.port = main_config["port"]  # 机器人端口
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
+    async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
+        recv.content = recv.content.split(" |\u2005")  # 拆分消息
 
-    async def run(self, recv):
         error = ''
-        if len(recv['content']) != 2:
+        if len(recv.content) != 2:
             error = '指令格式错误！'
 
         if not error:
             # 首先请求geoapi，查询城市的id
-            request_city = recv['content'][1]
+            request_city = recv.content[1]
             geo_api_url = f'https://geoapi.qweather.com/v2/city/lookup?key={self.weather_api_key}&number=1&location={request_city}'
 
             conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
@@ -61,27 +59,27 @@ class weather(PluginInterface):
 
                 out_message = self.compose_weather_message(request_city_name, now_weather_api_json,
                                                            weather_forecast_api_json)
-                await self.send_friend_or_group(recv, out_message)
+                await self.send_friend_or_group(bot, recv, out_message)
 
             elif geoapi_json['code'] == '404':
                 error = '-----XYBot-----\n⚠️城市不存在！'
-                await self.send_friend_or_group(recv, error)
+                await self.send_friend_or_group(bot, recv, error)
             else:
                 error = f'-----XYBot-----\n⚠️请求失败！\n{geoapi_json}'
-                await self.send_friend_or_group(recv, error)
+                await self.send_friend_or_group(bot, recv, error)
 
 
         else:
-            await self.send_friend_or_group(recv, error)
+            await self.send_friend_or_group(bot, recv, error)
 
-    async def send_friend_or_group(self, recv, out_message="null"):
-        if recv["fromType"] == "chatroom":  # 判断是群还是私聊
-            logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
-            await self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
-
+    async def send_friend_or_group(self, bot: client.Wcf, recv: XYBotWxMsg, out_message="null"):
+        if recv.from_group():  # 判断是群还是私聊
+            out_message = f"@{self.db.get_nickname(recv.sender)}\n{out_message}"
+            logger.info(f'[发送@信息]{out_message}| [发送到] {recv.roomid}')
+            bot.send_text(out_message, recv.roomid, recv.sender)  # 发送@信息
         else:
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            await self.bot.send_text_msg(recv["from"], out_message)  # 发送
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
+            bot.send_text(out_message, recv.roomid)  # 发送
 
     @staticmethod
     def compose_weather_message(city_name, now_weather_api_json, weather_forecast_api_json):

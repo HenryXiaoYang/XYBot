@@ -5,9 +5,10 @@
 import aiohttp
 import yaml
 from loguru import logger
+from wcferry import client
 
-import pywxdll
 from utils.plugin_interface import PluginInterface
+from wcferry_helper import XYBotWxMsg
 
 
 class random_picture_link(PluginInterface):
@@ -19,15 +20,9 @@ class random_picture_link(PluginInterface):
         self.random_pic_link_url = config["random_pic_link_url"]  # 随机图片api url
         self.link_count = config["link_count"]  # 链接数量
 
-        main_config_path = "main_config.yml"
-        with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
-            main_config = yaml.safe_load(f.read())
+    async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
+        recv.content = recv.content.split(" |\u2005")  # 拆分消息
 
-        self.ip = main_config["ip"]  # 机器人ip
-        self.port = main_config["port"]  # 机器人端口
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-
-    async def run(self, recv):
         try:
             out_message = "-----XYBot-----\n❓❓❓\n"
 
@@ -39,11 +34,11 @@ class random_picture_link(PluginInterface):
                     out_message += f"❓: {req.url}\n"
             await conn_ssl.close()
 
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')  # 发送信息
-            await self.bot.send_text_msg(recv["from"], out_message)  # 发送
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')  # 发送信息
+            bot.send_text(out_message, recv.roomid)  # 发送
 
         except Exception as error:
             out_message = f"-----XYBot-----\n出现错误❌！{error}"
             logger.error(error)
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            await self.bot.send_text_msg(recv["from"], out_message)
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
+            bot.send_text(out_message, recv.roomid)

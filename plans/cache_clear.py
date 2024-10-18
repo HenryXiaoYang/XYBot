@@ -4,8 +4,8 @@ import os
 import schedule
 import yaml
 from loguru import logger
+from wcferry import client
 
-import pywxdll
 from utils.plans_interface import PlansInterface
 
 
@@ -15,10 +15,7 @@ class cache_clear(PlansInterface):
         with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 
-        self.ip = main_config["ip"]  # 机器人ip
-        self.port = main_config["port"]  # 机器人端口
         self.timezone = main_config["timezone"]  # 时区
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
     async def job(self):
         path = "resources/cache/"  # 图片缓存路径
@@ -34,5 +31,5 @@ class cache_clear(PlansInterface):
         loop = asyncio.get_running_loop()
         loop.create_task(self.job())
 
-    def run(self):
+    def run(self, bot: client.Wcf):
         schedule.every(6).hours.do(self.job_async)  # 每六小时执行一次

@@ -9,10 +9,11 @@ from datetime import timedelta
 import pytz
 import yaml
 from loguru import logger
+from wcferry import client
 
-import pywxdll
 from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
+from wcferry_helper import XYBotWxMsg
 
 
 class sign_in(PluginInterface):
@@ -32,18 +33,16 @@ class sign_in(PluginInterface):
         with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 
-        self.ip = main_config["ip"]  # 机器人ip
-        self.port = main_config["port"]  # 机器人端口
         self.timezone = main_config["timezone"]  # 时区
-
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
         self.db = BotDatabase()
 
-    async def run(self, recv):
+    async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
+        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+
         signin_points = random.randint(self.min_points, self.max_points)  # 随机3-20积分
 
-        sign_wxid = recv["sender"]
+        sign_wxid = recv.sender
 
         signstat = str(self.db.get_stat(sign_wxid))  # 从数据库获取签到状态
 
@@ -57,16 +56,16 @@ class sign_in(PluginInterface):
             lucky_star = "⭐️" * lucky_num
             lucky_star_message = f"你的运势：{lucky_star}\n{self.lucky_star_message.get(lucky_num)}"
 
-            out_message = f"\n-----XYBot-----\n签到成功！你领到了{signin_points}个积分！✅\n\n{lucky_star_message}"  # 创建发送信息
-            logger.info(f"[发送@信息]{out_message}| [发送到] {recv['from']}")
-            await self.bot.send_at_msg(recv["from"], out_message, [sign_wxid])
+            out_message = f"@{self.db.get_nickname(sign_wxid)}\n-----XYBot-----\n签到成功！你领到了{signin_points}个积分！✅\n\n{lucky_star_message}"  # 创建发送信息
+            logger.info(f"[发送@信息]{out_message}| [发送到] {recv.roomid}")
+            bot.send_text(out_message, recv.roomid, sign_wxid)
 
         else:  # 今天已签到，不加积分
             next_sign_in_date = datetime.strptime(signstat, "%Y%m%d") + timedelta(days=1)
             next_sign_in_date_formatted = next_sign_in_date.strftime("%Y年%m月%d日")
-            out_message = f"\n-----XYBot-----\n❌你今天已经签到过了，每日凌晨刷新签到哦！下一次签到日期：{next_sign_in_date_formatted}"  # 创建信息
-            logger.info(f"[发送@信息]{out_message}| [发送到] {recv['from']}")
-            await self.bot.send_at_msg(recv["from"], out_message, [sign_wxid])
+            out_message = f"@{self.db.get_nickname(sign_wxid)}\n-----XYBot-----\n❌你今天已经签到过了，每日凌晨刷新签到哦！下一次签到日期：{next_sign_in_date_formatted}"  # 创建信息
+            logger.info(f"[发送@信息]{out_message}| [发送到] {recv.roomid}")
+            bot.send_text(out_message, recv.roomid, sign_wxid)
 
     def signstat_check(self, signstat):  # 检查签到状态
         signstat = "20000101" if signstat in ["0", "1"] else signstat

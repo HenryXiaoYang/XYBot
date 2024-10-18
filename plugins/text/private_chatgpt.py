@@ -7,10 +7,11 @@
 import yaml
 from loguru import logger
 from openai import AsyncOpenAI
+from wcferry import client
 
-import pywxdll
 from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
+from wcferry_helper import XYBotWxMsg
 
 
 class private_chatgpt(PluginInterface):
@@ -34,10 +35,6 @@ class private_chatgpt(PluginInterface):
         with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 
-        self.ip = main_config["ip"]  # 机器人ip
-        self.port = main_config["port"]  # 机器人端口
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-
         self.admins = main_config["admins"]  # 管理员列表
 
         self.openai_api_base = main_config["openai_api_base"]  # openai api 链接
@@ -48,19 +45,19 @@ class private_chatgpt(PluginInterface):
             sensitive_words_config = yaml.safe_load(f.read())
         self.sensitive_words = sensitive_words_config["sensitive_words"]  # 敏感词列表
 
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人
-
         self.db = BotDatabase()
 
-    async def run(self, recv) -> None:
+    async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
+        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+
         if not self.enable_private_chat_gpt:
             return  # 如果不开启私聊chatgpt，不处理
-        elif recv.get("fromType") == "chatroom":
+        elif recv.from_group():
             return  # 如果是群聊消息，不处理
 
-        # 这里recv["content"]中的内容是分割的
-        gpt_request_message = " ".join(recv["content"])
-        wxid = recv["sender"]
+        # 这里recv.content中的内容是分割的
+        gpt_request_message = " ".join(recv.content)
+        wxid = recv.sender
 
         if gpt_request_message.startswith("我是"):  # 微信打招呼消息，不需要处理
             return
@@ -73,24 +70,24 @@ class private_chatgpt(PluginInterface):
             error = "您的问题中包含敏感词，请重新输入！⚠️"
 
         if not error:  # 如果没有错误
-            if recv["content"][0] in self.clear_dialogue_keyword:  # 如果是清除对话记录的关键词，清除数据库对话记录
+            if recv.content[0] in self.clear_dialogue_keyword:  # 如果是清除对话记录的关键词，清除数据库对话记录
                 self.clear_dialogue_keyword(wxid)  # 保存清除了的数据到数据库
                 out_message = "对话记录已清除！✅"
-                await self.bot.send_text_msg(wxid, out_message)
+                bot.send_text(out_message, wxid)
                 logger.info(f'[发送信息]{out_message}| [发送到] {wxid}')
             else:
                 gpt_answer = await self.chatgpt(wxid, gpt_request_message)  # 调用chatgpt函数
                 if gpt_answer[0]:  # 如果没有错误
-                    await self.bot.send_text_msg(wxid, gpt_answer[1])  # 发送回答
+                    bot.send_text(gpt_answer[1], wxid)  # 发送回答
                     logger.info(f'[发送信息]{gpt_answer[1]}| [发送到] {wxid}')
                     if wxid not in self.admins or not self.db.get_whitelist(wxid):
                         self.db.add_points(wxid, -self.private_chat_gpt_price)  # 扣除积分，管理员不扣
                 else:
                     out_message = f"出现错误⚠️！\n{gpt_answer[1]}"  # 如果有错误，发送错误信息
-                    await self.bot.send_text_msg(wxid, out_message)
+                    bot.send_text(out_message, wxid)
                     logger.error(f'[发送信息]{out_message}| [发送到] {wxid}')
         else:
-            await self.bot.send_text_msg(recv["from"], error)
+            bot.send_text(error, recv.roomid)
             logger.info(f'[发送信息]{error}| [发送到] {wxid}')
 
     async def chatgpt(self, wxid: str, message: str):  # 这个函数请求了openai的api

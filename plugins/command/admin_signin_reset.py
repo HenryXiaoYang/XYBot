@@ -4,10 +4,11 @@
 
 import yaml
 from loguru import logger
+from wcferry import client
 
-import pywxdll
 from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
+from wcferry_helper import XYBotWxMsg
 
 
 class admin_signin_reset(PluginInterface):
@@ -16,24 +17,22 @@ class admin_signin_reset(PluginInterface):
         with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 
-        self.ip = main_config["ip"]  # 获取机器人api的ip
-        self.port = main_config["port"]  # 获取机器人api的端口
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-
         self.admin_list = main_config["admins"]  # 获取管理员列表
 
         self.db = BotDatabase()  # 实例化数据库类
 
-    async def run(self, recv):
-        admin_wxid = recv["sender"]
+    async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
+        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+
+        admin_wxid = recv.sender
 
         if admin_wxid in self.admin_list:  # 如果操作人在白名单内
             self.db.reset_stat()  # 重置数据库签到状态
             out_message = "-----XYBot-----\n😊成功重置签到状态！"
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            await self.bot.send_text_msg(recv["from"], out_message)  # 发送信息
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
+            bot.send_text(out_message, recv.roomid)  # 发送信息
 
         else:  # 操作人不在白名单内
             out_message = "-----XYBot-----\n❌你配用这个指令吗？"
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            await self.bot.send_text_msg(recv["from"], out_message)  # 发送信息
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
+            bot.send_text(out_message, recv.roomid)  # 发送信息

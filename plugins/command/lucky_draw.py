@@ -6,10 +6,11 @@ import random
 
 import yaml
 from loguru import logger
+from wcferry import client
 
-import pywxdll
 from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
+from wcferry_helper import XYBotWxMsg
 
 
 class lucky_draw(PluginInterface):
@@ -25,54 +26,48 @@ class lucky_draw(PluginInterface):
         ]  # 保底抽奖次数 每个保底需要x抽
         self.guaranteed_max_probability = config["guaranteed_max_probability"]
 
-        main_config_path = "main_config.yml"
-        with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
-            main_config = yaml.safe_load(f.read())
-
-        self.ip = main_config["ip"]  # 机器人ip
-        self.port = main_config["port"]  # 机器人端口
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-
         self.db = BotDatabase()  # 实例化数据库类
 
-    async def run(self, recv):
-        global draw_count, draw_name  # 全局变量防止出错
+    async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
+        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+
+        global _draw_count, _draw_name  # 全局变量防止出错
 
         # -----初始化与消息格式监测-----
-        target_wxid = recv["sender"]
+        target_wxid = recv.sender  # 获取发送者wxid
 
-        command = recv["content"]  # 指令
+        command = recv.content  # 指令
 
         target_points = self.db.get_points(target_wxid)  # 获取目标积分
 
         error = ""
 
         if len(command) == 2:  # 判断指令格式
-            draw_name = command[1]  # 抽奖名
-            draw_count = 1  # 抽奖次数，单抽设为1
+            _draw_name = command[1]  # 抽奖名
+            _draw_count = 1  # 抽奖次数，单抽设为1
 
             if (
-                    draw_name not in self.lucky_draw_probability.keys()
+                    _draw_name not in self.lucky_draw_probability.keys()
             ):  # 判断抽奖是否有效，积分是否够
                 error = "-----XYBot-----\n❌抽奖种类未知或者无效"
             elif (
-                    draw_name in self.lucky_draw_probability.keys()
-                    and target_points < self.lucky_draw_probability[draw_name]["cost"]
+                    _draw_name in self.lucky_draw_probability.keys()
+                    and target_points < self.lucky_draw_probability[_draw_name]["cost"]
             ):
                 error = "-----XYBot-----\n❌积分不足！"
 
         elif len(command) == 3 and command[2].isdigit():
-            draw_name = command[1]
-            draw_count = int(command[2])
+            _draw_name = command[1]
+            _draw_count = int(command[2])
 
             if (
-                    draw_name not in self.lucky_draw_probability.keys()
+                    _draw_name not in self.lucky_draw_probability.keys()
             ):  # 判断抽奖是否有效，积分是否够，连抽要乘次数
                 error = "-----XYBot-----\n❌抽奖种类未知或者无效"
             elif (
-                    draw_name in self.lucky_draw_probability.keys()
+                    _draw_name in self.lucky_draw_probability.keys()
                     and target_points
-                    < self.lucky_draw_probability[draw_name]["cost"] * draw_count
+                    < self.lucky_draw_probability[_draw_name]["cost"] * _draw_count
             ):
                 error = "-----XYBot-----\n❌积分不足！"
         else:  # 指令格式错误
@@ -82,11 +77,11 @@ class lucky_draw(PluginInterface):
 
             # -----抽奖核心部分-----
 
-            draw_probability = self.lucky_draw_probability[draw_name][
+            draw_probability = self.lucky_draw_probability[_draw_name][
                 "probability"
             ]  # 从设置获取抽奖名概率
             draw_cost = (
-                    self.lucky_draw_probability[draw_name]["cost"] * draw_count
+                    self.lucky_draw_probability[_draw_name]["cost"] * _draw_count
             )  # 从设置获取抽奖消耗积分
 
             wins = []  # 赢取列表
@@ -94,7 +89,7 @@ class lucky_draw(PluginInterface):
             self.db.add_points(target_wxid, -1 * draw_cost)  # 扣取积分
 
             # 保底抽奖
-            min_guaranteed = draw_count // self.draw_per_guarantee  # 保底抽奖次数
+            min_guaranteed = _draw_count // self.draw_per_guarantee  # 保底抽奖次数
             for _ in range(min_guaranteed):  # 先把保底抽了
                 random_num = random.uniform(0, self.guaranteed_max_probability)
                 cumulative_probability = 0
@@ -111,7 +106,7 @@ class lucky_draw(PluginInterface):
                         break
 
             # 正常抽奖
-            for _ in range(draw_count - min_guaranteed):  # 把剩下的抽了
+            for _ in range(_draw_count - min_guaranteed):  # 把剩下的抽了
                 random_num = random.uniform(0, 1)
                 cumulative_probability = 0
                 for probability, prize_dict in draw_probability.items():
@@ -134,37 +129,37 @@ class lucky_draw(PluginInterface):
 
             self.db.add_points(target_wxid, total_win_points)  # 把赢取的积分加入数据库
             logger.info(
-                f"[抽奖] wxid: {target_wxid} | 抽奖名: {draw_name} | 次数: {draw_count} | 赢取积分: {total_win_points}"
+                f"[抽奖] wxid: {target_wxid} | 抽奖名: {_draw_name} | 次数: {_draw_count} | 赢取积分: {total_win_points}"
             )
 
             message = self.make_message(
-                wins, draw_name, draw_count, total_win_points, draw_cost
+                wins, _draw_name, _draw_count, total_win_points, draw_cost
             )  # 组建信息
 
-            await self.send_friend_or_group(recv, message)  # 发送
+            await self.send_friend_or_group(bot, recv, message)  # 发送
 
         else:
-            await self.send_friend_or_group(recv, error)  # 发送错误
+            await self.send_friend_or_group(bot, recv, error)  # 发送错误
 
-    async def send_friend_or_group(self, recv, out_message="null"):
-        if recv["fromType"] == "chatroom":  # 判断是群还是私聊
-            logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
-            await self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
-
+    async def send_friend_or_group(self, bot: client.Wcf, recv: XYBotWxMsg, out_message="null"):
+        if recv.from_group():  # 判断是群还是私聊
+            out_message = f"@{self.db.get_nickname(recv.sender)}\n{out_message}"
+            logger.info(f'[发送@信息]{out_message}| [发送到] {recv.roomid}')
+            bot.send_text(out_message, recv.roomid, recv.sender)  # 发送@信息
         else:
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            await self.bot.send_text_msg(recv["from"], out_message)  # 发送
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
+            bot.send_text(out_message, recv.roomid)  # 发送
 
     @staticmethod
     def make_message(
-            wins, draw_name, draw_count, total_win_points, draw_cost
+            wins, _draw_name, _draw_count, total_win_points, draw_cost
     ):  # 组建信息
         name_max_len = 0
         for win_name, win_points, win_symbol in wins:
             if len(win_name) > name_max_len:
                 name_max_len = len(win_name)
 
-        begin_message = f"----XYBot抽奖----\n🥳恭喜你在 {draw_count}次 {draw_name}抽奖 中抽到了：\n\n"
+        begin_message = f"----XYBot抽奖----\n🥳恭喜你在 {_draw_count}次 {_draw_name}抽奖 中抽到了：\n\n"
         lines = []
         for _ in range(name_max_len + 2):
             lines.append("")

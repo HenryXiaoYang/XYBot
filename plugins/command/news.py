@@ -6,9 +6,10 @@ import aiohttp
 import yaml
 from bs4 import BeautifulSoup as bs
 from loguru import logger
+from wcferry import client
 
-import pywxdll
 from utils.plugin_interface import PluginInterface
+from wcferry_helper import XYBotWxMsg
 
 
 class news(PluginInterface):
@@ -19,15 +20,9 @@ class news(PluginInterface):
 
         self.important_news_count = config["important_news_count"]  # 要获取的要闻数量
 
-        main_config_path = "main_config.yml"
-        with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
-            main_config = yaml.safe_load(f.read())
+    async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
+        recv.content = recv.content.split(" |\u2005")  # 拆分消息
 
-        self.ip = main_config["ip"]  # 机器人ip
-        self.port = main_config["port"]  # 机器人端口
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-
-    async def run(self, recv):
         try:
             url = "https://news.china.com/#"
             conn_ssl = aiohttp.TCPConnector(ssl=False)
@@ -49,13 +44,13 @@ class news(PluginInterface):
 
             compose_message = f"----📰XYBot新闻📰----\n‼️‼️最新要闻‼️‼️\n{focus_news_string}\n⭐️⭐️要闻⭐️⭐️\n{important_news_string}"
 
-            await self.bot.send_text_msg(recv["from"], compose_message)
-            logger.info(f'[发送信息]{compose_message}| [发送到] {recv["from"]}')
+            bot.send_text(compose_message, recv.roomid)
+            logger.info(f'[发送信息]{compose_message}| [发送到] {recv.roomid}')
 
         except Exception as error:
             out_message = f'获取新闻失败!⚠️\n{error}'
-            await self.bot.send_text_msg(recv["from"], out_message)
-            logger.error(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
+            bot.send_text(out_message, recv.roomid)
+            logger.error(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
 
     @staticmethod
     async def get_focus_news(soup) -> list:  # 聚焦

@@ -2,31 +2,25 @@
 #
 #  This program is licensed under the GNU General Public License v3.0.
 
-import yaml
 from loguru import logger
+from wcferry import client
 
-import pywxdll
 from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
+from wcferry_helper import XYBotWxMsg
 
 
 class query_points(PluginInterface):
     def __init__(self):
-        main_config_path = "main_config.yml"
-        with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
-            main_config = yaml.safe_load(f.read())
-
-        self.ip = main_config["ip"]  # 机器人ip
-        self.port = main_config["port"]  # 机器人端口
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-
         self.db = BotDatabase()  # 实例化机器人数据库类
 
-    async def run(self, recv):
-        query_wxid = recv["sender"]
+    async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
+        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+
+        query_wxid = recv.sender  # 获取查询wxid
 
         points_count = self.db.get_points(query_wxid)
 
-        out_message = f"-----XYBot-----\n你有{points_count}点积分！👍"  # 从数据库获取积分数并创建信息
-        logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
-        await self.bot.send_at_msg(recv["from"], out_message, [query_wxid])
+        out_message = f"@{self.db.get_nickname(query_wxid)}\n-----XYBot-----\n你有{points_count}点积分！👍"  # 从数据库获取积分数并创建信息
+        logger.info(f'[发送@信息]{out_message}| [发送到] {recv.roomid}')
+        bot.send_text(out_message, recv.roomid, query_wxid)

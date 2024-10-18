@@ -10,8 +10,8 @@ import requests
 import schedule
 import yaml
 from loguru import logger
+from wcferry import client
 
-import pywxdll
 from utils.plans_interface import PlansInterface
 
 
@@ -21,12 +21,9 @@ class daily_greeting(PlansInterface):
         with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
 
-        self.ip = main_config["ip"]  # 机器人ip
-        self.port = main_config["port"]  # 机器人端口
         self.timezone = main_config["timezone"]  # 时区
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
 
-    async def job(self):
+    async def job(self, bot: client.Wcf):
         week_names = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
 
         now = datetime.now(tz=pytz.timezone(self.timezone))
@@ -37,10 +34,10 @@ class daily_greeting(PlansInterface):
 
         message = f"早上好！☀️今天是{date_str} {week_name}。😆\n\n{daily_sentence}"
 
-        contact_list = await self.bot.get_contact_list()
+        contact_list = bot.get_contacts()
         for contact in contact_list:
             if str(contact.get("wxid")).endswith("@chatroom"):  # 是一个群聊
-                await self.bot.send_text_msg(contact.get("wxid"), message)
+                # bot.send_text(message, contact.get("wxid"))
                 logger.info(f"[发送@信息]{message}| [发送到] {contact.get('wxid')}")
 
     @staticmethod
@@ -49,17 +46,22 @@ class daily_greeting(PlansInterface):
 
         hitokoto_api_json = requests.get(hitokoto_api_url).json()
 
-        sentence = hitokoto_api_json.get("hitokoto")
-        from_type = hitokoto_api_json.get("from")
-        from_who = hitokoto_api_json.get("from_who")
+        sentence = hitokoto_api_json.get("hitokoto", "")
+        from_type = hitokoto_api_json.get("from", "")
+        from_who = hitokoto_api_json.get("from_who", "")
 
-        formatted = f"「{sentence}」\n——{from_type} {from_who}"
+        if from_type:
+            from_sentence = f"——{from_type} {from_who}"
+        else:
+            from_sentence = f"——{from_who}"
+
+        formatted = f"「{sentence}」\n{from_sentence}"
 
         return formatted
 
-    def job_async(self):
+    def job_async(self, bot: client.Wcf):
         loop = asyncio.get_running_loop()
-        loop.create_task(self.job())
+        loop.create_task(self.job(bot))
 
-    def run(self):
-        schedule.every().day.at("07:00", tz=self.timezone).do(self.job_async)
+    def run(self, bot: client.Wcf):
+        schedule.every().day.at("07:00", tz=self.timezone).do(self.job_async, bot)

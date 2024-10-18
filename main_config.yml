@@ -1,16 +1,13 @@
-#Version v1.1.0
-bot_version: "v1.1.0"
+#Version v2.0.0
+bot_version: "v2.0.0"
 
 # XYBot主设置
 
 #如果不知道自己在干什么请别动这两行
 ip: 127.0.0.1
-port: 19088
-tcp_server_port: 19089
+port: 5555
 
-admins: [ "" ]
-
-max_worker: 25
+admins: [ "wxid_9bgpqdiogma012","wxid_osl26mdmcz7v12" ]
 
 command_prefix: "" #如果需要前缀，则必须为一个字符。如果不需要前缀可设置为空，即 ""。
 

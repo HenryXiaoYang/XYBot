@@ -8,9 +8,11 @@ import aiohttp
 import yaml
 from bs4 import BeautifulSoup
 from loguru import logger
+from wcferry import client
 
-import pywxdll
+from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
+from wcferry_helper import XYBotWxMsg
 
 
 class hypixel_info(PluginInterface):
@@ -21,35 +23,31 @@ class hypixel_info(PluginInterface):
 
         self.bedwar_keywords = config["bedwar_keywords"]  # 获取查询bedwar小游戏关键词
 
-        main_config_path = "main_config.yml"
-        with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
-            main_config = yaml.safe_load(f.read())
+        self.db = BotDatabase()
 
-        self.ip = main_config["ip"]  # 机器人ip
-        self.port = main_config["port"]  # 机器人端口
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
+    async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
+        recv.content = recv.content.split(" |\u2005")  # 拆分消息
 
-    async def run(self, recv):
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36 QIHU 360SE"
         }  # 设置user agent 绕cf
 
         # 指令格式错误判断
-        if len(recv["content"]) == 1 or len(recv["content"]) > 3:
+        if len(recv.content) == 1 or len(recv.content) > 3:
             out_message = "-----XYBot-----\n格式错误❌"
 
-            await self.send_friend_or_group(recv, out_message)
+            await self.send_friend_or_group(bot, recv, out_message)
 
-        elif len(recv["content"]) == 2:  # Basic info
-            await asyncio.create_task(self.send_basic_info(recv, headers))
+        elif len(recv.content) == 2:  # Basic info
+            await asyncio.create_task(self.send_basic_info(bot, recv, headers))
 
-        elif len(recv["content"]) == 3:
-            if recv["content"][1] in self.bedwar_keywords:  # bedwar
-                await asyncio.create_task(self.send_bedwar_info(recv, headers))
+        elif len(recv.content) == 3:
+            if recv.content[1] in self.bedwar_keywords:  # bedwar
+                await asyncio.create_task(self.send_bedwar_info(bot, recv, headers))
 
             else:
                 out_message = "-----XYBot-----\n不存在的游戏！❌"
-                await self.send_friend_or_group(recv, out_message)
+                await self.send_friend_or_group(bot, recv, out_message)
 
     @staticmethod
     def check_valid(soup):
@@ -133,19 +131,19 @@ class hypixel_info(PluginInterface):
                 bw_stat.append(row_info_list)
         return bw_stat
 
-    async def send_friend_or_group(self, recv, out_message="null"):
-        if recv["fromType"] == "chatroom":  # 判断是群还是私聊
-            logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
-            await self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
-
+    async def send_friend_or_group(self, bot: client.Wcf, recv: XYBotWxMsg, out_message="null"):
+        if recv.from_group():  # 判断是群还是私聊
+            out_message = f"@{self.db.get_nickname(recv.sender)}\n{out_message}"
+            logger.info(f'[发送@信息]{out_message}| [发送到] {recv.roomid}')
+            bot.send_text(out_message, recv.roomid, recv.sender)  # 发送@信息
         else:
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            await self.bot.send_text_msg(recv["from"], out_message)  # 发送
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
+            bot.send_text(out_message, recv.roomid)  # 发送
 
-    async def send_basic_info(self, recv, headers):
-        request_ign = recv["content"][1]  # 请求的玩家ign (游戏内名字 in game name)
+    async def send_basic_info(self, bot, recv, headers):
+        request_ign = recv.content[1]  # 请求的玩家ign (游戏内名字 in game name)
 
-        await self.send_friend_or_group(recv, f"-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂")
+        await self.send_friend_or_group(bot, recv, f"-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂")
 
         conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
         async with aiohttp.request(
@@ -181,12 +179,13 @@ class hypixel_info(PluginInterface):
 
         else:  # 玩家不存在
             out_message = f"-----XYBot-----\n玩家 {request_ign} 不存在！❌"
-            await self.send_friend_or_group(recv, out_message)
+            await self.send_friend_or_group(bot, recv, out_message)
 
-    async def send_bedwar_info(self, recv, headers):  # 获取玩家bedwar信息
-        request_ign = recv["content"][2]  # 请求的玩家ign (游戏内名字 in game name)
+    async def send_bedwar_info(self, bot, recv, headers):  # 获取玩家bedwar信息
+        request_ign = recv.content[2]  # 请求的玩家ign (游戏内名字 in game name)
 
-        await self.send_friend_or_group(recv, f"-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂")  # 发送查询确认，让用户等待
+        await self.send_friend_or_group(bot, recv,
+                                        f"-----XYBot-----\n查询玩家 {request_ign} 中，请稍候！🙂")  # 发送查询确认，让用户等待
 
         conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
         async with aiohttp.request(
@@ -224,7 +223,7 @@ class hypixel_info(PluginInterface):
                 out_message += "\n"
 
             # 发送
-            await self.send_friend_or_group(recv, out_message)
+            await self.send_friend_or_group(bot, recv, out_message)
         else:  # 玩家不存在
             out_message = f"-----XYBot-----\n玩家 {request_ign} 不存在！❌"
-            await self.send_friend_or_group(recv, out_message)
+            await self.send_friend_or_group(bot, recv, out_message)

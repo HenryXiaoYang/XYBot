@@ -16,7 +16,7 @@ from utils.singleton import singleton
 @singleton
 class PluginManager:
     def __init__(self):
-        self.plugins = {"command": {}, "text": {}, "mention": {}, "image": {}, "voice": {}}
+        self.plugins = {"command": {}, "text": {}, "mention": {}, "image": {}, "voice": {}, "join_group": {}}
         self.keywords = {}
 
         with open("main_config.yml", "r", encoding="utf-8") as f:  # 读取设置
@@ -24,7 +24,7 @@ class PluginManager:
 
         self.excluded_plugins = config["excluded_plugins"]
 
-        self.all_plugin_types = ["command", "text", "mention", "image", "voice"]
+        self.all_plugin_types = ["command", "text", "mention", "image", "voice", "join_group"]
 
     def refresh_keywords(self):
         """

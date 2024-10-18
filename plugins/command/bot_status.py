@@ -6,9 +6,10 @@ import base64
 
 import yaml
 from loguru import logger
+from wcferry import client
 
-import pywxdll
 from utils.plugin_interface import PluginInterface
+from wcferry_helper import XYBotWxMsg
 
 
 class bot_status(PluginInterface):
@@ -25,11 +26,7 @@ class bot_status(PluginInterface):
 
         self.bot_version = main_config["bot_version"]
 
-        self.ip = main_config["ip"]  # 机器人ip
-        self.port = main_config["port"]  # 机器人端口
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
-
-    async def run(self, recv):
+    async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
         b, a = [
             82,
             50,
@@ -99,5 +96,5 @@ class bot_status(PluginInterface):
         for i in b:
             a += chr(i)
         out_message = f"-----XYBot-----\n{self.status_message}\nBot version: {self.bot_version}\n{base64.b64decode(a).decode('utf-8')}"
-        logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-        await self.bot.send_text_msg(recv["from"], out_message)  # 发送
+        logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
+        bot.send_text(out_message, recv.roomid)  # 发送

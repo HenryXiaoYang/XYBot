@@ -7,9 +7,11 @@
 import aiohttp
 import yaml
 from loguru import logger
+from wcferry import client
 
-import pywxdll
+from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
+from wcferry_helper import XYBotWxMsg
 
 
 class warthunder(PluginInterface):
@@ -20,39 +22,36 @@ class warthunder(PluginInterface):
 
         self.warthunder_player_api_url = config["warthunder_player_api_url"]  # 要获取的要闻数量
 
-        main_config_path = "main_config.yml"
-        with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
-            main_config = yaml.safe_load(f.read())
+        self.db = BotDatabase()
 
-        self.ip = main_config["ip"]  # 机器人ip
-        self.port = main_config["port"]  # 机器人端口
-        self.bot = pywxdll.Pywxdll(self.ip, self.port)  # 机器人api
+    async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
+        recv.content = recv.content.split(" |\u2005")  # 拆分消息
 
-    async def run(self, recv):
         error = ""
-        if len(recv["content"]) < 2:
+        if len(recv.content) < 2:
             error = "-----XYBot-----\n参数错误!❌\n请发送正确的指令格式：\n战雷数据 玩家昵称"
 
         if error:
-            await self.send_friend_or_group(recv, error)
+            await self.send_friend_or_group(bot, recv, error)
             return
 
-        player_name = ' '.join(["content"][1:])
-        await self.send_friend_or_group(recv, f"-----XYBot-----\n正在查询玩家{player_name}的数据，请稍等...😄")
+        player_name = ' '.join(recv.content[1:])
+        await self.send_friend_or_group(bot, recv, f"-----XYBot-----\n正在查询玩家{player_name}的数据，请稍等...😄")
 
         data = await self.get_player_data(player_name)
         if isinstance(data, Exception):
-            await self.send_friend_or_group(recv, f"-----XYBot-----\n查询失败，错误信息：{data}")
+            await self.send_friend_or_group(bot, recv, f"-----XYBot-----\n查询失败，错误信息：{data}")
             return
         elif data.get("error", False):
-            await self.send_friend_or_group(recv, f"-----XYBot-----\n目前API使用人数过多，请等候1分钟后再使用。🙏")
+            await self.send_friend_or_group(bot, recv, f"-----XYBot-----\n目前API使用人数过多，请等候1分钟后再使用。🙏")
             return
         elif data.get("code", 200) == 404:
-            await self.send_friend_or_group(recv, f"-----XYBot-----\n未找到玩家{player_name}的数据，请检查昵称是否正确。🤔")
+            await self.send_friend_or_group(bot, recv,
+                                            f"-----XYBot-----\n未找到玩家{player_name}的数据，请检查昵称是否正确。🤔")
             return
         else:
             out_message = await self.parse_player_data(data)
-            await self.send_friend_or_group(recv, out_message)
+            await self.send_friend_or_group(bot, recv, out_message)
 
     async def get_player_data(self, player_name):
         try:
@@ -62,6 +61,7 @@ class warthunder(PluginInterface):
             return data
         except Exception as e:
             return e
+
     @staticmethod
     async def parse_player_data(data):
         nickname = data.get("nickname")
@@ -97,11 +97,11 @@ class warthunder(PluginInterface):
         out_message = f"-----XYBot-----\n{general_info}\n\n{realistic_info}\n\n{aviation_rb_info}\n\n{ground_rb_info}"
         return out_message
 
-    async def send_friend_or_group(self, recv, out_message="null"):
-        if recv["fromType"] == "chatroom":  # 判断是群还是私聊
-            logger.info(f'[发送@信息]{out_message}| [发送到] {recv["from"]}')
-            await self.bot.send_at_msg(recv["from"], "\n" + out_message, [recv["sender"]])
-
+    async def send_friend_or_group(self, bot: client.Wcf, recv: XYBotWxMsg, out_message="null"):
+        if recv.from_group():  # 判断是群还是私聊
+            out_message = f"@{self.db.get_nickname(recv.sender)}\n{out_message}"
+            logger.info(f'[发送@信息]{out_message}| [发送到] {recv.roomid}')
+            bot.send_text(out_message, recv.roomid, recv.sender)  # 发送@信息
         else:
-            logger.info(f'[发送信息]{out_message}| [发送到] {recv["from"]}')
-            await self.bot.send_text_msg(recv["from"], out_message)  # 发送
+            logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
+            bot.send_text(out_message, recv.roomid)  # 发送
