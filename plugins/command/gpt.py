@@ -2,6 +2,8 @@
 #
 #  This program is licensed under the GNU General Public License v3.0.
 
+import re
+
 import yaml
 from loguru import logger
 from openai import AsyncOpenAI
@@ -40,18 +42,20 @@ class gpt(PluginInterface):
         self.db = BotDatabase()
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
         user_wxid = recv.sender  # 获取发送者wxid
-        gpt_request_message = " ".join(recv.content[1:])  # 用户问题
 
         error_message = ""
 
-        if self.db.get_points(user_wxid) < self.gpt_point_price and self.db.get_whitelist(user_wxid) != 1 and user_wxid not in self.admins:  # 积分不足 不在白名单 不是管理员
+        if self.db.get_points(user_wxid) < self.gpt_point_price and self.db.get_whitelist(
+                user_wxid) != 1 and user_wxid not in self.admins:  # 积分不足 不在白名单 不是管理员
             error_message = f"-----XYBot-----\n积分不足,需要{self.gpt_point_price}点⚠️"
         elif len(recv.content) < 2:  # 指令格式正确
             error_message = "-----XYBot-----\n参数错误!❌"
-        elif not self.senstitive_word_check(gpt_request_message):  # 敏感词检查
+
+        gpt_request_message = " ".join(recv.content[1:])  # 用户问题
+        if not self.senstitive_word_check(gpt_request_message):  # 敏感词检查
             error_message = "-----XYBot-----\n内容包含敏感词!⚠️"
 
         if not error_message:

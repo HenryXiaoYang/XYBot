@@ -2,6 +2,8 @@
 #
 #  This program is licensed under the GNU General Public License v3.0.
 
+import re
+
 from loguru import logger
 from wcferry import client
 
@@ -15,7 +17,7 @@ class query_points(PluginInterface):
         self.db = BotDatabase()  # 实例化机器人数据库类
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
         query_wxid = recv.sender  # 获取查询wxid
 

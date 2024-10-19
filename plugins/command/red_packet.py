@@ -4,6 +4,7 @@
 
 import os
 import random
+import re
 import time
 
 import yaml
@@ -44,7 +45,7 @@ class red_packet(PluginInterface):
         self.red_packets = {}  # 红包列表
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
         if len(recv.content) == 3:  # 判断是否为红包指令
             await self.send_red_packet(bot, recv)

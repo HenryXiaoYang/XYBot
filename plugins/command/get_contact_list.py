@@ -3,6 +3,7 @@
 #  This program is licensed under the GNU General Public License v3.0.
 
 import os.path
+import re
 import time
 
 import yaml
@@ -29,7 +30,7 @@ class get_contact_list(PluginInterface):
         self.admin_list = main_config["admins"]  # 获取管理员列表
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
         admin_wxid = recv.sender
 

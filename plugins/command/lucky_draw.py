@@ -3,6 +3,7 @@
 #  This program is licensed under the GNU General Public License v3.0.
 
 import random
+import re
 
 import yaml
 from loguru import logger
@@ -29,7 +30,7 @@ class lucky_draw(PluginInterface):
         self.db = BotDatabase()  # 实例化数据库类
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
         global _draw_count, _draw_name  # 全局变量防止出错
 

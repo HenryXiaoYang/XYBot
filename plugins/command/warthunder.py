@@ -4,6 +4,8 @@
 #
 #  This program is licensed under the GNU General Public License v3.0.
 
+import re
+
 import aiohttp
 import yaml
 from loguru import logger
@@ -25,7 +27,7 @@ class warthunder(PluginInterface):
         self.db = BotDatabase()
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
         error = ""
         if len(recv.content) < 2:

@@ -3,6 +3,7 @@
 #  This program is licensed under the GNU General Public License v3.0.
 
 import os
+import re
 
 import aiohttp
 import yaml
@@ -28,7 +29,7 @@ class random_picture(PluginInterface):
             logger.info("已创建cache文件夹")
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
         current_directory = os.path.dirname(os.path.abspath(__file__))
 

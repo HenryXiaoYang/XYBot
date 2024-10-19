@@ -2,6 +2,8 @@
 #
 #  This program is licensed under the GNU General Public License v3.0.
 
+import re
+
 import aiohttp
 import yaml
 from bs4 import BeautifulSoup as bs
@@ -21,7 +23,7 @@ class news(PluginInterface):
         self.important_news_count = config["important_news_count"]  # 要获取的要闻数量
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
         try:
             url = "https://news.china.com/#"

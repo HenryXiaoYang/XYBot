@@ -3,6 +3,7 @@
 #  This program is licensed under the GNU General Public License v3.0.
 
 import asyncio
+import re
 
 import aiohttp
 import yaml
@@ -26,7 +27,7 @@ class hypixel_info(PluginInterface):
         self.db = BotDatabase()
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36 QIHU 360SE"

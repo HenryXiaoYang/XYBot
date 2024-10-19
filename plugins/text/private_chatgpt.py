@@ -1,8 +1,8 @@
 #  Copyright (c) 2024. Henry Yang
 #
 #  This program is licensed under the GNU General Public License v3.0.
-#
-#  This program is licensed under the GNU General Public License v3.0.
+
+import re
 
 import yaml
 from loguru import logger
@@ -48,7 +48,7 @@ class private_chatgpt(PluginInterface):
         self.db = BotDatabase()
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content) # 拆分消息
 
         if not self.enable_private_chat_gpt:
             return  # 如果不开启私聊chatgpt，不处理

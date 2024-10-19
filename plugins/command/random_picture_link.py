@@ -2,6 +2,8 @@
 #
 #  This program is licensed under the GNU General Public License v3.0.
 
+import re
+
 import aiohttp
 import yaml
 from loguru import logger
@@ -21,7 +23,7 @@ class random_picture_link(PluginInterface):
         self.link_count = config["link_count"]  # 链接数量
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
         try:
             out_message = "-----XYBot-----\n❓❓❓\n"

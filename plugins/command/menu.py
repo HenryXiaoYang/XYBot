@@ -2,6 +2,8 @@
 #
 #  This program is licensed under the GNU General Public License v3.0.
 
+import re
+
 import yaml
 from loguru import logger
 from wcferry import client
@@ -20,7 +22,7 @@ class menu(PluginInterface):
         self.menus = config["menus"]
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
         if len(recv.content) == 1:  # 如果命令列表长度为1，那就代表请求主菜单
             out_message = self.main_menu

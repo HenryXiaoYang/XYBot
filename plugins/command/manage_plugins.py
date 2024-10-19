@@ -2,6 +2,8 @@
 #
 #  This program is licensed under the GNU General Public License v3.0.
 
+import re
+
 import yaml
 from loguru import logger
 from wcferry import client
@@ -29,7 +31,7 @@ class manage_plugins(PluginInterface):
         self.admin_list = main_config["admins"]  # 获取管理员列表
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
         admin_wxid = recv.sender  # 获取发送者wxid
 
@@ -101,9 +103,7 @@ class manage_plugins(PluginInterface):
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                     bot.send_text(out_message, recv.roomid)
             else:
-                if plugin_manager.unload_plugin(
-                        action_plugin
-                ):  # 判断是否成功并发送响应
+                if plugin_manager.unload_plugin(action_plugin):  # 判断是否成功并发送响应
                     out_message = f"-----XYBot-----\n卸载插件{action_plugin}成功！✅"
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                     bot.send_text(out_message, recv.roomid)
@@ -131,9 +131,7 @@ class manage_plugins(PluginInterface):
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                     bot.send_text(out_message, recv.roomid)
             else:
-                if plugin_manager.reload_plugin(
-                        action_plugin
-                ):  # 判断是否成功并发送响应
+                if plugin_manager.reload_plugin(action_plugin):  # 判断是否成功并发送响应
                     out_message = f"-----XYBot-----\n重载插件{action_plugin}成功！✅"
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                     bot.send_text(out_message, recv.roomid)
@@ -149,7 +147,8 @@ class manage_plugins(PluginInterface):
 
     async def list_plugins(self, bot: client.Wcf, recv: XYBotWxMsg):
         out_message = "-----XYBot-----\n已加载插件列表："
-        for plugin in plugin_manager.plugins.keys():
-            out_message += f"\n{plugin}"
+        for type in plugin_manager.all_plugin_types:
+            for plugin in plugin_manager.plugins[type]:
+                out_message += f"\n{plugin}"
         logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
         bot.send_text(out_message, recv.roomid)

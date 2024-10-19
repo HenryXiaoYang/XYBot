@@ -6,6 +6,7 @@
 
 import base64
 import os
+import re
 import time
 
 import yaml
@@ -48,7 +49,7 @@ class dalle3(PluginInterface):
         self.db = BotDatabase()
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
         user_wxid = recv.sender  # 获取发送者wxid
         user_request_prompt = " ".join(recv.content)

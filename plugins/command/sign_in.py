@@ -3,6 +3,7 @@
 #  This program is licensed under the GNU General Public License v3.0.
 
 import random
+import re
 from datetime import datetime
 from datetime import timedelta
 
@@ -38,7 +39,7 @@ class sign_in(PluginInterface):
         self.db = BotDatabase()
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
         signin_points = random.randint(self.min_points, self.max_points)  # 随机3-20积分
 

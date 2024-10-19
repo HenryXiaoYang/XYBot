@@ -4,6 +4,7 @@
 
 import asyncio
 import os
+import re
 from random import sample
 
 import yaml
@@ -41,7 +42,7 @@ class gomoku(PluginInterface):
         self.gomoku_players = {}  # 这个字典维护着所有的五子棋玩家，用wxid查询是否已经在游戏中，以及对应的游戏id 游戏id为一个uuid
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
-        recv.content = recv.content.split(" |\u2005")  # 拆分消息
+        recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
         sub_keyword = recv.content[1]
 
         if sub_keyword in self.create_game_sub_keywords:
