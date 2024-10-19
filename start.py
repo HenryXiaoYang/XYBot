@@ -116,9 +116,9 @@ async def main():
     req.func = wcf_pb2.FUNC_ENABLE_RECV_TXT
     bot._send_request(req)
 
-    rsp = wcf_pb2.Response()
+    await asyncio.sleep(5) # 等待微信消息接受准备
 
-    # print(1/0)
+    rsp = wcf_pb2.Response()
 
     with pynng.Pair1() as sock:
         sock.dial(bot.msg_url, block=True)
