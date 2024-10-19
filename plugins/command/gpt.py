@@ -47,8 +47,7 @@ class gpt(PluginInterface):
 
         error_message = ""
 
-        if not self.db.get_points(user_wxid) >= self.gpt_point_price or self.db.get_whitelist(
-                user_wxid) == 1 or user_wxid in self.admins:  # 积分足够或在白名单或在管理员
+        if self.db.get_points(user_wxid) < self.gpt_point_price and self.db.get_whitelist(user_wxid) != 1 and user_wxid not in self.admins:  # 积分不足 不在白名单 不是管理员
             error_message = f"-----XYBot-----\n积分不足,需要{self.gpt_point_price}点⚠️"
         elif len(recv.content) < 2:  # 指令格式正确
             error_message = "-----XYBot-----\n参数错误!❌"
