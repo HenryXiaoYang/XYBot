@@ -44,9 +44,8 @@ class BotDatabase:
         column_names = [column[1] for column in columns]
         for c in correct_columns.keys():
             if c not in column_names:
-                sql = "ALTER TABLE USERDATA ADD COLUMN ?"
-                arg = (c + " " + correct_columns[c],)
-                cursor.execute(sql, arg)
+                sql = f"ALTER TABLE USERDATA ADD COLUMN {c} {correct_columns[c]}"
+                cursor.execute(sql)
                 logger.info(f"[数据库]已添加列 {c}")
 
         self.wxid_list = self._get_wxid_list()  # 获取已有用户列表
