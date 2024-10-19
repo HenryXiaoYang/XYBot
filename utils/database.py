@@ -76,8 +76,8 @@ class BotDatabase:
         cursor = self.database.cursor()
         try:
             if not (wxid,) in self.wxid_list:  # 不存在，创建用户并设置积分为增加的积分
-                sql = "INSERT INTO USERDATA VALUES (?,?,?,?,?,?)"
-                arg = (wxid, "", 0, 0, 0, "{}",)
+                sql = "INSERT INTO USERDATA (WXID, NICKNAME, POINTS, SIGNINSTAT, WHITELIST, PRIVATE_GPT_DATA) VALUES (?, ?, ?, ?, ?, ?)"
+                arg = (wxid, "", 0, 0, 0, "{}")
                 cursor.execute(sql, arg)
                 self.database.commit()  # 提交数据库
             cursor.execute("select u.WXID from USERDATA u;")  # 刷新已有用户列表
