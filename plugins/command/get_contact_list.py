@@ -55,7 +55,7 @@ class get_contact_list(PluginInterface):
 
                 xybot_contact_sheet.append([wxid, code, remark, name, country, province, city, gender])  # 加入表格
 
-            excel_path = f"{self.excel_save_path}/XYBot通讯录_{time.time_ns()}.xlsx"  # 保存路径
+            excel_path = f"{self.excel_save_path}/XYBotContact_{time.time_ns()}.xlsx"  # 保存路径
             wb.save(excel_path)  # 保存表格
 
             path = os.path.abspath(excel_path)
