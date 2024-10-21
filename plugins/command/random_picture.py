@@ -4,6 +4,7 @@
 
 import os
 import re
+import time
 
 import aiohttp
 import yaml
@@ -31,15 +32,13 @@ class random_picture(PluginInterface):
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
         recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-
         # 图片缓存路径
-        cache_path_original = os.path.abspath(os.path.join(self.cache_path, "picture_{time.time_ns()}"))
+        cache_path_original = os.path.abspath(os.path.join(self.cache_path, f"picture_{time.time_ns()}"))
 
         try:
-            conn_ssl = aiohttp.TCPConnector(verify_ssl=False)
+            conn_ssl = aiohttp.TCPConnector(ssl=False)
             async with aiohttp.request("GET", url=self.random_picture_url, connector=conn_ssl) as req:
-                cache_path = cache_path_original + req.headers["Content-Type"].split("/")[1]
+                cache_path = cache_path_original + "." + str(req.url).split('.')[-1]  # 图片后缀
                 with open(cache_path, "wb") as file:  # 下载并保存
                     file.write(await req.read())
                     file.close()
