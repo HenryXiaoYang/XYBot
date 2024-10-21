@@ -7,6 +7,6 @@ private_chat_gpt_price: 3 # 每次对话消耗的积分，0为关闭
 clear_dialogue_keyword: [ "清除对话", "重置对话", "新建对话","清除对话记录" ]
 
 # gpt请求模型设置
-gpt_version: 'gpt-3.5-turbo' # 连续对话消耗的token较多，谨慎设置！
+gpt_version: 'gpt-4o-mini' # 连续对话消耗的token较多，谨慎设置！
 gpt_max_token: 1000
 gpt_temperature: 0.5
