@@ -54,6 +54,12 @@ async def main():
     )  # 日志设置
     logger.info("已设置日志")
 
+    cache_path = "resources/cache"  # 检测是否有cache文件夹
+    if not os.path.exists(cache_path):
+        logger.info("检测到未创建cache缓存文件夹")
+        os.makedirs(cache_path)
+        logger.info("已创建cache文件夹")
+
     with open("main_config.yml", "r", encoding="utf-8") as f:  # 读取设置
         config = yaml.safe_load(f.read())
 

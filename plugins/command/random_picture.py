@@ -23,11 +23,7 @@ class random_picture(PluginInterface):
 
         self.random_picture_url = config["random_picture_url"]  # 随机图片api
 
-        self.cache_path = "resources/cache"  # 检测是否有cache文件夹
-        if not os.path.exists(self.cache_path):
-            logger.info("检测到未创建cache缓存文件夹")
-            os.makedirs(self.cache_path)
-            logger.info("已创建cache文件夹")
+        self.cache_path = "resources/cache"
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
         recv.content = re.split(" |\u2005", recv.content)  # 拆分消息

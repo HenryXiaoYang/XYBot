@@ -30,6 +30,8 @@ class XYBot:
 
         self.image_save_path = os.path.abspath("resources/cache")
         self.voice_save_path = os.path.abspath("resources/cache")
+        logger.debug(f"语音保存路径: {self.voice_save_path}")
+        logger.debug(f"图片保存路径: {self.image_save_path}")
 
         self.self_wxid = bot.get_self_wxid()
 
