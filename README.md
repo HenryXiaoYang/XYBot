@@ -6,7 +6,9 @@
 
 XYBot是一个可运行于Linux和Windows的基于Hook的微信机器人。😊 具有高度可自定义性，支持自我编写插件。🚀
 
-XYBot提供了多种功能，包括获取天气🌤️、获取新闻📰、ChatGPT聊天🗣️、Hypixel玩家查询🎮、随机图片📷、随机链接🔗、随机群成员👥、五子棋♟️、签到✅、查询积分📊、积分榜🏆、积分转送💰、积分抽奖🎁、积分红包🧧等。🎉
+XYBot提供了多种功能，包括获取天气🌤️、获取新闻📰、Hypixel玩家查询🎮、战争雷霆玩家信息查询🎮、随机图片📷、随机链接🔗、五子棋♟️、签到✅、查询积分📊、积分榜🏆、积分转送💰、积分抽奖🎁、积分红包🧧等。🎉
+
+XYBot还提供了AI相关的功能，包括ChatGPT🗣️，Dalle🎨。🤖
 
 XYBot拥有独立的经济系统，其中基础货币称为”积分“。💰
 
@@ -19,7 +21,7 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 
 <p align="center">
     <a href="https://opensource.org/licenses/"><img src="https://img.shields.io/badge/License-GPL%20v3-red.svg" alt="GPLv3 License"></a>
-    <a href="https://github.com/HenryXiaoYang/XYBot"><img src="https://img.shields.io/badge/Version-0.0.7-orange.svg" alt="Version"></a>
+    <a href="https://github.com/HenryXiaoYang/XYBot"><img src="https://img.shields.io/badge/Version-2.0.0-orange.svg" alt="Version"></a>
     <a href="https://yangres.com"><img src="https://img.shields.io/badge/Blog-@HenryXiaoYang-yellow.svg" alt="Blog"></a>
 </p>
 
@@ -27,7 +29,7 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 
 由于需要频繁的更新维护，XYBot版本号格式将会发生变化，v0.0.7后面的版本号将会按照以下格式进行更新：
 
-v大版本.功能版本.Bug修复版本
+v大版本(hook/微信版本变动时更改).功能版本.Bug修复版本
 
 例如：
 
@@ -42,7 +44,9 @@ v大版本.功能版本.Bug修复版本
 - 获取天气🌤️
 - 获取新闻📰
 - ChatGPT🗣️
+- Dalle🎨
 - Hypixel玩家查询🎮
+- 战争雷霆玩家信息查询💣
 - 随机图图📷
 - 随机链接🔗
 - 五子棋♟️
@@ -89,6 +93,37 @@ ChatGPT
 五子棋
 ![Gomoku Example](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/README/gomoku.png?raw=true)
 
+## 快速开始🚀
+
+### Linux/Docker
+```shell
+docker pull henryxiaoyang/xybot:v2.0.0
+
+docker run -d --name XYBot \
+  -e WC_AUTO_RESTART=yes \
+  -p 4000:8080 \
+  --add-host dldir1.qq.com:127.0.0.1 \
+  -v XYBot:/home/app/XYBot/ \
+  -v XYBot-wechatfiles:/home/app/WeChat\ Files/ \
+  --tty \
+  henryxiaoyang/xybot:v2.0.0
+```
+
+### Windows
+
+需要 Git 与 [Python3](https://www.python.org/downloads/release/python-3127/) 与 [微信3.9.1027](https://github.com/lich0821/WeChatFerry/releases/download/v39.2.4/WeChatSetup-3.9.10.27.exe)
+
+```shell
+git clone https://github.com/HenryXiaoYang/XYBot.git
+cd XYBot
+pip install -r requirements.txt
+
+# 请手动启动微信
+
+# 启动微信后执行
+python3 start.py
+```
+
 ## 自我编写插件🧑‍💻
 
 请参考模板插件：
@@ -116,7 +151,7 @@ ChatGPT
 
 #### 用的什么微信版本?🤔️
 
-3.9.5.81😄
+3.9.10.27😄
 
 #### 最长能运行多久？🤔️
 
@@ -136,7 +171,7 @@ https://github.com/miloira/wxhook 感谢这个项目提供了Windows环境下微
 
 https://github.com/nefarius/Injector 感谢这个项目提供了Docker环境下微信的注入Hook的工具！
 
-https://github.com/lich0821 感谢这个项目的作者写的微信版本号修复代码！参考了下，非常感谢！
+https://github.com/lich0821 感谢这个项目的作者写的wcferry！
 
 ## ⭐️Star History⭐️
 
