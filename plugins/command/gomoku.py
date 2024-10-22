@@ -261,7 +261,8 @@ class gomoku(PluginInterface):
                 await self.send_friend_or_group(bot, recv, out_message)
 
                 # 创建超时任务
-                task = asyncio.create_task(self.timeout_play_game(bot, recv, player_wxid, game_id))
+                task = asyncio.create_task(
+                    self.timeout_play_game(bot, recv, self.gomoku_games[game_id]['turn'], game_id))
                 self.gomoku_games[game_id]['asyncio_task'] = task
 
 
@@ -358,9 +359,9 @@ class gomoku(PluginInterface):
             self.gomoku_players.pop(white_wxid)
             self.gomoku_games.pop(game_id)
 
-            loser = white_wxid if player_wxid == black_wxid else black_wxid
-            loser_nick = bot.get_alias_in_chatroom(loser, recv.roomid)
-            winner_nick = bot.get_alias_in_chatroom(player_wxid, recv.roomid)
+            winner = white_wxid if player_wxid == black_wxid else black_wxid
+            winner_nick = bot.get_alias_in_chatroom(winner, recv.roomid)
+            loser_nick = bot.get_alias_in_chatroom(player_wxid, recv.roomid)
 
             out_message = f'-----XYBot-----\n{loser_nick} 落子超时！\n🏆 {winner_nick} 获胜！'  # 发送超时信息
             await self.send_friend_or_group(bot, recv, out_message)
