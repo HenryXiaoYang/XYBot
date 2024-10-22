@@ -22,7 +22,7 @@ class BotDatabase:
             conn = sqlite3.connect("userdata.db")
             c = conn.cursor()
             c.execute(
-                """CREATE TABLE USERDATA (WXID TEXT PRIMARY KEY , POINTS INT, SIGNINSTAT INT, WHITELIST INT, PRIVATE_GPT_DATA TEXT)"""
+                """CREATE TABLE USERDATA (WXID TEXT PRIMARY KEY, NICKNAME TEXT, POINTS INT, SIGNINSTAT INT, WHITELIST INT, PRIVATE_GPT_DATA TEXT)"""
             )
             conn.commit()
             c.close()
@@ -35,15 +35,17 @@ class BotDatabase:
 
         # 检测数据库是否有正确的列
         logger.info("[数据库]检测数据库是否有正确的列")
-        correct_columns = {'WXID': ' TEXT PRIMARY KEY', 'POINTS': ' INT', 'SIGNINSTAT': ' INT', 'WHITELIST': ' INT',
-                           'PRIVATE_GPT_DATA': ' TEXT'}
+        correct_columns = {'WXID': 'TEXT PRIMARY KEY', 'NICKNAME': 'TEXT', 'POINTS': 'INT', 'SIGNINSTAT': 'INT',
+                           'WHITELIST': 'INT',
+                           'PRIVATE_GPT_DATA': 'TEXT'}
         cursor = self.database.cursor()
         cursor.execute("PRAGMA table_info(USERDATA)")
         columns = cursor.fetchall()
         column_names = [column[1] for column in columns]
         for c in correct_columns.keys():
             if c not in column_names:
-                cursor.execute(f"ALTER TABLE USERDATA ADD COLUMN {c}{correct_columns[c]}")
+                sql = f"ALTER TABLE USERDATA ADD COLUMN {c} {correct_columns[c]}"
+                cursor.execute(sql)
                 logger.info(f"[数据库]已添加列 {c}")
 
         self.wxid_list = self._get_wxid_list()  # 获取已有用户列表
@@ -74,8 +76,9 @@ class BotDatabase:
         cursor = self.database.cursor()
         try:
             if not (wxid,) in self.wxid_list:  # 不存在，创建用户并设置积分为增加的积分
-                sql_command = "INSERT INTO USERDATA VALUES {}".format((wxid, 0, 0, 0, '{}'))
-                cursor.execute(sql_command)
+                sql = "INSERT INTO USERDATA (WXID, NICKNAME, POINTS, SIGNINSTAT, WHITELIST, PRIVATE_GPT_DATA) VALUES (?, ?, ?, ?, ?, ?)"
+                arg = (wxid, "", 0, 0, 0, "{}")
+                cursor.execute(sql, arg)
                 self.database.commit()  # 提交数据库
             cursor.execute("select u.WXID from USERDATA u;")  # 刷新已有用户列表
             self.wxid_list = cursor.fetchall()  # 刷新已有用户列表
@@ -90,17 +93,13 @@ class BotDatabase:
 
         try:
             self._check_user(wxid)
-            sql_command = "SELECT POINTS FROM USERDATA WHERE WXID='{wxid}'".format(
-                wxid=wxid
-            )
-            cursor.execute(sql_command)
+            sql = "SELECT POINTS FROM USERDATA WHERE WXID=?"  # 获取当前积分
+            arg = (wxid,)
+            cursor.execute(sql, arg)
             new_points = cursor.fetchall()[0][0] + num
-            sql_command = (
-                "UPDATE USERDATA SET POINTS={point} WHERE WXID='{wxid}'".format(
-                    point=new_points, wxid=wxid
-                )
-            )
-            cursor.execute(sql_command)
+            sql = "UPDATE USERDATA SET POINTS=? WHERE WXID=?"
+            arg = (new_points, wxid,)
+            cursor.execute(sql, arg)
             self.database.commit()
             logger.info(f"[数据库] {wxid} 积分已加 {num} 点，当前积分{new_points}")
         finally:
@@ -114,12 +113,9 @@ class BotDatabase:
 
         try:
             self._check_user(wxid)
-            sql_command = (
-                "UPDATE USERDATA SET POINTS={point} WHERE WXID='{wxid}'".format(
-                    point=num, wxid=wxid
-                )
-            )
-            cursor.execute(sql_command)
+            sql = "UPDATE USERDATA SET POINTS=? WHERE WXID=?"
+            arg = (num, wxid,)
+            cursor.execute(sql, arg)
             self.database.commit()
             logger.info(f"[数据库] {wxid} 积分已设置为 {num} 点")
         finally:
@@ -133,10 +129,9 @@ class BotDatabase:
 
         try:
             self._check_user(wxid)
-            sql_command = "SELECT POINTS FROM USERDATA WHERE WXID='{wxid}'".format(
-                wxid=wxid
-            )
-            cursor.execute(sql_command)
+            sql = "SELECT POINTS FROM USERDATA WHERE WXID=?"
+            arg = (wxid,)
+            cursor.execute(sql, arg)
             result = cursor.fetchall()[0][0]
             return result
         finally:
@@ -150,12 +145,9 @@ class BotDatabase:
 
         try:
             self._check_user(wxid)
-            sql_command = (
-                "SELECT SIGNINSTAT FROM USERDATA WHERE WXID='{wxid}'".format(
-                    wxid=wxid
-                )
-            )
-            cursor.execute(sql_command)
+            sql = "SELECT SIGNINSTAT FROM USERDATA WHERE WXID=?"
+            arg = (wxid,)
+            cursor.execute(sql, arg)
             result = cursor.fetchall()[0][0]
             return result
         finally:
@@ -169,74 +161,59 @@ class BotDatabase:
 
         try:
             self._check_user(wxid)
-            sql_command = "UPDATE USERDATA SET SIGNINSTAT={SIGNINSTAT} WHERE WXID='{wxid}'".format(
-                SIGNINSTAT=num, wxid=wxid
-            )
-            cursor.execute(sql_command)
+            sql = "UPDATE USERDATA SET SIGNINSTAT=? WHERE WXID=?"
+
+            arg = (num, wxid,)
+            cursor.execute(sql, arg)
             self.database.commit()  # 提交数据库
             logger.info(f"[数据库] {wxid} 签到状态已设置为 {num}")
         finally:
             cursor.close()
 
     def reset_stat(self):
-        return self._execute_in_queue(self._reset_stat)
-
-    def _reset_stat(self):
         cursor = self.database.cursor()
 
         try:
-            sql_command = "UPDATE USERDATA SET SIGNINSTAT=0"
-            cursor.execute(sql_command)
+            sql = "UPDATE USERDATA SET SIGNINSTAT=0"
+            cursor.execute(sql)
             self.database.commit()  # 提交数据库
             logger.info("[数据库] 签到状态已重置")
         finally:
             cursor.close()
 
     def get_highest_points(self, num):
-        return self._execute_in_queue(self._get_highest_points, num)
-
-    def _get_highest_points(self, num):
         cursor = self.database.cursor()
 
         try:
-            sql_command = "select * from USERDATA order by POINTS DESC, SIGNINSTAT LIMIT 0,{limit}".format(
-                limit=num
-            )
-            cursor.execute(sql_command)
+            sql = "select * from USERDATA order by POINTS DESC, SIGNINSTAT LIMIT 0,?"
+            arg = (num,)
+            cursor.execute(sql, arg)
             result = cursor.fetchall()
             return result
         finally:
             cursor.close()
 
     def set_whitelist(self, wxid, stat):
-        return self._execute_in_queue(self._set_whitelist, wxid, stat)
-
-    def _set_whitelist(self, wxid, stat):
         cursor = self.database.cursor()
 
         try:
             self._check_user(wxid)
-            sql_command = "UPDATE USERDATA SET WHITELIST={whitelist} WHERE WXID='{wxid}'".format(
-                whitelist=stat, wxid=wxid
-            )
-            cursor.execute(sql_command)
+            sql = "UPDATE USERDATA SET WHITELIST=? WHERE WXID=?"
+            arg = (stat, wxid,)
+            cursor.execute(sql, arg)
             self.database.commit()  # 提交数据库
             logger.info(f"[数据库] {wxid} 白名单状态已设置为 {stat}")
         finally:
             cursor.close()
 
     def get_whitelist(self, wxid):
-        return self._execute_in_queue(self._get_whitelist, wxid)
-
-    def _get_whitelist(self, wxid):
         cursor = self.database.cursor()
 
         try:
             self._check_user(wxid)
-            sql_command = "SELECT WHITELIST FROM USERDATA WHERE WXID='{wxid}'".format(
-                wxid=wxid
-            )
-            cursor.execute(sql_command)
+            sql = "SELECT WHITELIST FROM USERDATA WHERE WXID=?"
+            arg = (wxid,)
+            cursor.execute(sql, arg)
             result = cursor.fetchall()[0][0]
             return result
         finally:
@@ -253,12 +230,10 @@ class BotDatabase:
         try:
             self._check_user(trader_wxid)
             self._check_user(target_wxid)
-            get_trader_point_sql_command = (
-                "SELECT POINTS FROM USERDATA WHERE WXID='{wxid}'".format(
-                    wxid=trader_wxid
-                )
-            )
-            cursor.execute(get_trader_point_sql_command)
+            sql = "SELECT POINTS FROM USERDATA WHERE WXID=?"
+            arg = (trader_wxid,)
+
+            cursor.execute(sql, arg)
             trader_points = cursor.fetchall()[0][0]
             if trader_points >= num:
                 self._add_points(trader_wxid, num * -1)
@@ -270,9 +245,6 @@ class BotDatabase:
             cursor.close()
 
     def get_user_list(self) -> list:
-        return self._execute_in_queue(self._get_user_list)
-
-    def _get_user_list(self) -> list:
         cursor = self.database.cursor()
 
         try:
@@ -283,9 +255,6 @@ class BotDatabase:
             cursor.close()
 
     def get_user_count(self) -> int:
-        return self._execute_in_queue(self._get_user_count)
-
-    def _get_user_count(self) -> int:
         cursor = self.database.cursor()
 
         try:
@@ -296,17 +265,13 @@ class BotDatabase:
             cursor.close()
 
     def get_private_gpt_data(self, wxid: str) -> dict:
-        return self._execute_in_queue(self._get_private_gpt_data, wxid)
-
-    def _get_private_gpt_data(self, wxid: str) -> dict:
         cursor = self.database.cursor()
 
         try:
             self._check_user(wxid)
-            sql_command = "SELECT PRIVATE_GPT_DATA FROM USERDATA WHERE WXID='{wxid}'".format(
-                wxid=wxid
-            )
-            cursor.execute(sql_command)
+            sql = "SELECT PRIVATE_GPT_DATA FROM USERDATA WHERE WXID=?"
+            arg = (wxid,)
+            cursor.execute(sql, arg)
             json_string = cursor.fetchone()[0]
             if not json_string:
                 return {}
@@ -317,51 +282,45 @@ class BotDatabase:
             cursor.close()
 
     def save_private_gpt_data(self, wxid: str, data: dict) -> None:
-        return self._execute_in_queue(self._save_private_gpt_data, wxid, data)
-
-    def _save_private_gpt_data(self, wxid: str, data: dict) -> None:
         cursor = self.database.cursor()
 
         try:
             self._check_user(wxid)
             json_string = json.dumps(data)
 
-            sql_command = "UPDATE USERDATA SET PRIVATE_GPT_DATA='{json_data}' WHERE WXID='{wxid}'".format(
-                json_data=json_string, wxid=wxid)
-
-            cursor.execute(sql_command)
+            sql = "UPDATE USERDATA SET PRIVATE_GPT_DATA=? WHERE WXID=?"
+            args = (json_string, wxid,)
+            cursor.execute(sql, args)
             self.database.commit()  # 提交数据库
             logger.info(f"[数据库] {wxid} 私聊GPT数据已保存")
         finally:
             cursor.close()
 
-    def _add_column(self, column_name: str, column_type: str) -> None:
+    def add_column(self, column_name: str, column_type: str) -> None:
         cursor = self.database.cursor()
 
         try:
-            cursor.execute(f"ALTER TABLE USERDATA ADD COLUMN {column_name} {column_type}")
+            sql = "ALTER TABLE USERDATA ADD COLUMN ? ?"
+            arg = (column_name, column_type,)
+            cursor.execute(sql, arg)
             self.database.commit()
             logger.info(f"[数据库] 已添加列 {column_name}")
         finally:
             cursor.close()
 
-    def add_column(self, column_name: str, column_type: str) -> None:
-        return self._execute_in_queue(self._add_column, column_name, column_type)
-
-    def _remove_column(self, column_name: str) -> None:
+    def remove_column(self, column_name: str) -> None:
         cursor = self.database.cursor()
 
         try:
-            cursor.execute(f"ALTER TABLE USERDATA DROP COLUMN {column_name}")
+            sql = "ALTER TABLE USERDATA DROP COLUMN ?"
+            arg = (column_name,)
+            cursor.execute(sql, arg)
             self.database.commit()
             logger.info(f"[数据库] 已删除列 {column_name}")
         finally:
             cursor.close()
 
-    def remove_column(self, column_name: str) -> None:
-        return self._execute_in_queue(self._remove_column, column_name)
-
-    def _get_columns(self) -> list:
+    def get_columns(self) -> list:
         cursor = self.database.cursor()
 
         try:
@@ -372,5 +331,29 @@ class BotDatabase:
         finally:
             cursor.close()
 
-    def get_columns(self) -> list:
-        return self._execute_in_queue(self._get_columns)
+    def get_nickname(self, wxid: str) -> str:
+        cursor = self.database.cursor()
+
+        try:
+            self._check_user(wxid)
+            sql = "SELECT NICKNAME FROM USERDATA WHERE WXID=?"
+            arg = (wxid,)
+            cursor.execute(sql, arg)
+            result = cursor.fetchall()[0][0]
+
+            return result
+        finally:
+            cursor.close()
+
+    def set_nickname(self, wxid: str, nickname: str) -> None:
+        cursor = self.database.cursor()
+
+        try:
+            self._check_user(wxid)
+            sql = "UPDATE USERDATA SET NICKNAME=? WHERE WXID=?"
+
+            arg = (nickname, wxid,)
+            cursor.execute(sql, arg)
+            self.database.commit()  # 提交数据库
+        finally:
+            cursor.close()

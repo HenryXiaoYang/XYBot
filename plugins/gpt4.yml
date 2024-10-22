@@ -1,8 +1,0 @@
-keywords: [ "gpt4","GPT4","ChatGPT4","chatgpt4","CHATGPT4" ]
-plugin_name: "gpt4"
-
-gpt_point_price: 10
-
-gpt_version: 'gpt-4'
-gpt_max_token: 400
-gpt_temperature: 0.5

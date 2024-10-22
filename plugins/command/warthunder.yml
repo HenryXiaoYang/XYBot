@@ -1,0 +1,4 @@
+keywords: [ "战雷数据", "战雷查询" ]
+plugin_name: "warthunder"
+
+warthunder_player_api_url: "https://wtapi.yangres.com/player/"

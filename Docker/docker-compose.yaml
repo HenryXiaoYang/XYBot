@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
     xybot:
-        image: "henryxiaoyang/xybot:latest"
+        image: "henryxiaoyang/xybot:v2.0.0"
         restart: unless-stopped
         container_name: "XYBot"
         environment:

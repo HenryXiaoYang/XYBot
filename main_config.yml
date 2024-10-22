@@ -1,16 +1,13 @@
-#Version 0.0.7
-bot_version: "v0.0.7"
+#Version v2.0.0
+bot_version: "v2.0.0"
 
 # XYBot主设置
 
 #如果不知道自己在干什么请别动这两行
 ip: 127.0.0.1
-port: 19088
-tcp_server_port: 19089
+port: 5555
 
-admins: [ "" ]
-
-max_worker: 25
+admins: [ ]
 
 command_prefix: "" #如果需要前缀，则必须为一个字符。如果不需要前缀可设置为空，即 ""。
 
@@ -34,19 +31,3 @@ whitelist: [ ]
 openai_api_base: ""
 #ChatGPT API的Key
 openai_api_key: ""
-
-# ------------------------------------------------------------------------------ #
-# 私聊gpt设置（不用指令，直接问答）
-
-# 是否开启私聊gpt
-enable_private_chat_gpt: True # 可为 True 或者 False
-
-dialogue_count: 3 # 上下文记忆轮数，0为关闭。连续对话消耗的token较多，谨慎设置！
-private_chat_gpt_price: 3 # 每次对话消耗的积分，0为关闭
-
-clear_dialogue_keyword: [ "清除对话", "重置对话", "新建对话","清除对话记录" ]
-
-# gpt请求模型设置
-gpt_version: 'gpt-3.5-turbo' # 连续对话消耗的token较多，谨慎设置！
-gpt_max_token: 1000
-gpt_temperature: 0.5

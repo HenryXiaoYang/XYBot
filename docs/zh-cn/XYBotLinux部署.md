@@ -2,7 +2,7 @@
 
 这一页写了在Linux上部署XYBot的方法。
 
-本篇部署教程适用于`XYBot v0.0.7`。
+本篇部署教程适用于`XYBot v2.0.0`。
 
 ## 前言
 
@@ -28,7 +28,7 @@
 
 服务器配置要求：
 
-- 2核2G以上
+- 2核4G以上
 
 ## 部署
 
@@ -51,22 +51,21 @@ https://docs.docker.com/compose/install/
 这一步以及后面遇到权限问题请在前面加个`sudo`。
 
 ```bash
-docker pull henryxiaoyang/xybot:latest
+docker pull henryxiaoyang/xybot:v2.0.0
 ```
 
 ### 4. 启动容器
 
 指令：
 ```bash
-docker run -d \
-  --name XYBot \
-  --restart unless-stopped \
+docker run -d --name XYBot \
   -e WC_AUTO_RESTART=yes \
   -p 4000:8080 \
   --add-host dldir1.qq.com:127.0.0.1 \
   -v XYBot:/home/app/XYBot/ \
   -v XYBot-wechatfiles:/home/app/WeChat\ Files/ \
-  -t henryxiaoyang/xybot:latest
+  --tty \
+  henryxiaoyang/xybot:v2.0.0
 ```
 
 Docker-compose:
@@ -78,7 +77,7 @@ version: "3.3"
 
 services:
     xybot:
-        image: "henryxiaoyang/xybot:latest"
+        image: "henryxiaoyang/xybot:v2.0.0"
         restart: unless-stopped
         container_name: "XYBot"
         environment:
@@ -97,7 +96,7 @@ volumes:
     XYBot-wechatfiles:
 ```
 
-### 5. 登陆微信
+### 5. 容器日志提示你登陆微信后登陆微信
 
 在浏览器中打开`http://<你的ip地址>:4000/vnc.html`访问VNC。
 
@@ -120,7 +119,7 @@ cd /var/lib/docker/volumes/XYBot/_data
 ### 7. 重启容器
 
 ```bash
-docker restart wechat-service-xybot
+docker restart XYBot
 ```
 
 修改主设置后需要重启容器。重启后需要访问VNC重新扫码并登陆微信！

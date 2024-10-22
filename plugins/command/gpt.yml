@@ -1,0 +1,8 @@
+keywords: [ "gpt","GPT","ChatGPT","chatgpt","CHATGPT" ]
+plugin_name: "gpt"
+
+gpt_point_price: 3
+
+gpt_version: 'gpt-4o-mini'
+gpt_max_token: 1000
+gpt_temperature: 0.5
