@@ -1,2 +1,4 @@
 keywords: [ "管理积分" ]
 plugin_name: "admin_points"
+
+command_format_menu: "➕加积分：\n管理积分 加 积分数 wxid或者@群成员\n\n➖减积分：\n管理积分 减 积分数 wxid或者@群成员\n\n⚙️直接设置积分：\n管理积分 积分数 wxid或者@群成员"
