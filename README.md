@@ -121,7 +121,7 @@ pip install -r requirements.txt
 # 请手动启动微信
 
 # 启动微信后执行
-python3 start.py
+python start.py
 ```
 
 ## 自我编写插件🧑‍💻
