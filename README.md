@@ -6,7 +6,7 @@
 
 XYBot是一个可运行于Linux和Windows的基于Hook的微信机器人。😊 具有高度可自定义性，支持自我编写插件。🚀
 
-XYBot提供了多种功能，包括获取天气🌤️、获取新闻📰、Hypixel玩家查询🎮、战争雷霆玩家信息查询🎮、随机图片📷、随机链接🔗、五子棋♟️、签到✅、查询积分📊、积分榜🏆、积分转送💰、积分抽奖🎁、积分红包🧧等。🎉
+XYBot提供了多种功能，包括获取天气🌤️、获取新闻📰、Hypixel玩家查询🎮、战争雷霆玩家查询🎮、随机图片📷、随机链接🔗、五子棋♟️、签到✅、查询积分📊、积分榜🏆、积分转送💰、积分抽奖🎁、积分红包🧧等。🎉
 
 XYBot还提供了AI相关的功能，包括ChatGPT🗣️，Dalle🎨。🤖
 
@@ -159,17 +159,7 @@ XYBot内置了防微信自动退出登录功能，可以保持长时间运行。
 
 ## 特别感谢
 
-https://github.com/ChisBread/wechat-box/ 感谢提供了Docker容器相关的信息！
-
-https://github.com/sayue2019/wechat-service-allin 感谢提供了Docker容器相关的信息！
-
-https://github.com/cixingguangming55555/wechat-bot v0.0.7之前用的Hook，非常好用，感谢！
-
-https://github.com/ttttupup/wxhelper/ v0.0.7及之后用的Hook，功能很多，感谢！
-
-https://github.com/miloira/wxhook 感谢这个项目提供了Windows环境下微信的启动与注入Hook的工具！
-
-https://github.com/nefarius/Injector 感谢这个项目提供了Docker环境下微信的注入Hook的工具！
+https://github.com/ChisBread 感谢提供了Docker容器相关的信息！
 
 https://github.com/lich0821 感谢这个项目的作者写的wcferry！
 
