@@ -1,2 +1,4 @@
 keywords: [ "管理白名单", "白名单", "whitelist" ]
 plugin_name: "admin_whitelist"
+
+command_format_menu: "➕加入：\n管理白名单 加入 wxid或者@群成员\n\n➖移除：\n管理白名单 移除 wxid或者@群成员"
