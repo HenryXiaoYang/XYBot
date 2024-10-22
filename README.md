@@ -111,7 +111,7 @@ docker run -d --name XYBot \
 
 ### Windows
 
-需要 Git 与 [Python3](https://www.python.org/downloads/release/python-3127/) 与 [微信3.9.1027](https://github.com/lich0821/WeChatFerry/releases/download/v39.2.4/WeChatSetup-3.9.10.27.exe)
+需要 Git 与 [Python3](https://www.python.org/downloads/release/python-3127/) 与 [微信3.9.10。27](https://github.com/lich0821/WeChatFerry/releases/download/v39.2.4/WeChatSetup-3.9.10.27.exe)
 
 ```shell
 git clone https://github.com/HenryXiaoYang/XYBot.git
