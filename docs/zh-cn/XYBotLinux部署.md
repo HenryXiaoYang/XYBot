@@ -1,63 +1,104 @@
-# XYBot Linux部署
+# XYBot 微信机器人
 
-这一页写了在Linux上部署XYBot的方法。
+<p align="center">
+    <img alt="XYBot微信机器人logo" width="240" src="https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/logo/xybot_logo.png?raw=true">
+</p>
 
-本篇部署教程适用于`XYBot v2.0.0`。
+XYBot是一个可运行于Linux和Windows的基于Hook的微信机器人。😊 具有高度可自定义性，支持自我编写插件。🚀
 
-## 前言
+XYBot提供了多种功能，包括获取天气🌤️、获取新闻📰、Hypixel玩家查询🎮、战争雷霆玩家查询🎮、随机图片📷、随机链接🔗、五子棋♟️、签到✅、查询积分📊、积分榜🏆、积分转送💰、积分抽奖🎁、积分红包🧧等。🎉
 
-在Linux上部署`XYBot`需要用到`Docker`，`Docker`容器中运用了`wine`，它对环境要求**极高**。
+XYBot还提供了AI相关的功能，包括ChatGPT🗣️，Dalle🎨。🤖
 
-[已知可以部署的发行版：](https://github.com/ChisBread/wechat-service/issues/1#issuecomment-1252083579)
+XYBot拥有独立的经济系统，其中基础货币称为”积分“。💰
 
-- `Ubuntu`
-- `Arch`
-- `Debian`
-- `DSM6.2.3`
-- `DSM7.0`
+XYBot还提供了管理员功能，包括修改积分💰、修改白名单📝、重置签到状态🔄、获取机器人通讯录📚、热加载/卸载/重载插件🔄等。🔒
 
-不可部署的发行版：
+XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot还支持自我编写插件，用户可以根据自己的需求和创造力编写自定义插件，进一步扩展机器人的功能。💡
 
-- `CentOS`
+✅高度可自定义！
+✅支持自我编写插件！
 
-欢迎各位开`issue`或者`pull request`来反馈！
+<p align="center">
+    <a href="https://opensource.org/licenses/"><img src="https://img.shields.io/badge/License-GPL%20v3-red.svg" alt="GPLv3 License"></a>
+    <a href="https://github.com/HenryXiaoYang/XYBot"><img src="https://img.shields.io/badge/Version-2.0.0-orange.svg" alt="Version"></a>
+    <a href="https://yangres.com"><img src="https://img.shields.io/badge/Blog-@HenryXiaoYang-yellow.svg" alt="Blog"></a>
+</p>
 
-[CentOS部署失败](https://github.com/ChisBread/wechat-service/issues/1)
+## 公告
 
-由于运行PC版微信将消耗很多资源，请确认服务器配置。
+由于需要频繁的更新维护，XYBot版本号格式将会发生变化，v0.0.7后面的版本号将会按照以下格式进行更新：
 
-服务器配置要求：
+v大版本(hook/微信版本变动时更改).功能版本.Bug修复版本
 
-- 2核4G以上
+例如：
 
-## 部署
+- v1.0.1是v1.0.0的Bug修复版本
+- v1.1.0是v1.0.0的功能版本
+- v1.1.1是v1.1.0的Bug修复版本
 
-### 1. 安装Docker
+## 功能列表
 
-装好了可跳过
+用户功能:
 
-官方教程链接🔗：
+- 获取天气🌤️
+- 获取新闻📰
+- ChatGPT🗣️
+- Dalle🎨
+- Hypixel玩家查询🎮
+- 战争雷霆玩家信息查询💣
+- 随机图图📷
+- 随机链接🔗
+- 五子棋♟️
+- 签到✅
+- 查询积分📊
+- 积分榜🏆
+- 积分转送💰
+- 积分抽奖🎁
+- 积分红包🧧
 
-https://docs.docker.com/get-docker/
+管理员功能:
 
-### 2. 安装Docker Compose
+- 修改积分💰
+- 修改白名单📝
+- 重置签到状态🔄
+- 获取机器人通讯录📚
+- 热加载/卸载/重载插件🔄
+- 查看已加载插件ℹ️
 
-一样，已装好可跳过
+## XYBot 文档 📄
 
-https://docs.docker.com/compose/install/
+文档中有完整的功能介绍，部署教程，配置教程，插件编写教程。
 
-### 3. 拉取Docker镜像
+**[🔗XYBot 文档](https://henryxiaoyang.github.io/XYBot)**
 
-这一步以及后面遇到权限问题请在前面加个`sudo`。
+## 功能演示
 
-```bash
+菜单
+![Menu Example](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/README/menu.png?raw=true)
+
+随机图片
+![Random Picture Example](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/README/random_picture.png?raw=true)
+
+ChatGPT
+![ChatGPT Example 1](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/README/gpt3.png?raw=true)
+![ChatGPT Example 2](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/README/gpt4.png?raw=true)
+
+私聊ChatGPT
+![Private ChatGPT Example](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/README/private_gpt.png?raw=true)
+
+天气查询
+![Weather Example](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/README/weather.png?raw=true)
+
+五子棋
+![Gomoku Example](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/README/gomoku.png?raw=true)
+
+## 快速开始🚀
+
+### Linux/Docker
+```shell
 docker pull henryxiaoyang/xybot:v2.0.0
-```
 
-### 4. 启动容器
-
-指令：
-```bash
 docker run -d --name XYBot \
   -e WC_AUTO_RESTART=yes \
   -p 4000:8080 \
@@ -68,185 +109,81 @@ docker run -d --name XYBot \
   henryxiaoyang/xybot:v2.0.0
 ```
 
-Docker-compose:
+### Windows
 
-`XYBot/Docker/docker-compose.yaml`
+需要 Git 与 [Python3](https://www.python.org/downloads/release/python-3127/) 与 [微信3.9.10.27](https://github.com/lich0821/WeChatFerry/releases/download/v39.2.4/WeChatSetup-3.9.10.27.exe)
 
-```yaml
-version: "3.3"
+```shell
+git clone https://github.com/HenryXiaoYang/XYBot.git
+cd XYBot
+pip install -r requirements.txt
 
-services:
-    xybot:
-        image: "henryxiaoyang/xybot:v2.0.0"
-        restart: unless-stopped
-        container_name: "XYBot"
-        environment:
-            WC_AUTO_RESTART: "yes"
-        ports:
-            - "4000:8080"
-        extra_hosts:
-            - "dldir1.qq.com:127.0.0.1"
-        volumes:
-              - "XYBot:/home/app/XYBot/"
-              - "XYBot-wechatfiles:/home/app/WeChat Files/"
-        tty: true
+# 请手动启动微信
 
-volumes:
-    XYBot:
-    XYBot-wechatfiles:
+# 启动微信后执行
+python3 start.py
 ```
 
-### 5. 容器日志提示你登陆微信后登陆微信
+## 自我编写插件🧑‍💻
 
-在浏览器中打开`http://<你的ip地址>:4000/vnc.html`访问VNC。
+请参考模板插件：
 
-![VNC WeChat Login](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/wiki/windows_deployment/vnc_wechat_login.png?raw=true)
+**[🔗模板插件仓库️](https://github.com/HenryXiaoYang/XYBot-Plugin-Framework)**
 
-扫描微信二维码并登录，登陆后XYBot将自动启动。
+## XYBot交流群
 
-!>如果遇到微信崩溃，可尝试重启容器重新按步骤登陆。
+<p align="center">
+    <img alt="XYBot二维码" width="360" src="https://file.yangres.com/xybot-wechatgroup.jpeg">
+</p>
 
-### 6. 配置XYBot设置
+[**🔗图片会被缓存，点我查看最新二维码**](https://file.yangres.com/xybot-wechatgroup.jpeg)
 
-如果使用的步骤4的启动指令，XYBot的文件已被持久化到`/var/lib/docker/volumes/XYBot`，也就是`XYBot`卷。
+## 捐赠
 
-```bash
-cd /var/lib/docker/volumes/XYBot/_data
-```
+<p align="center"><img alt="爱发电二维码" width="360" src="https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/README/aifadian.jpg?raw=true"></p>
+<p align="center">你的赞助是我创作的动力！🙏</p>
 
-在这个目录下可以看到`main_config.yml`，修改这个文件即可。
+## FAQ❓❓❓
 
-### 7. 重启容器
+#### ARM架构能不能运行?🤔️
 
-```bash
-docker restart XYBot
-```
+不行
 
-修改主设置后需要重启容器。重启后需要访问VNC重新扫码并登陆微信！
+#### 用的什么微信版本?🤔️
 
-### 8. 测试是否部署成功
+3.9.10.27😄
 
-在微信中向XYBot私聊`菜单`，如果返回菜单则部署成功。
+#### 最长能运行多久？🤔️
 
-<!-- chat:start -->
+XYBot内置了防微信自动退出登录功能，可以保持长时间运行。
 
-#### **HenryXiaoYang**
+## 特别感谢
 
-菜单
+https://github.com/ChisBread 感谢提供了Docker容器相关的信息！
 
-#### **XYBot**
+https://github.com/lich0821 感谢这个项目的作者写的wcferry！
 
------XYBot菜单------
+## ⭐️Star History⭐️
 
-实用功能⚙️
-
-1.1 获取天气
-
-1.2 获取新闻
-
-1.3 ChatGPT
-
-1.4 Hypixel玩家查询
-
-
-
-娱乐功能🔥
-
-2.1 随机图图
-
-2.2 随机链接
-
-2.3 随机群成员
-
-2.4 五子棋
-
-
-
-积分功能💰
-
-3.1 签到
-
-3.2 查询积分
-
-3.3 积分榜
-
-3.4 积分转送
-
-3.5 积分抽奖
-
-3.6 积分红包
-
-
-
-🔧管理员功能
-
-4.1 管理员菜单
-
-
-
-获取菜单指令格式: 菜单 编号
-
-例如：菜单 1.1
-<!-- chat:end -->
-
-可以开始用XYBot了！
-
-如果失败，可以看看容器日志并发`issue`询问。
-
-```bash
-docker logs xybot -f --tail 100
-```
-
-### 9. 设置VNC密码
-
-VNC默认是没有密码的，强烈推荐设置密码。
-
-#### 1. 进入容器bash
-
-```bash
-docker exec -it xybot /bin/bash
-```
-
-#### 2. 设置密码
-
-请设置一个强密码避免暴力破解
-
-```bash
-# 跟提示设置密码
-x11vnc --storepasswd
-```
-
-#### 3. 编辑文件
-
-将第二行改成：
-
-```command=x11vnc -forever -shared -rfbauth /home/app/.vnc/passwd```
-
-```bash
-# 修改这个文件
-vi /etc/supervisord.d/x11vnc.conf
-```
-
-现在第二行应该是：
-
-```command=x11vnc -forever -shared -rfbauth /home/app/.vnc/passwd```
-
-#### 4. 退出容器bash
-
-```bash
-exit
-```
-
-#### 5. 重启容器
-
-```bash
-docker restart xybot
-```
-
-现在用网页连接vnc会请求密码
-
-#### 6. 登陆VNC后重新扫描二维码登陆微信
-
-登陆后，XYBot会自动启动
-
+<p align="center">
+    <picture>
+      <source
+        media="(prefers-color-scheme: dark)"
+        srcset="
+          https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date&theme=dark
+        "
+      />
+      <source
+        media="(prefers-color-scheme: light)"
+        srcset="
+          https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date
+        "
+      />
+      <img
+        alt="XYBot Star History"
+        width="600"
+        src="https://api.star-history.com/svg?repos=HenryXiaoYang/XYBot&type=Date"
+      />
+    </picture>
+</p>
 
