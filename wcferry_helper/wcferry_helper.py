@@ -5,6 +5,7 @@
 import asyncio
 import subprocess
 import time
+from os import path
 from platform import system
 
 import xmltodict
@@ -23,7 +24,8 @@ def inject(port: int = 5555, debug: bool = False, local: bool = True):
 
     sys = system()
     if sys == "Windows":
-        proccess = subprocess.Popen(f"wcferry_helper/injector.exe {port} {debug}", shell=True)
+        abs_inject_dir = path.abspath("wcferry_helper")
+        proccess = subprocess.Popen(f"wcferry_helper/injector.exe {port} {debug}", shell=True, cwd=abs_inject_dir)
     elif sys == "Linux":
         proccess = subprocess.Popen(f"wine wcferry_helper/injector.exe {port} {debug}", shell=True)
     else:
