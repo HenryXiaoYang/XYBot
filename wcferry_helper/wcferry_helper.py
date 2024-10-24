@@ -133,7 +133,11 @@ class XYBotWxMsg:
         if wxid not in self.ats:
             return False  # 不在 @ 清单里
 
-        if "@所有人" not in self.content and "@all" not in self.content and "@All" not in self.content:
+        if (
+            "@所有人" in self.content
+            or "@all" in self.content
+            or "@All" in self.content
+        ):
             return False  # 排除 @ 所有人
 
         return True
