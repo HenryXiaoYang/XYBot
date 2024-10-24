@@ -25,7 +25,7 @@ def inject(port: int = 5555, debug: bool = False, local: bool = True):
     sys = system()
     if sys == "Windows":
         abs_inject_dir = path.abspath("wcferry_helper")
-        proccess = subprocess.Popen(f"wcferry_helper/injector.exe {port} {debug}", shell=True, cwd=abs_inject_dir)
+        proccess = subprocess.Popen(f"injector.exe {port} {debug}", shell=True, cwd=abs_inject_dir)
     elif sys == "Linux":
         proccess = subprocess.Popen(f"wine wcferry_helper/injector.exe {port} {debug}", shell=True)
     else:
@@ -133,7 +133,11 @@ class XYBotWxMsg:
         if wxid not in self.ats:
             return False  # 不在 @ 清单里
 
-        if "@所有人" not in self.content and "@all" not in self.content and "@All" not in self.content:
+        if (
+            "@所有人" in self.content
+            or "@all" in self.content
+            or "@All" in self.content
+        ):
             return False  # 排除 @ 所有人
 
         return True
