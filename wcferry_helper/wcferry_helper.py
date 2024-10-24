@@ -25,7 +25,7 @@ def inject(port: int = 5555, debug: bool = False, local: bool = True):
     sys = system()
     if sys == "Windows":
         abs_inject_dir = path.abspath("wcferry_helper")
-        proccess = subprocess.Popen(f"wcferry_helper/injector.exe {port} {debug}", shell=True, cwd=abs_inject_dir)
+        proccess = subprocess.Popen(f"injector.exe {port} {debug}", shell=True, cwd=abs_inject_dir)
     elif sys == "Linux":
         proccess = subprocess.Popen(f"wine wcferry_helper/injector.exe {port} {debug}", shell=True)
     else:
