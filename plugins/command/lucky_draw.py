@@ -20,6 +20,8 @@ class lucky_draw(PluginInterface):
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
+        self.command_format_menu = config["command_format_menu"]  # 命令格式
+
         self.lucky_draw_probability = config["lucky_draw_probability"]  # 抽奖概率
         self.max_draw = config["max_draw"]  # 连抽最大数量
         self.draw_per_guarantee = config[
@@ -72,7 +74,7 @@ class lucky_draw(PluginInterface):
             ):
                 error = "-----XYBot-----\n❌积分不足！"
         else:  # 指令格式错误
-            error = "-----XYBot-----\n❌命令格式错误！请查看菜单获取正确命令格式"
+            error = f"-----XYBot-----\n❌命令格式错误！\n\n{self.command_format_menu}"
 
         if not error:
 
