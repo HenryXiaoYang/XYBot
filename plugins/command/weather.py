@@ -20,6 +20,8 @@ class weather(PluginInterface):
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
+        self.command_format_menu = config["command_format_menu"]  # 指令格式
+
         self.weather_api_key = config["weather_api_key"]
 
         self.db = BotDatabase()
@@ -29,7 +31,7 @@ class weather(PluginInterface):
 
         error = ''
         if len(recv.content) != 2:
-            error = '指令格式错误！'
+            error = f'指令格式错误！\n\n{self.command_format_menu}'
 
         if not error:
             # 首先请求geoapi，查询城市的id
