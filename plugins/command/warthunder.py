@@ -22,6 +22,8 @@ class warthunder(PluginInterface):
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
+        self.command_format_menu = config["command_format_menu"]  # 指令格式
+
         self.warthunder_player_api_url = config["warthunder_player_api_url"]  # 要获取的要闻数量
 
         self.db = BotDatabase()
@@ -31,7 +33,7 @@ class warthunder(PluginInterface):
 
         error = ""
         if len(recv.content) < 2:
-            error = "-----XYBot-----\n参数错误!❌\n请发送正确的指令格式：\n战雷数据 玩家昵称"
+            error = f"-----XYBot-----\n参数错误!❌\n\n{self.command_format_menu}"
 
         if error:
             await self.send_friend_or_group(bot, recv, error)
