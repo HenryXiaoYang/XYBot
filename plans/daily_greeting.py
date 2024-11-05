@@ -37,7 +37,7 @@ class daily_greeting(PlansInterface):
         contact_list = bot.get_contacts()
         for contact in contact_list:
             if str(contact.get("wxid")).endswith("@chatroom"):  # 是一个群聊
-                # bot.send_text(message, contact.get("wxid"))
+                bot.send_text(message, contact.get("wxid"))
                 logger.info(f"[发送@信息]{message}| [发送到] {contact.get('wxid')}")
 
     @staticmethod
