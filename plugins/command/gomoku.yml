@@ -1,6 +1,8 @@
 keywords: [ "五子棋", "gomoku" ]
 plugin_name: "gomoku"
 
+command_format_menu: "⚙️创建游戏：\n五子棋 邀请 @xxx\n\n⚙️接受游戏：\n五子棋 接收 邀请码\n\n⚙️下棋：\n五子棋 下棋 坐标"
+
 create_game_sub_keywords: [ "创建游戏", "创建", "create","邀请","invite" ]
 accept_game_sub_keywords: [ "接受", "accept" ]
 
