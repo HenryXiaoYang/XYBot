@@ -1,6 +1,8 @@
 #  Copyright (c) 2024. Henry Yang
 #
 #  This program is licensed under the GNU General Public License v3.0.
+#
+#  This program is licensed under the GNU General Public License v3.0.
 
 import asyncio
 import re
@@ -28,6 +30,8 @@ class hypixel_info(PluginInterface):
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
         recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
+
+        bot.send_text("请注意，hypixel_info插件已不再进行维护", recv.roomid)
 
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36 QIHU 360SE"
