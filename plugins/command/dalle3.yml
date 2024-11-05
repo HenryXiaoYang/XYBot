@@ -1,6 +1,8 @@
 keywords: [ "dalle","生成图片", "ai图片", "AI图片", "AI绘图", "ai绘图", "aipicture", "AIpicture" ]
 plugin_name: "dalle3"
 
+command_format_menu: "生成AI图片：\nAI图片 关键词"
+
 # 每次生成消耗的积分
 price: 5
 
