@@ -19,6 +19,8 @@ class manage_plugins(PluginInterface):
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
+        self.command_format_menu = config['command_format_menu']
+
         self.load_sub_keywords = config['load_sub_keywords']
         self.unload_sub_keywords = config['unload_sub_keywords']
         self.reload_sub_keywords = config['reload_sub_keywords']
@@ -51,7 +53,7 @@ class manage_plugins(PluginInterface):
                 await self.list_plugins(bot, recv)
 
             else:  # 操作不存在，则响应错误
-                out_message = "-----XYBot-----\n⚠️该操作不存在！"
+                out_message = f"-----XYBot-----\n⚠️该操作不存在！\n\n{self.command_format_menu}"
                 logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                 bot.send_text(out_message, recv.roomid)
 
