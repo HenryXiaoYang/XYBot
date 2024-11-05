@@ -3,6 +3,7 @@
 #  This program is licensed under the GNU General Public License v3.0.
 
 import asyncio
+import random
 from datetime import datetime
 
 import pytz
@@ -31,8 +32,9 @@ class daily_greeting(PlansInterface):
         date_str = now.strftime('%Y年%m月%d日')
         week_name = week_names[now.weekday()]
         daily_sentence = self.get_daily_sentence_formatted()
+        history_today = self.get_history_today()
 
-        message = f"早上好！☀️今天是{date_str} {week_name}。😆\n\n{daily_sentence}"
+        message = f"早上好！☀️今天是{date_str} {week_name}。😆\n\n{daily_sentence}\n\n{history_today}"
 
         contact_list = bot.get_contacts()
         for contact in contact_list:
@@ -58,6 +60,24 @@ class daily_greeting(PlansInterface):
         formatted = f"「{sentence}」\n{from_sentence}"
 
         return formatted
+
+    @staticmethod
+    def get_history_today() -> str:
+        url = "https://api.03c3.cn/api/history"
+        response = requests.get(url).json()
+
+        if response.code != 200 or response.get("data") != 200:
+            return ""
+
+        data = response.get("data")
+        data = random.choice(data)
+
+        message = f"🕰️历史上的今天：\n在{data.get('year')}年的今天，{data.get('description')}。"
+
+        return message
+
+
+
 
     def job_async(self, bot: client.Wcf):
         loop = asyncio.get_running_loop()
