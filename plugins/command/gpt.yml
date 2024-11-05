@@ -1,6 +1,8 @@
 keywords: [ "gpt","GPT","ChatGPT","chatgpt","CHATGPT" ]
 plugin_name: "gpt"
 
+command_format_menu: "⚙️向AI提问：\ngpt 问题"
+
 gpt_point_price: 3
 
 gpt_version: 'gpt-4o-mini'
