@@ -13,40 +13,33 @@ from utils.singleton import singleton
 
 # sb queue内置库没法获取返回值
 
-
 @singleton
 class BotDatabase:
     def __init__(self):
+        self.database_column = [("WXID", "TEXT PRIMARY KEY"), ("NICKNAME", "TEXT"), ("POINTS", "INT"), ("SIGNINSTAT", "INT"),("WHITELIST", "INT"), ("PRIVATE_GPT_DATA", "TEXT")]
+
         if not os.path.exists("userdata.db"):  # 检查数据库是否存在
             logger.warning("检测到数据库不存在，正在创建数据库")
             conn = sqlite3.connect("userdata.db")
             c = conn.cursor()
-            c.execute(
-                """CREATE TABLE USERDATA (WXID TEXT PRIMARY KEY, NICKNAME TEXT, POINTS INT, SIGNINSTAT INT, WHITELIST INT, PRIVATE_GPT_DATA TEXT)"""
-            )
+
+            # compose create table sql
+            create_table_sql = f"CREATE TABLE USERDATA ("
+            for column in self.database_column:
+                create_table_sql += f"{column[0]} {column[1]}, "
+            create_table_sql = create_table_sql[:-2] + ")"
+
+            c.execute(create_table_sql)
+
             conn.commit()
             c.close()
             conn.close()
+
             logger.warning("已创建数据库")
 
         self.database = sqlite3.connect(
             "userdata.db", check_same_thread=False
         )  # 连接数据库
-
-        # 检测数据库是否有正确的列
-        logger.info("[数据库]检测数据库是否有正确的列")
-        correct_columns = {'WXID': 'TEXT PRIMARY KEY', 'NICKNAME': 'TEXT', 'POINTS': 'INT', 'SIGNINSTAT': 'INT',
-                           'WHITELIST': 'INT',
-                           'PRIVATE_GPT_DATA': 'TEXT'}
-        cursor = self.database.cursor()
-        cursor.execute("PRAGMA table_info(USERDATA)")
-        columns = cursor.fetchall()
-        column_names = [column[1] for column in columns]
-        for c in correct_columns.keys():
-            if c not in column_names:
-                sql = f"ALTER TABLE USERDATA ADD COLUMN {c} {correct_columns[c]}"
-                cursor.execute(sql)
-                logger.info(f"[数据库]已添加列 {c}")
 
         self.wxid_list = self._get_wxid_list()  # 获取已有用户列表
 
@@ -185,7 +178,7 @@ class BotDatabase:
         cursor = self.database.cursor()
 
         try:
-            sql = "select * from USERDATA order by POINTS DESC, SIGNINSTAT LIMIT 0,?"
+            sql = "SELECT * FROM USERDATA ORDER BY POINTS DESC LIMIT ?;"
             arg = (num,)
             cursor.execute(sql, arg)
             result = cursor.fetchall()
