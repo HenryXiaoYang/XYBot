@@ -19,6 +19,8 @@ class manage_plugins(PluginInterface):
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
+        self.command_format_menu = config['command_format_menu']
+
         self.load_sub_keywords = config['load_sub_keywords']
         self.unload_sub_keywords = config['unload_sub_keywords']
         self.reload_sub_keywords = config['reload_sub_keywords']
@@ -51,7 +53,7 @@ class manage_plugins(PluginInterface):
                 await self.list_plugins(bot, recv)
 
             else:  # 操作不存在，则响应错误
-                out_message = "-----XYBot-----\n⚠️该操作不存在！"
+                out_message = f"-----XYBot-----\n⚠️该操作不存在！\n\n{self.command_format_menu}"
                 logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                 bot.send_text(out_message, recv.roomid)
 
@@ -69,21 +71,29 @@ class manage_plugins(PluginInterface):
                 out_message = "-----XYBot-----\n❌不能加载该插件！"
                 logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                 bot.send_text(out_message, recv.roomid)
+
             elif action_plugin == '*':
-                if plugin_manager.load_plugins():
-                    out_message = "-----XYBot-----\n加载所有插件成功！✅"
+                status = plugin_manager.load_plugins()
+                if status[0]:  # 判断是否成功并发送响应
+                    out_message = f"-----XYBot-----\n加载所有插件成功！✅\n{status[1]}"
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                     bot.send_text(out_message, recv.roomid)
-            else:
-                if plugin_manager.load_plugin(action_plugin):  # 判断是否成功并发送响应
-                    out_message = f"-----XYBot-----\n加载插件{action_plugin}成功！✅"
+                else:
+                    out_message = f"-----XYBot-----\n加载所有插件失败！❌\n{status[1]}"
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                     bot.send_text(out_message, recv.roomid)
 
-                else:
-                    out_message = f"-----XYBot-----\n加载插件{action_plugin}失败！❌"
+            else:
+                status = plugin_manager.load_plugin(action_plugin)  # 判断是否成功并发送响应
+                if status[0]:  # 判断是否成功并发送响应
+                    out_message = f"-----XYBot-----\n加载插件{action_plugin}成功！✅\n{status[1]}"
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                     bot.send_text(out_message, recv.roomid)
+                else:
+                    out_message = f"-----XYBot-----\n加载插件{action_plugin}失败！❌\n{status[1]}"
+                    logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
+                    bot.send_text(out_message, recv.roomid)
+
         except Exception as error:
             out_message = f"-----XYBot-----\n加载插件失败！❌\n{error}"
             logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
@@ -97,21 +107,30 @@ class manage_plugins(PluginInterface):
                 out_message = "-----XYBot-----\n❌不能卸载该插件！"
                 logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                 bot.send_text(out_message, recv.roomid)
+
             elif action_plugin == '*':
-                if plugin_manager.unload_plugins():
-                    out_message = "-----XYBot-----\n卸载所有插件成功！✅"
+                status = plugin_manager.unload_plugins()
+                if status[0]:  # 判断是否成功并发送响应
+                    out_message = f"-----XYBot-----\n卸载所有插件成功！✅\n{status[1]}"
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                     bot.send_text(out_message, recv.roomid)
+                else:
+                    out_message = f"-----XYBot-----\n卸载所有插件失败！❌\n{status[1]}"
+                    logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
+                    bot.send_text(out_message, recv.roomid)
+
             else:
-                if plugin_manager.unload_plugin(action_plugin):  # 判断是否成功并发送响应
-                    out_message = f"-----XYBot-----\n卸载插件{action_plugin}成功！✅"
+                status = plugin_manager.unload_plugin(action_plugin)
+                if status[0]:  # 判断是否成功并发送响应
+                    out_message = f"-----XYBot-----\n卸载插件{action_plugin}成功！✅\n{status[1]}"
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                     bot.send_text(out_message, recv.roomid)
 
                 else:
-                    out_message = f"-----XYBot-----\n卸载插件{action_plugin}失败！❌"
+                    out_message = f"-----XYBot-----\n卸载插件{action_plugin}失败！❌\n{status[1]}"
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                     bot.send_text(out_message, recv.roomid)
+
         except Exception as error:
             out_message = f"-----XYBot-----\n卸载插件失败！❌\n{error}"
             logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
@@ -125,21 +144,29 @@ class manage_plugins(PluginInterface):
                 out_message = "-----XYBot-----\n❌不能重载该插件！"
                 logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                 bot.send_text(out_message, recv.roomid)
+
             elif action_plugin == '*':
-                if plugin_manager.reload_plugins():
-                    out_message = "-----XYBot-----\n重载所有插件成功！✅"
+                status = plugin_manager.reload_plugins()
+                if status[0]:
+                    out_message = f"-----XYBot-----\n重载所有插件成功！✅\n{status[1]}"
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                     bot.send_text(out_message, recv.roomid)
-            else:
-                if plugin_manager.reload_plugin(action_plugin):  # 判断是否成功并发送响应
-                    out_message = f"-----XYBot-----\n重载插件{action_plugin}成功！✅"
+                else:
+                    out_message = f"-----XYBot-----\n重载所有插件失败！❌\n{status[1]}"
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                     bot.send_text(out_message, recv.roomid)
 
-                else:
-                    out_message = f"-----XYBot-----\n重载插件{action_plugin}失败！❌"
+            else:
+                status = plugin_manager.reload_plugin(action_plugin)
+                if status[0]:  # 判断是否成功并发送响应
+                    out_message = f"-----XYBot-----\n重载插件{action_plugin}成功！✅\n{status[1]}"
                     logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
                     bot.send_text(out_message, recv.roomid)
+                else:
+                    out_message = f"-----XYBot-----\n重载插件{action_plugin}失败！❌\n{status[1]}"
+                    logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
+                    bot.send_text(out_message, recv.roomid)
+
         except Exception as error:
             out_message = f"-----XYBot-----\n重载插件失败！❌\n{error}"
             logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')

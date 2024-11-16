@@ -1,6 +1,8 @@
 keywords: [ "管理插件" ]
 plugin_name: "manage_plugins"
 
+command_format_menu: "⚙️加载插件：\n管理插件 加载 插件名(英文)\n\n⚙️卸载插件：\n管理插件 卸载 插件名(英文)\n\n⚙️重载插件：\n管理插件 重载 插件名(英文)\n\n⚙️列出插件：\n管理插件 列表"
+
 load_sub_keywords: [ "加载", "load" ]
 unload_sub_keywords: [ "卸载", "unload" ]
 reload_sub_keywords: [ "重载", "reload" ]

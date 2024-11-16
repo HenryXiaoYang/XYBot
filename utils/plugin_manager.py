@@ -71,6 +71,12 @@ class PluginManager:
             logger.warning(f"! 未加载插件：{plugin_name}，因为它已经加载")
             return False, f"插件 {plugin_name} 已经加载。"
 
+        # 判断插件是否已经加载
+        for plugin_type in self.all_plugin_types:
+            if plugin_name in self.plugins[plugin_type].keys():
+                logger.warning(f"! 未加载插件：{plugin_name}，因为它已经加载")
+                return False, f"插件 {plugin_name} 已经加载。"
+
         for plugin_type in self.all_plugin_types:  # 遍历所有插件文件夹
             if f"{plugin_name}.py" in os.listdir(f'plugins/{plugin_type}'):  # 判断插件是否存在
                 module = importlib.import_module(f"plugins.{plugin_type}.{plugin_name}")  # 导入插件
@@ -127,14 +133,21 @@ class PluginManager:
         :param no_refresh: 是否刷新关键词。Whether to refresh the keywords.
         :return: tuple -(bool, str) - 如果卸载成功，返回True和成功消息。如果卸载失败，返回False和失败原因 (bool, str) - True and a success message if the plugin was unloaded successfully, False and an error message otherwise.
         """
+        if plugin_name == "manage_plugins":
+            logger.info("! 禁止卸载插件：manage_plugins")
+            return False, "禁止卸载manage_plugins"
+
         for plugin_type in self.all_plugin_types:
-            if plugin_name in list(self.plugins[plugin_type].keys()):
+            if plugin_name in self.plugins[plugin_type].keys():
                 del self.plugins[plugin_type][plugin_name]
                 del sys.modules[f"plugins.{plugin_type}.{plugin_name}"]
                 logger.info(f"- 已卸载插件：{plugin_name}")
+
                 if not no_refresh:
                     self.refresh_keywords()
+
                 return True, "成功"  # 如果插件卸载成功则返回True
+
         logger.info(f"! 未找到插件：{plugin_name}，无法卸载")
         return False, f"未找到插件：{plugin_name}"  # 如果插件不存在则返回False
 

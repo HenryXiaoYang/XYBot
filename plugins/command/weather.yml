@@ -1,6 +1,8 @@
 keywords: [ "天气", "获取天气" ]
 plugin_name: "weather"
 
+command_format_menu: "⚙️获取天气：\n天气 城市名称"
+
 weather_api_key: ""
 
 # 老api改收费了 新的api需要申请，链接：https://dev.qweather.com/

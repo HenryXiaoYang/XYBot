@@ -23,6 +23,8 @@ class red_packet(PluginInterface):
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
+        self.command_format_menu = config["command_format_menu"]  # 指令格式
+
         self.max_point = config["max_point"]  # 最大积分
         self.min_point = config["min_point"]  # 最小积分
         self.max_packet = config["max_packet"]  # 最大红包数量
@@ -52,7 +54,7 @@ class red_packet(PluginInterface):
         elif len(recv.content) == 2:  # 判断是否为抢红包指令
             await self.grab_red_packet(bot, recv)
         else:  # 指令格式错误
-            await self.send_friend_or_group(bot, recv, "-----XYBot-----\n❌命令格式错误！请查看菜单获取正确命令格式")
+            await self.send_friend_or_group(bot, recv, f"-----XYBot-----\n❌命令格式错误！{self.command_format_menu}")
 
     async def send_red_packet(self, bot: client.Wcf, recv: XYBotWxMsg):
         red_packet_sender = recv.sender

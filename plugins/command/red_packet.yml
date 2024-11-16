@@ -1,6 +1,8 @@
 keywords: [ "发红包", "抢红包" ]
 plugin_name: "red_packet"
 
+command_format_menu: "⚙️发红包：\n发红包 数量 金额\n⚙️抢红包：\n抢红包 红包验证码"
+
 max_point: 5000
 min_point: 10
 

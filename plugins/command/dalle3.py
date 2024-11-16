@@ -32,6 +32,8 @@ class dalle3(PluginInterface):
         self.image_size = config["image_size"]  # 生成的图片的大小
         self.image_style = config["image_style"]  # 生成的图片的风格
 
+        self.command_format_menu = config["command_format_menu"]  # 帮助菜单
+
         main_config_path = "main_config.yml"
         with open(main_config_path, "r", encoding="utf-8") as f:  # 读取设置
             main_config = yaml.safe_load(f.read())
@@ -56,7 +58,7 @@ class dalle3(PluginInterface):
 
         error = ""
         if len(recv.content) < 2:  # 指令格式正确
-            error = "-----XYBot-----\n参数错误！🙅正确格式为：AI绘图 描述"
+            error = f"-----XYBot-----\n参数错误！🙅\n\n{self.command_format_menu}"
         # 检查积分是否足够，管理员与白名单不需要检查
         elif user_wxid not in self.admins and self.db.get_whitelist(user_wxid) == 0 and self.db.get_points(
                 user_wxid) < self.price:
@@ -64,7 +66,7 @@ class dalle3(PluginInterface):
         elif not self.senstitive_word_check(user_request_prompt):  # 敏感词检查
             error = "-----XYBot-----\n内容包含敏感词!⚠️"
         elif not user_request_prompt:
-            error = "-----XYBot-----\n请输入描述！🤔"
+            error = f"-----XYBot-----\n请输入描述！🤔\n\n{self.command_format_menu}"
 
         if error:  # 如果没满足生成图片的条件，向用户发送为什么
             await self.send_friend_or_group(bot, recv, error)

@@ -20,6 +20,8 @@ class gpt(PluginInterface):
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
+        self.command_format_menu = config["command_format_menu"]  # 指令格式
+
         self.gpt_version = config["gpt_version"]  # gpt版本
         self.gpt_point_price = config["gpt_point_price"]  # gpt使用价格（单次）
         self.gpt_max_token = config["gpt_max_token"]  # gpt 最大token
@@ -52,7 +54,7 @@ class gpt(PluginInterface):
                 user_wxid) != 1 and user_wxid not in self.admins:  # 积分不足 不在白名单 不是管理员
             error_message = f"-----XYBot-----\n积分不足,需要{self.gpt_point_price}点⚠️"
         elif len(recv.content) < 2:  # 指令格式正确
-            error_message = "-----XYBot-----\n参数错误!❌"
+            error_message = f"-----XYBot-----\n参数错误!❌\n\n{self.command_format_menu}"
 
         gpt_request_message = " ".join(recv.content[1:])  # 用户问题
         if not self.senstitive_word_check(gpt_request_message):  # 敏感词检查

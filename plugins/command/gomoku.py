@@ -23,6 +23,8 @@ class gomoku(PluginInterface):
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
+        self.command_format_menu = config["command_format_menu"]
+
         self.keywords = config["keywords"]
         self.create_game_sub_keywords = config["create_game_sub_keywords"]
         self.accept_game_sub_keywords = config["accept_game_sub_keywords"]
@@ -52,7 +54,7 @@ class gomoku(PluginInterface):
         elif sub_keyword in self.play_game_sub_keywords:
             await self.play_game(bot, recv)
         else:
-            out_message = '-----XYBot-----\n❌指令格式错误!'
+            out_message = f"-----XYBot-----\n❌指令格式错误!\n\n{self.command_format_menu}"
             await self.send_friend_or_group(bot, recv, out_message)
 
     async def create_game(self, bot: client.Wcf, recv: XYBotWxMsg):
@@ -60,7 +62,7 @@ class gomoku(PluginInterface):
         if not recv.from_group():  # 判断是否为群聊
             error = '-----XYBot-----\n❌请在群聊中游玩五子棋'
         elif len(recv.content) < 3:  # 判断指令格式是否正确
-            error = '-----XYBot-----\n❌指令格式错误'
+            error = f'-----XYBot-----\n❌指令格式错误\n\n{self.command_format_menu}'
 
         inviter_wxid = recv.sender
 
@@ -111,7 +113,7 @@ class gomoku(PluginInterface):
         if not recv.from_group():  # 判断是否为群聊
             error = '-----XYBot-----\n❌请在群聊中游玩五子棋'
         elif len(recv.content) < 3:  # 判断指令格式是否正确
-            error = '-----XYBot-----\n❌指令格式错误'
+            error = f'-----XYBot-----\n❌指令格式错误\n\n{self.command_format_menu}'
 
         if not error:
             game_id = recv.content[2]

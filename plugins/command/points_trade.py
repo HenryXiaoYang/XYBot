@@ -19,6 +19,8 @@ class points_trade(PluginInterface):
         with open(config_path, "r", encoding="utf-8") as f:  # 读取设置
             config = yaml.safe_load(f.read())
 
+        self.command_format_menu = config["command_format_menu"]  # 指令格式
+
         self.max_points = config["max_points"]  # 最多转帐多少积分
         self.min_points = config["min_points"]  # 最少转帐多少积分
 
@@ -46,13 +48,13 @@ class points_trade(PluginInterface):
             else:
                 await self.log_and_send_error_message(bot, roomid, trader_wxid, error_message)  # 记录日志和发送错误信息
         else:
-            out_message = f"@{self.db.get_nickname(recv.sender)}\n-----XYBot-----\n转帐失败❌\n指令格式错误/在私聊转帐积分(仅可在群聊中转帐积分)❌"
+            out_message = f"@{self.db.get_nickname(recv.sender)}\n-----XYBot-----\n转帐失败❌\n指令格式错误/在私聊转帐积分(仅可在群聊中转帐积分)❌\n\n{self.command_format_menu}"
             logger.info(f'[发送@信息]{out_message}| [发送到] {recv.roomid}')
             bot.send_text(out_message, recv.roomid, recv.sender)
 
     def get_error_message(self, target_wxid, trader_wxid, points_num: str):  # 获取错误信息
         if not target_wxid:
-            return "\n-----XYBot-----\n转帐失败❌\n转帐人不存在(仅可转账群内成员)或⚠️转帐目标昵称重复⚠️"
+            return "\n-----XYBot-----\n转帐失败❌\n转帐人不存在"
         elif not points_num.isdigit():
             return "\n-----XYBot-----\n转帐失败❌\n转帐积分无效(必须为正整数!)"
         points_num = int(points_num)
