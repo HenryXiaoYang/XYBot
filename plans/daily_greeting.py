@@ -66,7 +66,7 @@ class daily_greeting(PlansInterface):
         url = "https://api.03c3.cn/api/history"
         response = requests.get(url).json()
 
-        if response.code != 200 or response.get("data") != 200:
+        if response.code != 200 or response.get("code") != 200:
             return ""
 
         data = response.get("data")
