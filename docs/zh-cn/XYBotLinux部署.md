@@ -51,7 +51,7 @@ https://docs.docker.com/compose/install/
 这一步以及后面遇到权限问题请在前面加个`sudo`。
 
 ```bash
-docker pull henryxiaoyang/xybot:v2.0.0
+docker pull henryxiaoyang/xybot:latest
 ```
 
 ### 4. 启动容器
@@ -65,7 +65,7 @@ docker run -d --name XYBot \
   -v XYBot:/home/app/XYBot/ \
   -v XYBot-wechatfiles:/home/app/WeChat\ Files/ \
   --tty \
-  henryxiaoyang/xybot:v2.0.0
+  henryxiaoyang/xybot:latest
 ```
 
 Docker-compose:
@@ -77,7 +77,7 @@ version: "3.3"
 
 services:
     xybot:
-        image: "henryxiaoyang/xybot:v2.0.0"
+        image: "henryxiaoyang/xybot:latest"
         restart: unless-stopped
         container_name: "XYBot"
         environment:
