@@ -1,6 +1,7 @@
 #  Copyright (c) 2024. Henry Yang
 #
 #  This program is licensed under the GNU General Public License v3.0.
+
 import json
 import os
 import sqlite3
@@ -11,12 +12,17 @@ from loguru import logger
 from utils.singleton import singleton
 
 
-# sb queue内置库没法获取返回值
+# row factory function for the database
+def dict_factory(cursor, row):
+    fields = [column[0] for column in cursor.description]
+    return {key: value for key, value in zip(fields, row)}
+
 
 @singleton
 class BotDatabase:
     def __init__(self):
-        self.database_column = [("WXID", "TEXT PRIMARY KEY"), ("NICKNAME", "TEXT"), ("POINTS", "INT"), ("SIGNINSTAT", "INT"),("WHITELIST", "INT"), ("PRIVATE_GPT_DATA", "TEXT")]
+        self.database_column = [("WXID", "TEXT PRIMARY KEY"), ("NICKNAME", "TEXT"), ("POINTS", "INT"),
+                                ("SIGNINSTAT", "INT"), ("WHITELIST", "INT"), ("PRIVATE_GPT_DATA", "TEXT")]
 
         if not os.path.exists("userdata.db"):  # 检查数据库是否存在
             logger.warning("检测到数据库不存在，正在创建数据库")
@@ -41,6 +47,8 @@ class BotDatabase:
             "userdata.db", check_same_thread=False
         )  # 连接数据库
 
+        self.database.row_factory = dict_factory
+
         self.wxid_list = self._get_wxid_list()  # 获取已有用户列表
 
         self.executor = ThreadPoolExecutor(
@@ -60,21 +68,20 @@ class BotDatabase:
         cursor = self.database.cursor()
 
         try:
-            cursor.execute("select u.WXID from USERDATA u;")  # 获取已有用户列表
-            return cursor.fetchall()
+            cursor.execute("select u.WXID from USERDATA u;")  # 获取已有用户
+            return [item["WXID"] for item in cursor.fetchall()]  # 获取已有用户列表
         finally:
             cursor.close()
 
     def _check_user(self, wxid):
         cursor = self.database.cursor()
         try:
-            if not (wxid,) in self.wxid_list:  # 不存在，创建用户并设置积分为增加的积分
+            if not wxid in self.wxid_list:  # 不存在，创建用户并设置积分为增加的积分
                 sql = "INSERT INTO USERDATA (WXID, NICKNAME, POINTS, SIGNINSTAT, WHITELIST, PRIVATE_GPT_DATA) VALUES (?, ?, ?, ?, ?, ?)"
                 arg = (wxid, "", 0, 0, 0, "{}")
                 cursor.execute(sql, arg)
                 self.database.commit()  # 提交数据库
-            cursor.execute("select u.WXID from USERDATA u;")  # 刷新已有用户列表
-            self.wxid_list = cursor.fetchall()  # 刷新已有用户列表
+            self.wxid_list = self._get_wxid_list()
         finally:
             cursor.close()
 
@@ -89,7 +96,7 @@ class BotDatabase:
             sql = "SELECT POINTS FROM USERDATA WHERE WXID=?"  # 获取当前积分
             arg = (wxid,)
             cursor.execute(sql, arg)
-            new_points = cursor.fetchall()[0][0] + num
+            new_points = cursor.fetchall()[0]["POINTS"] + num
             sql = "UPDATE USERDATA SET POINTS=? WHERE WXID=?"
             arg = (new_points, wxid,)
             cursor.execute(sql, arg)
@@ -125,7 +132,7 @@ class BotDatabase:
             sql = "SELECT POINTS FROM USERDATA WHERE WXID=?"
             arg = (wxid,)
             cursor.execute(sql, arg)
-            result = cursor.fetchall()[0][0]
+            result = cursor.fetchall()[0]["POINTS"]
             return result
         finally:
             cursor.close()
@@ -141,7 +148,7 @@ class BotDatabase:
             sql = "SELECT SIGNINSTAT FROM USERDATA WHERE WXID=?"
             arg = (wxid,)
             cursor.execute(sql, arg)
-            result = cursor.fetchall()[0][0]
+            result = cursor.fetchall()[0]["SIGNINSTAT"]
             return result
         finally:
             cursor.close()
@@ -207,7 +214,7 @@ class BotDatabase:
             sql = "SELECT WHITELIST FROM USERDATA WHERE WXID=?"
             arg = (wxid,)
             cursor.execute(sql, arg)
-            result = cursor.fetchall()[0][0]
+            result = cursor.fetchall()[0]["WHITELIST"]
             return result
         finally:
             cursor.close()
@@ -227,7 +234,7 @@ class BotDatabase:
             arg = (trader_wxid,)
 
             cursor.execute(sql, arg)
-            trader_points = cursor.fetchall()[0][0]
+            trader_points = cursor.fetchall()[0]["POINTS"]
             if trader_points >= num:
                 self._add_points(trader_wxid, num * -1)
                 self._add_points(target_wxid, num)
@@ -252,7 +259,7 @@ class BotDatabase:
 
         try:
             cursor.execute("select count(*) from USERDATA")
-            result = cursor.fetchall()[0][0]
+            result = cursor.fetchall()[0]["count(*)"]
             return result
         finally:
             cursor.close()
@@ -265,7 +272,7 @@ class BotDatabase:
             sql = "SELECT PRIVATE_GPT_DATA FROM USERDATA WHERE WXID=?"
             arg = (wxid,)
             cursor.execute(sql, arg)
-            json_string = cursor.fetchone()[0]
+            json_string = cursor.fetchone()["PRIVATE_GPT_DATA"]
             if not json_string:
                 return {}
             else:
@@ -289,37 +296,13 @@ class BotDatabase:
         finally:
             cursor.close()
 
-    def add_column(self, column_name: str, column_type: str) -> None:
-        cursor = self.database.cursor()
-
-        try:
-            sql = "ALTER TABLE USERDATA ADD COLUMN ? ?"
-            arg = (column_name, column_type,)
-            cursor.execute(sql, arg)
-            self.database.commit()
-            logger.info(f"[数据库] 已添加列 {column_name}")
-        finally:
-            cursor.close()
-
-    def remove_column(self, column_name: str) -> None:
-        cursor = self.database.cursor()
-
-        try:
-            sql = "ALTER TABLE USERDATA DROP COLUMN ?"
-            arg = (column_name,)
-            cursor.execute(sql, arg)
-            self.database.commit()
-            logger.info(f"[数据库] 已删除列 {column_name}")
-        finally:
-            cursor.close()
-
     def get_columns(self) -> list:
         cursor = self.database.cursor()
 
         try:
             cursor.execute("PRAGMA table_info(USERDATA)")
             columns = cursor.fetchall()
-            column_names = [column[1] for column in columns]
+            column_names = [column["name"] for column in columns]
             return column_names
         finally:
             cursor.close()
@@ -332,7 +315,7 @@ class BotDatabase:
             sql = "SELECT NICKNAME FROM USERDATA WHERE WXID=?"
             arg = (wxid,)
             cursor.execute(sql, arg)
-            result = cursor.fetchall()[0][0]
+            result = cursor.fetchall()[0]["NICKNAME"]
 
             return result
         finally:

@@ -7,14 +7,13 @@ import asyncio
 from loguru import logger
 from wcferry import client
 
-from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
 from wcferry_helper import XYBotWxMsg
 
 
 class blocker(PluginInterface):
     def __init__(self):
-        self.db = BotDatabase()  # 实例化机器人数据库类
+        pass
 
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
         logger.debug("开始执行blocker插件,10s")
