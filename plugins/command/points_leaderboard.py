@@ -28,17 +28,15 @@ class points_leaderboard(PluginInterface):
     async def run(self, bot: client.Wcf, recv: XYBotWxMsg):
         recv.content = re.split(" |\u2005", recv.content)  # 拆分消息
 
-        data = self.db.get_highest_points(
-            self.leaderboard_top_number
-        )  # 从数据库获取前x名积分数
+        data = self.db.get_highest_points(self.leaderboard_top_number)  # 从数据库获取前x名积分数
         out_message = "-----XYBot积分排行榜-----"  # 创建积分
         rank = 1
         for i in data:  # 从数据库获取的数据中for循环
-            nickname = self.db.get_nickname(i[0])  # 获取昵称
+            nickname = self.db.get_nickname(i["WXID"])  # 获取昵称
             if not nickname:
-                nickname = i[0]
+                nickname = i["WXID"]
 
-            out_message += f"\n{rank}. {nickname} {i[1]}分 👍"
+            out_message += f"\n{rank}. {nickname} {i["POINTS"]}分 👍"
             rank += 1
             # 组建积分榜信息
 
