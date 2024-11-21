@@ -98,3 +98,4 @@ class bot_status(PluginInterface):
         out_message = f"-----XYBot-----\n{self.status_message}\nBot version: {self.bot_version}\n{base64.b64decode(a).decode('utf-8')}"
         logger.info(f'[发送信息]{out_message}| [发送到] {recv.roomid}')
         bot.send_text(out_message, recv.roomid)  # 发送
+        bot.send_pat_msg(recv.roomid, recv.sender)  # 发送拍一拍消息

@@ -140,6 +140,7 @@ class lucky_draw(PluginInterface):
             )  # 组建信息
 
             await self.send_friend_or_group(bot, recv, message)  # 发送
+            bot.send_pat_msg(recv.roomid, target_wxid)  # 发送拍一拍消息
 
         else:
             await self.send_friend_or_group(bot, recv, error)  # 发送错误

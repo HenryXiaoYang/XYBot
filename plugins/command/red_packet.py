@@ -156,6 +156,7 @@ class red_packet(PluginInterface):
                 # 组建信息
                 out_message = f"-----XYBot-----\n🧧恭喜 {red_packet_grabber_nick} 抢到了 {grabbed_points} 点积分！"
                 await self.send_friend_or_group(bot, recv, out_message)
+                bot.send_pat_msg(recv.roomid, red_packet_grabber)  # 发送拍一拍消息
 
                 # 判断是否抢完
                 if not self.red_packets[req_captcha]["list"]:
