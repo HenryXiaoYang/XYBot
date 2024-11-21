@@ -1,6 +1,6 @@
 keywords: [ "战雷数据", "战雷查询" ]
 plugin_name: "warthunder"
 
-command_format_menu: "⚙️查询战雷玩家数据：\战雷查询 玩家昵称"
+command_format_menu: "⚙️查询战雷玩家数据：战雷查询 玩家昵称"
 
 warthunder_player_api_url: "https://wtapi.yangres.com/player/"
