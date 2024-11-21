@@ -1,0 +1,15 @@
+gpt_point_price: 3
+
+# 调用函数需要特定的版本 https://platform.openai.com/docs/guides/function-calling#which-models-support-function-calling
+gpt_version: 'gpt-4o-mini'
+gpt_max_token: 1000
+gpt_temperature: 0.5
+
+# 每次生成图片消耗的积分
+image_price: 5
+
+# https://platform.openai.com/docs/api-reference/images/create
+model_name: "dall-e-3" # 模型名
+image_quality: "standard" # 生成质量，更好的质量可设置为"hd"
+image_size: "1024x1024" # 图片大小
+image_style: "vivid" # 图片风格
