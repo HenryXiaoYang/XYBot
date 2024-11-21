@@ -52,10 +52,7 @@ class daily_greeting(PlansInterface):
         from_type = hitokoto_api_json.get("from", "")
         from_who = hitokoto_api_json.get("from_who", "")
 
-        if from_type:
-            from_sentence = f"——{from_type} {from_who}"
-        else:
-            from_sentence = f"——{from_who}"
+        from_sentence = f"——{from_type+' '}{from_who}"
 
         formatted = f"「{sentence}」\n{from_sentence}"
 
@@ -64,9 +61,11 @@ class daily_greeting(PlansInterface):
     @staticmethod
     def get_history_today() -> str:
         url = "https://api.03c3.cn/api/history"
-        response = requests.get(url).json()
+        req = requests.get(url)
+        response_code = req.status_code
+        response = req.json()
 
-        if response.code != 200 or response.get("code") != 200:
+        if response_code != 200 or response.get("code") != 200:
             return ""
 
         data = response.get("data")
