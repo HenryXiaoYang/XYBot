@@ -78,10 +78,18 @@ class mention_gpt(PluginInterface):
             tool_call = chat_completion.choices[0].message.tool_calls[0]
             prompt = json.loads(tool_call.function.arguments).get("prompt")
 
-            sucess = await self.generate_and_send_picture(prompt, bot, recv)
+            success = await self.generate_and_send_picture(prompt, bot, recv)
 
-            chat_completion_2 = await self.function_call_result_to_gpt(gpt_request_message, prompt, sucess,
-                                                                       chat_completion)
+            function_call_result_message = {
+                "role": "tool",
+                "content": json.dumps({
+                    "prompt": prompt,
+                    "success": success,
+                }),
+                "tool_call_id": tool_call.id
+            }
+
+            chat_completion_2 = await self.function_call_result_to_gpt(gpt_request_message, chat_completion, function_call_result_message)
             await self.send_friend_or_group(bot, recv, chat_completion_2.choices[0].message.content)
 
             if user_wxid not in self.admins and not self.db.get_whitelist(user_wxid):
@@ -112,7 +120,7 @@ class mention_gpt(PluginInterface):
 
                             },
                             "required": ["prompt"],
-                            "additionalProperties": False
+                            "additionalProperties": False,
                         }
                     }
                 }
@@ -121,7 +129,7 @@ class mention_gpt(PluginInterface):
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are a helpful, creative, clever, and very friendly assistant. You output in plain text instead of markdown. You may also generate images.",
+                        "content": "You are a helpful, creative, clever, and very friendly assistant. You output in plain text instead of markdown.",
                     },
                     {
                         "role": "user",
@@ -132,35 +140,28 @@ class mention_gpt(PluginInterface):
                 model=self.gpt_version,
                 temperature=self.gpt_temperature,
                 max_tokens=self.gpt_max_token,
+                parallel_tool_calls=False
             )
             return True, chat_completion
         except Exception as error:
             return False, error
 
-    async def function_call_result_to_gpt(self, gpt_request_message, prompt, success, chat_completion):
-        function_call_result_message = {
-            "role": "tool",
-            "content": json.dumps({
-                "prompt": prompt,
-                "success": success,
-            }),
-            "tool_call_id": chat_completion.choices[0].message.tool_calls[0].id
-        }
-
+    async def function_call_result_to_gpt(self, gpt_request_message, chat_completion, function_call_result_message):
         client = AsyncOpenAI(api_key=self.openai_api_key, base_url=self.openai_api_base)
-        response_chat_completion = await client.chat.completions.create(
-            messages=[
+        message_payload = [
                 {
                     "role": "system",
-                    "content": "You are a helpful, creative, clever, and very friendly assistant. You output in plain text instead of markdown. You may also generate images.",
+                    "content": "You are a helpful, creative, clever, and very friendly assistant. You output in plain text instead of markdown.",
                 },
                 {
                     "role": "user",
                     "content": gpt_request_message,
                 },
-                chat_completion.choices[0].message,
+                chat_completion.choices[0].message.dict(),
                 function_call_result_message
-            ],
+            ]
+        response_chat_completion = await client.chat.completions.create(
+            messages=message_payload,
             model=self.gpt_version,
             temperature=self.gpt_temperature,
             max_tokens=self.gpt_max_token,
@@ -169,14 +170,17 @@ class mention_gpt(PluginInterface):
 
     async def generate_and_send_picture(self, prompt: str, bot: client.Wcf, recv: XYBotWxMsg) -> bool:
         try:
+            await self.send_friend_or_group(bot, recv, f"⚙️生成图片中...")
             save_path = await self.dalle3(prompt)
             bot.send_image(save_path, recv.roomid)
+            logger.info(f"发送图片: {save_path}")
             return True
         except Exception as error:
             logger.error(f"Error: {error}")
             return False
 
     async def dalle3(self, prompt):  # 返回生成的图片的绝对路径，报错的话返回错误
+        logger.info(f"开始生成图片: {prompt}")
         client = AsyncOpenAI(api_key=self.openai_api_key, base_url=self.openai_api_base)
         try:
             image_generation = await client.images.generate(
@@ -194,6 +198,7 @@ class mention_gpt(PluginInterface):
         except Exception as e:
             return e
 
+        logger.info(f"生成图片 {prompt} 成功: {save_path}")
         return save_path
 
     def senstitive_word_check(self, message):  # 检查敏感词
