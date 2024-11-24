@@ -79,7 +79,7 @@ class private_chatgpt(PluginInterface):
                 if gpt_answer[0]:  # 如果没有错误
                     bot.send_text(gpt_answer[1], wxid)  # 发送回答
                     logger.info(f'[发送信息]{gpt_answer[1]}| [发送到] {wxid}')
-                    if wxid not in self.admins or not self.db.get_whitelist(wxid):
+                    if wxid not in self.admins and not self.db.get_whitelist(wxid):
                         self.db.add_points(wxid, -self.private_chat_gpt_price)  # 扣除积分，管理员不扣
                 else:
                     out_message = f"出现错误⚠️！\n{gpt_answer[1]}"  # 如果有错误，发送错误信息
