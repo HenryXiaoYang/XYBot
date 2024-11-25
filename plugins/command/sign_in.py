@@ -68,6 +68,9 @@ class sign_in(PluginInterface):
             logger.info(f"[发送@信息]{out_message}| [发送到] {recv.roomid}")
             bot.send_text(out_message, recv.roomid, sign_wxid)
 
+        bot.send_pat_msg(recv.roomid, sign_wxid)
+        logger.info(f"[发送拍一拍] 拍了拍: {sign_wxid} | 发送到: {recv.roomid}")
+
     def signstat_check(self, signstat):  # 检查签到状态
         signstat = "20000101" if signstat in ["0", "1"] else signstat
         last_sign_date = datetime.strptime(signstat, "%Y%m%d").date()

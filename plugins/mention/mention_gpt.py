@@ -70,6 +70,7 @@ class mention_gpt(PluginInterface):
         chat_completion = await self.chatgpt(gpt_request_message)
 
         if not chat_completion[0]:
+            logger.error(str(chat_completion[1]))
             out_message = f"出现错误，请稍后再试！⚠️\n错误信息：\n{str(chat_completion[1])}"
             await self.send_friend_or_group(bot, recv, out_message)
 
