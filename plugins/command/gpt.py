@@ -12,6 +12,7 @@ from wcferry import client
 from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
 from wcferry_helper import XYBotWxMsg
+from utils.ai_interface import OpenAIService, PoeService
 
 
 class gpt(PluginInterface):
@@ -33,8 +34,17 @@ class gpt(PluginInterface):
 
         self.admins = main_config["admins"]  # 获取管理员列表
 
-        self.openai_api_base = main_config["openai_api_base"]  # openai api 链接
-        self.openai_api_key = main_config["openai_api_key"]  # openai api 密钥
+        # 从主配置读取 AI 服务类型,默认使用 openai
+        self.ai_service_type = main_config.get("ai_service_type", "openai")
+        
+        # 根据服务类型选择性地读取配置
+        if self.ai_service_type == "poe":
+            self.poe_api_key = main_config["poe_api_key"]
+            self.ai_service = PoeService(self.poe_api_key)
+        else:  # 默认使用 openai
+            self.openai_api_base = main_config["openai_api_base"]
+            self.openai_api_key = main_config["openai_api_key"]
+            self.ai_service = OpenAIService(self.openai_api_key, self.openai_api_base)
 
         sensitive_words_path = "sensitive_words.yml"  # 加载敏感词yml
         with open(sensitive_words_path, "r", encoding="utf-8") as f:  # 读取设置
@@ -85,20 +95,22 @@ class gpt(PluginInterface):
             await self.send_friend_or_group(bot, recv, error_message)
 
     async def chatgpt(self, gpt_request_message):
-        client = AsyncOpenAI(api_key=self.openai_api_key, base_url=self.openai_api_base)
         try:
-            chat_completion = await client.chat.completions.create(
-                messages=[
-                    {
-                        "role": "user",
-                        "content": gpt_request_message,
-                    }
-                ],
+            # 构造消息格式
+            messages = [
+                {"role": "system", "content": "You are a helpful assistant that output in plain text."},
+                {"role": "user", "content": gpt_request_message}
+            ]
+            
+            success, response_content = await self.ai_service.chat_completion(
+                messages=messages,
                 model=self.gpt_version,
                 temperature=self.gpt_temperature,
-                max_tokens=self.gpt_max_token,
+                max_tokens=self.gpt_max_token
             )
-            return True, chat_completion.choices[0].message.content
+            
+            return success, response_content
+            
         except Exception as error:
             return False, error
 

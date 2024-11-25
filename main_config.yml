@@ -27,7 +27,13 @@ whitelist: [ ]
 # ------------------------------------------------------------------------------ #
 # 全局chatgpt设置，插件使用到，私聊gpt也使用到
 
+# AI 服务配置 (可选值: "openai" 或 "poe")
+ai_service_type: "openai"  
+
 #ChatGPT的API网址
 openai_api_base: ""
 #ChatGPT API的Key
 openai_api_key: ""
+
+# 添加 poe api 配置
+poe_api_key: ""

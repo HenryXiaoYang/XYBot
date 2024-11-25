@@ -12,6 +12,7 @@ from wcferry import client
 from utils.database import BotDatabase
 from utils.plugin_interface import PluginInterface
 from wcferry_helper import XYBotWxMsg
+from utils.ai_interface import OpenAIService, PoeService
 
 
 class private_chatgpt(PluginInterface):
@@ -37,8 +38,17 @@ class private_chatgpt(PluginInterface):
 
         self.admins = main_config["admins"]  # 管理员列表
 
-        self.openai_api_base = main_config["openai_api_base"]  # openai api 链接
-        self.openai_api_key = main_config["openai_api_key"]  # openai api 密钥
+        # 从主配置读取 AI 服务类型,默认使用 openai
+        self.ai_service_type = main_config.get("ai_service_type", "openai")
+        
+        # 根据服务类型选择性地读取配置
+        if self.ai_service_type == "poe":
+            self.poe_api_key = main_config["poe_api_key"]
+            self.ai_service = PoeService(self.poe_api_key)
+        else:  # 默认使用 openai
+            self.openai_api_base = main_config["openai_api_base"]
+            self.openai_api_key = main_config["openai_api_key"]
+            self.ai_service = OpenAIService(self.openai_api_key, self.openai_api_base)
 
         sensitive_words_path = "sensitive_words.yml"  # 加载敏感词yml
         with open(sensitive_words_path, "r", encoding="utf-8") as f:  # 读取设置
@@ -89,21 +99,21 @@ class private_chatgpt(PluginInterface):
             bot.send_text(error, recv.roomid)
             logger.info(f'[发送信息]{error}| [发送到] {wxid}')
 
-    async def chatgpt(self, wxid: str, message: str):  # 这个函数请求了openai的api
+    async def chatgpt(self, wxid: str, message: str):  # 这个函数请求了ai服务
         request_content = self.compose_gpt_dialogue_request_content(wxid, message)  # 构成对话请求内容，返回一个包含之前对话的列表
 
-        client = AsyncOpenAI(api_key=self.openai_api_key, base_url=self.openai_api_base)
         try:
-            chat_completion = await client.chat.completions.create(
+            success, response_content = await self.ai_service.chat_completion(
                 messages=request_content,
                 model=self.gpt_version,
                 temperature=self.gpt_temperature,
-                max_tokens=self.gpt_max_token,
-            )  # 调用openai api
+                max_tokens=self.gpt_max_token
+            )  # 调用ai服务，返回成功与否和回答内容
 
-            self.save_gpt_dialogue_request_content(wxid, request_content,
-                                                   chat_completion.choices[0].message.content)  # 保存对话请求与回答内容
-            return True, chat_completion.choices[0].message.content  # 返回对话回答内容
+            if success:
+                self.save_gpt_dialogue_request_content(wxid, request_content, response_content)
+            return success, response_content
+
         except Exception as error:
             return False, error
 

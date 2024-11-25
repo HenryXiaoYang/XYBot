@@ -12,3 +12,4 @@ captcha~=0.5.0
 openpyxl~=3.1.5
 pynng~=0.8.0
 xmltodict~=0.13.0
+fastapi-poe==0.0.48
