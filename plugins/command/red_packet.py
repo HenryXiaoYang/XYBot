@@ -135,7 +135,7 @@ class red_packet(PluginInterface):
             error = "-----XYBot-----\n❌红包只能在群里抢！"
         elif red_packet_grabber in self.red_packets[req_captcha]["grabbed"]:
             error = "-----XYBot-----\n⚠️你已经抢过这个红包了！"
-        elif self.red_packets[req_captcha].sender == red_packet_grabber:
+        elif self.red_packets[req_captcha]["sender"] == red_packet_grabber:
             error = "-----XYBot-----\n❌不能抢自己的红包！"
 
         if not error:
