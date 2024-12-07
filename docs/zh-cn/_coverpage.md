@@ -1,4 +1,4 @@
-![logo](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/logo/xybot_logo_small.png?raw=true)
+![logo](https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/logo/xybot_logo_medium.png?raw=true)
 
 # XYBot <small>v2.0.0</small>
 

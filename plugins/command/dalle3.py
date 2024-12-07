@@ -83,6 +83,7 @@ class dalle3(PluginInterface):
         if user_wxid not in self.admins and self.db.get_whitelist(user_wxid) == 0:  # 如果用户不是管理员或者白名单，扣积分
             self.db.add_points(user_wxid, -self.price)
             await self.send_friend_or_group(bot, recv, f"-----XYBot-----\n🎉图片生成完毕，已扣除 {self.price} 点积分！🙏")
+            bot.send_pat_msg(recv.roomid, user_wxid) # 拍一拍
 
         bot.send_image(image_path, recv.roomid)
         logger.info(f'[发送图片]{image_path}| [发送到] {recv.roomid}')

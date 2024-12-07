@@ -2,15 +2,15 @@
 
 这一页写了如何设置XYBot。
 
-本篇适用于`XYBot v2.0.0`。
+本篇适用于`XYBot v2.2.0`。
 
 ## 配置主设置
 
-这是`XYBot v2.0.0`的主设置：
+这是`XYBot v2.2.0`的主设置：
 
 ```yaml
-#Version v2.0.0
-bot_version: "v2.0.0"
+#Version v2.2.0
+bot_version: "v2.2.0"
 
 # XYBot主设置
 

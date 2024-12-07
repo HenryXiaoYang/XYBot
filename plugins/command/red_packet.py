@@ -135,7 +135,7 @@ class red_packet(PluginInterface):
             error = "-----XYBot-----\n❌红包只能在群里抢！"
         elif red_packet_grabber in self.red_packets[req_captcha]["grabbed"]:
             error = "-----XYBot-----\n⚠️你已经抢过这个红包了！"
-        elif self.red_packets[req_captcha].sender == red_packet_grabber:
+        elif self.red_packets[req_captcha]["sender"] == red_packet_grabber:
             error = "-----XYBot-----\n❌不能抢自己的红包！"
 
         if not error:
@@ -156,6 +156,7 @@ class red_packet(PluginInterface):
                 # 组建信息
                 out_message = f"-----XYBot-----\n🧧恭喜 {red_packet_grabber_nick} 抢到了 {grabbed_points} 点积分！"
                 await self.send_friend_or_group(bot, recv, out_message)
+                bot.send_pat_msg(recv.roomid, red_packet_grabber)  # 发送拍一拍消息
 
                 # 判断是否抢完
                 if not self.red_packets[req_captcha]["list"]:

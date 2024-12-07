@@ -45,6 +45,7 @@ class points_trade(PluginInterface):
                 self.db.safe_trade_points(trader_wxid, target_wxid, points_num)
                 # 记录日志和发送成功信息
                 await self.log_and_send_success_message(bot, roomid, trader_wxid, target_wxid, points_num)
+                bot.send_pat_msg(roomid, target_wxid)
             else:
                 await self.log_and_send_error_message(bot, roomid, trader_wxid, error_message)  # 记录日志和发送错误信息
         else:

@@ -43,6 +43,7 @@ class random_picture(PluginInterface):
 
             logger.info(f'[发送信息](随机图图图片) {cache_path}| [发送到] {recv.roomid}')
             bot.send_image(os.path.abspath(cache_path), recv.roomid)  # 发送图片
+            bot.send_pat_msg(recv.roomid, recv.sender)  # 发送拍一拍消息
 
         except Exception as error:
             out_message = f"-----XYBot-----\n出现错误❌！{error}"

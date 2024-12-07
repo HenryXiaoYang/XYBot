@@ -1,6 +1,0 @@
-keywords: [ "随机链接" ]
-plugin_name: "random_picture_link"
-
-random_pic_link_url: "https://api.yimian.xyz/img?type=moe"
-
-link_count: 3
