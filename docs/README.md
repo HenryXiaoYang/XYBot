@@ -1,7 +1,7 @@
 # XYBot 微信机器人
 
 <p align="center">
-    <img alt="XYBot微信机器人logo" width="240" src="https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/v0.0.7/logo/xybot_logo.png?raw=true">
+    <img alt="XYBot微信机器人logo" width="240" src="https://github.com/HenryXiaoYang/HXY_Readme_Images/blob/main/XYBot/logo/xybot_logo.png?raw=true">
 </p>
 
 XYBot是一个可运行于Linux和Windows的基于Hook的微信机器人。😊 具有高度可自定义性，支持自我编写插件。🚀
@@ -21,7 +21,7 @@ XYBot详细的部署教程可以在项目的Wiki中找到。📚 同时，XYBot�
 
 <p align="center">
     <a href="https://opensource.org/licenses/"><img src="https://img.shields.io/badge/License-GPL%20v3-red.svg" alt="GPLv3 License"></a>
-    <a href="https://github.com/HenryXiaoYang/XYBot"><img src="https://img.shields.io/badge/Version-2.0.0-orange.svg" alt="Version"></a>
+    <a href="https://github.com/HenryXiaoYang/XYBot"><img src="https://img.shields.io/badge/Version-2.2.0-orange.svg" alt="Version"></a>
     <a href="https://yangres.com"><img src="https://img.shields.io/badge/Blog-@HenryXiaoYang-yellow.svg" alt="Blog"></a>
 </p>
 
@@ -151,7 +151,7 @@ python start.py
 
 #### 用的什么微信版本?🤔️
 
-3.9.10.27😄
+3.9.11.25😄
 
 #### 最长能运行多久？🤔️
 
