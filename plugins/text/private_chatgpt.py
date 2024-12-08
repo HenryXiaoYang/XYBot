@@ -62,6 +62,9 @@ class private_chatgpt(PluginInterface):
         if gpt_request_message.startswith("我是"):  # 微信打招呼消息，不需要处理
             return
 
+        if wxid == "weixin":  # 微信系统消息, 不处理
+            return
+
         error = ''
         if self.db.get_points(wxid) < self.private_chat_gpt_price and wxid not in self.admins and not self.db.get_whitelist(wxid):  # 积分不够
             error = f"您的积分不足 {self.private_chat_gpt_price} 点，无法使用私聊GPT功能！⚠️"
