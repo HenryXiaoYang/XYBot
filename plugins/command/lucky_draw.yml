@@ -1,7 +1,7 @@
 keywords: [ "抽奖","积分抽奖" ]
 plugin_name: "lucky_draw"
 
-command_format_menu: "⚙️抽筋：\n抽奖 小|中|大 次数"
+command_format_menu: "⚙️抽奖：\n抽奖 小|中|大 次数"
 
 max_draw: 100
 
