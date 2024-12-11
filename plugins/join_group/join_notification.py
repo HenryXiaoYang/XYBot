@@ -27,6 +27,14 @@ class join_notification(PluginInterface):
             if match:
                 joiner = match.group(2)
                 await self.send_welcome(bot, recv.roomid, joiner)
+        elif "分享的二维码" in join_group_msg:
+            # 通过正则表达式提取邀请者的名字
+            invite_pattern = r'"([^"]+)"通过扫描"([^"]+)"分享的二维码加入群聊'
+            match = re.search(invite_pattern, join_group_msg)
+
+            if match:
+                joiner = match.group(1)
+                await self.send_welcome(bot, recv.roomid, joiner)
 
     async def send_welcome(self, bot: client.Wcf, roomid: str, joiner: str):
         out_message = f"-------- XYBot ---------\n👏欢迎新成员 {joiner} 加入本群！⭐️\n⚙️输入 菜单 获取玩法哦😄"
