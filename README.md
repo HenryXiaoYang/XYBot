@@ -1,3 +1,7 @@
+# 公告
+
+# XYBotV1已停止更新，请前往XYBotV2 https://github.com/HenryXiaoYang/XYBotV2
+
 # XYBot 微信机器人
 
 <p align="center">
